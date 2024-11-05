@@ -1,29 +1,28 @@
-# Create T3 App
+## 実行方法
+```.env```を作成、環境変数を登録  
+```npm install```  
+```npm run db:push```  
+```npm run dev```  
+http:/localhost:3000に接続
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+## Prisma
+```npx prisma studio```  
+http:/localhost:5555に接続  
+→データベースの中身が見れる、GUIでテーブル書き換え可能  
 
-## What's next? How do I make an app with this?
+## ブランチ命名規則
+基本的には<個人名>/<作業名>で統一  
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## コミットメッセージ
+○○: 海画面に遷移するめんだこボタンを追加
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
-
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
-
-## Learn More
-
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
-
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
-
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
-
-## How do I deploy this?
-
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+fix：バグ修正
+add：新規ファイル追加  
+remove：ファイル削除  
+feat：新規機能実装  
+update：機能修正（バグではない）  
+change：仕様変更  
+ref：リファクタリング  
+style：空白とか改行とかコメントとか  
+docs：ボタンの文字を変えたとか  
+revert：変更取り消し  
