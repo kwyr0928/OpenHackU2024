@@ -15,111 +15,83 @@ datasource db {
 }
 
 model User {
-  id     String @id @default(cuid())
+  id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
   emailVerified DateTime?
   image         String?
-  nextMoning   NextMoning[]
-  allPerset    AllPerset[]
-  timePerset   TimePerset[]
-  folderPerset FolderPerset[]
-  taskPerset   TaskPerset[]
-  session      Session[]
-  account      Account[]
+  created_at    DateTime
+  updated_at    DateTime
+
+  session Session[]
+  account Account[]
+  Items   Items[]
 }
 
-model NextMoning {
-  id          Int       @id @default(autoincrement())
-  userId      String
-  updateTime  DateTime
-  allPresetId Int
-  user        User      @relation(fields: [userId], references: [id])
-  allPreset   AllPerset @relation(fields: [allPresetId], references: [id]) //1-1
+model Items {
+  id         String   @id @default(cuid())
+  userId     String
+  setNext    Boolean  @default(false) // 設定中でtrue
+  itemType   Int // 全体0, フォルダ1, タスク2
+  parentId   String? //Itemsのidを持つ
+  order      Int      @default(0) //順序
+  created_at DateTime
+  updated_at DateTime
+
+  user       User         @relation(fields: [userId], references: [id])
+  item       Items?       @relation(name: "itemParents", fields: [parentId], references: [id])
+  WholeSets  WholeSets[]
+  FolderSets FolderSets[]
+  TaskSets   TaskSets[]
+  Items      Items[]      @relation(name: "itemParents")
 }
 
-// 全体プリセット
-model AllPerset {
-  id            Int         @id @default(autoincrement())
-  userId        String
-  name          String?     @default("カスタム")
-  resultTime    DateTime    @db.Time
-  timePresetId  Int
-  presetOrderId Int
-  user          User        @relation(fields: [userId], references: [id])
-  timePreset    TimePerset  @relation(fields: [timePresetId], references: [id]) //1-1
-  presetOrder   PresetOrder @relation(fields: [presetOrderId], references: [id]) //1-many
+model WholeSets {
+  id         String   @id @default(cuid())
+  itemId     String
+  timeSetId  String
+  created_at DateTime
+  updated_at DateTime
 
-  nextMoning NextMoning[]
+  item    Items    @relation(fields: [itemId], references: [id])
+  timeSet TimeSets @relation(fields: [timeSetId], references: [id])
 }
 
-// プリセット順序
-model PresetOrder {
-  id             Int  @id @default(autoincrement())
-  pos            Int
-  type           Int // folder:0 or task:1
-  folderPresetId Int?
-  taskPersetId   Int?
+model TimeSets {
+  id         String   @id @default(cuid())
+  name       String   @default("カスタム")
+  time       DateTime @db.Time()
+  created_at DateTime
+  updated_at DateTime
 
-  folderPerset FolderPerset? @relation(fields: [folderPresetId], references: [id]) //01-1
-  taskPerset   TaskPerset?   @relation(fields: [taskPersetId], references: [id]) //01-1
-  allPerset    AllPerset[]
+  WholeSets WholeSets[]
 }
 
-// 時間プリセット
-model TimePerset {
-  id     Int      @id @default(autoincrement())
-  userId String
-  name   String   @default("カスタム")
-  time   DateTime @db.Time
-  user   User     @relation(fields: [userId], references: [id])
-
-  allPerset AllPerset[]
+model FolderSets {
+  id         String   @id @default(cuid())
+  itemId     String
+  item       Items    @relation(fields: [itemId], references: [id])
+  created_at DateTime
 }
 
-// フォルダプリセット
-model FolderPerset {
-  id     Int    @id @default(autoincrement())
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
-  name   String @default("カスタム")
+model TaskSets {
+  id         String   @id @default(cuid())
+  itemId     String
+  item       Items    @relation(fields: [itemId], references: [id])
+  created_at DateTime
+  updated_at DateTime
 
-  tasksInFolder TasksInFolder[]
-  presetOrder   PresetOrder[]
+  TaskOptions TaskOptions[]
 }
 
-// タスクプリセット
-model TaskPerset {
-  id           Int    @id @default(autoincrement())
-  user         User   @relation(fields: [userId], references: [id])
-  userId       String
-  name         String @default("カスタム")
-  static       Int // 固定値:0 オプションあり:1
-  minute       Int? // 固定値の場合
-  taskOptionId Int[] //このタスクが持つオプション一覧
-
-  presetOrder   PresetOrder[]
-  tasksInFolder TasksInFolder[]
-}
-
-// タスクオプション
-model TaskOption {
-  id     Int    @id @default(autoincrement())
-  name   String
-  minute Int
-
-  tasksInFolder TasksInFolder[]
-}
-
-// 中間テーブル(フォルダーの中身)
-model TasksInFolder {
-  id             Int          @id @default(autoincrement())
-  folderPresetId Int
-  taskPresetId   Int
-  taskOptionId   Int
-  folderPreset   FolderPerset @relation(fields: [folderPresetId], references: [id])
-  taskPreset     TaskPerset   @relation(fields: [taskPresetId], references: [id])
-  taskOption     TaskOption   @relation(fields: [taskOptionId], references: [id])
+model TaskOptions {
+  id         String   @id @default(cuid())
+  name       String
+  optionTime Int // n分
+  taskId     String
+  task       TaskSets @relation(fields: [taskId], references: [id])
+  created_at DateTime
+  updated_at DateTime
 }
 
 // NextAuth関連
