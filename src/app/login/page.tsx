@@ -7,7 +7,7 @@ export default function Login() {
     <div className="flex h-screen flex-col items-center justify-center text-center">
       {/* 新規登録 */}
       <Button size="xl" className="mb-10">
-        <Link href="/question/1">新規登録</Link>
+        <Link href="/question">新規登録</Link>
       </Button>
 
       {/* ログイン */}
