@@ -1,13 +1,13 @@
-import Link from "next/link";
-import { Button } from "~/components/ui/button";
+"use client"
 
-export default function Page() {
-  return (
-<div>
-    <p className="text-red-500 text-2xl">src/app/page.tsx</p>
-     <p>トップ画面</p>
-     <p>Welcome</p>
-     <Button><Link href="/login">ログイン画面へ</Link></Button>
-</div>
+import { signIn, signOut, useSession } from "next-auth/react";
+
+export default function AuthButton() {
+  const { data: session } = useSession();
+
+  return session ? (
+    <button onClick={() => signOut()}>Sign out</button>
+  ) : (
+    <button onClick={() => signIn("google")}>Sign in with Google</button>
   );
 }
