@@ -20,8 +20,8 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
-  created_at    DateTime
-  updated_at    DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   session Session[]
   account Account[]
@@ -35,8 +35,8 @@ model Items {
   itemType   Int // 全体0, フォルダ1, タスク2
   parentId   String? //Itemsのidを持つ
   order      Int      @default(0) //順序
-  created_at DateTime
-  updated_at DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   user       User         @relation(fields: [userId], references: [id])
   item       Items?       @relation(name: "itemParents", fields: [parentId], references: [id])
@@ -50,8 +50,8 @@ model WholeSets {
   id         String   @id @default(cuid())
   itemId     String
   timeSetId  String
-  created_at DateTime
-  updated_at DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   item    Items    @relation(fields: [itemId], references: [id])
   timeSet TimeSets @relation(fields: [timeSetId], references: [id])
@@ -61,8 +61,8 @@ model TimeSets {
   id         String   @id @default(cuid())
   name       String   @default("カスタム")
   time       DateTime @db.Time()
-  created_at DateTime
-  updated_at DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   WholeSets WholeSets[]
 }
@@ -71,15 +71,16 @@ model FolderSets {
   id         String   @id @default(cuid())
   itemId     String
   item       Items    @relation(fields: [itemId], references: [id])
-  created_at DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model TaskSets {
   id         String   @id @default(cuid())
   itemId     String
   item       Items    @relation(fields: [itemId], references: [id])
-  created_at DateTime
-  updated_at DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   TaskOptions TaskOptions[]
 }
@@ -90,8 +91,8 @@ model TaskOptions {
   optionTime Int // n分
   taskId     String
   task       TaskSets @relation(fields: [taskId], references: [id])
-  created_at DateTime
-  updated_at DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 // NextAuth関連
