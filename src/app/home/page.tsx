@@ -1,25 +1,57 @@
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
+import { Card, CardHeader, CardTitle, CardContent } from "~/components/ui/card";
+import { Checkbox } from "~/components/ui/checkbox";
+import { ScrollArea } from "~/components/ui/scroll-area";
+import { Separator } from "~/components/ui/separator";
+
+const tags = Array.from({ length: 50 }).map(
+  (_, i, a) => `v1.2.0-beta.${a.length - i}`,
+);
 
 export default function Home() {
   return (
-<div>
-    <p className="text-red-500 text-2xl">src/app/home/page.tsx</p>
-     <p>ホーム画面</p>
-     <Image
-            src="/image/home.png"
-            alt="home"
-            width={300}
-            height={300}
+    <div className="flex h-screen flex-col items-center justify-center text-center">
+      <Button size="xl">
+        <Link href="/schedule/new">明日の予定を決める！</Link>
+      </Button>
+      <Card className="mt-4 w-3/4 max-w-md">
+        <CardHeader>
+          <CardTitle>次の朝の予定</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <h4 className="mb-4 text-lg font-medium leading-none">6:30に起床</h4>
+          <ScrollArea className="h-60 w-full rounded-md border">
+            <div className="p-4">
+              {tags.map((tag) => (
+                <React.Fragment key={tag}>
+                  <div className="text-sm">{tag}</div>
+                  <Separator className="my-2" />
+                </React.Fragment>
+              ))}
+            </div>
+          </ScrollArea>
+          <h4 className="mt-4 text-lg font-medium leading-none">9:20に電車</h4>
+        </CardContent>
+      </Card>
+
+      <div className="mt-4">プリセット一覧</div>
+      <Button>
+        <Link href="/presets">
+          <Image
+            src="/image/file.svg"
+            alt="newAllPreset"
+            width={30}
+            height={30}
           />
-     <Button><Link href="/schedule/new">明日の予定を決める！</Link></Button>
-     <Button><Link href="/schedule/today">今日の予定（ここの仕様迷い）</Link></Button>
-     <Button><Link href="/schedule/tomorrow">明日の予定（ここの仕様迷い）</Link></Button>
-     <Button><Link href="/presets">プリセット一覧</Link></Button>
-     <Button>
+        </Link>
+      </Button>
+
+      <Button className="mt-4">
         <Link href="/settings">設定</Link>
       </Button>
-</div>
+    </div>
   );
 }
