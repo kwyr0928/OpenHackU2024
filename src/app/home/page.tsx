@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "~/components/ui/card";
 import { Checkbox } from "~/components/ui/checkbox";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { Separator } from "~/components/ui/separator";
+import DisplayTime from "~/components/displayTime/displayTime";
 
 const tags = Array.from({ length: 50 }).map(
   (_, i, a) => `v1.2.0-beta.${a.length - i}`,
@@ -14,9 +15,10 @@ const tags = Array.from({ length: 50 }).map(
 export default function Home() {
   return (
     <div className="flex h-screen flex-col items-center justify-center text-center">
-      <Button size="xl">
-        <Link href="/schedule/new">明日の予定を決める！</Link>
-      </Button>
+      <h1 className="mb-10">
+        現在時刻
+        <DisplayTime />
+      </h1>
       <Card className="mt-4 w-3/4 max-w-md">
         <CardHeader>
           <CardTitle>次の朝の予定</CardTitle>
@@ -34,6 +36,9 @@ export default function Home() {
             </div>
           </ScrollArea>
           <h4 className="mt-4 text-lg font-medium leading-none">9:20に電車</h4>
+          <Button size="sm" className="mt-3 bg-blue-500 hover:bg-blue-600">
+            <Link href="/schedule/new">変更する</Link>
+          </Button>
         </CardContent>
       </Card>
 
