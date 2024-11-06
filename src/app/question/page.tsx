@@ -9,7 +9,7 @@ import { Checkbox } from "~/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { Label } from "~/components/ui/label";
 
-export default function Question1() {
+export default function Question() {
   const [step, setStep] = useState(1); // ステップの状態を管理
 
   return (
