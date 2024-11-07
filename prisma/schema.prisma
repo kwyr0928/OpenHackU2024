@@ -20,15 +20,17 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
 
   session Session[]
   account Account[]
-  Items   Items[]
+  Item   Item[]
+
+  TimeSet TimeSet[]
 }
 
-model Items {
+model Item {
   id         String   @id @default(cuid())
   userId     String
   setNext    Boolean  @default(false) // 設定中でtrue
@@ -39,60 +41,66 @@ model Items {
   updated_at DateTime @updatedAt
 
   user       User         @relation(fields: [userId], references: [id])
-  item       Items?       @relation(name: "itemParents", fields: [parentId], references: [id])
-  WholeSets  WholeSets[]
-  FolderSets FolderSets[]
-  TaskSets   TaskSets[]
-  Items      Items[]      @relation(name: "itemParents")
+  item       Item?       @relation(name: "itemParents", fields: [parentId], references: [id])
+  WholeSet  WholeSet[]
+  FolderSet FolderSet[]
+  TaskSet   TaskSet[]
+  Items      Item[]      @relation(name: "itemParents")
 }
 
-model WholeSets {
+model WholeSet {
   id         String   @id @default(cuid())
   itemId     String
   timeSetId  String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  item    Items    @relation(fields: [itemId], references: [id])
-  timeSet TimeSets @relation(fields: [timeSetId], references: [id])
+  item    Item    @relation(fields: [itemId], references: [id])
+  timeSet TimeSet @relation(fields: [timeSetId], references: [id])
 }
 
-model TimeSets {
+model TimeSet {
   id         String   @id @default(cuid())
+  userId     String
   name       String   @default("カスタム")
   time       DateTime @db.Time()
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  WholeSets WholeSets[]
+  user      User        @relation(fields: [userId], references: [id])
+  WholeSet WholeSet[]
 }
 
-model FolderSets {
+model FolderSet {
   id         String   @id @default(cuid())
   itemId     String
-  item       Items    @relation(fields: [itemId], references: [id])
+  item       Item    @relation(fields: [itemId], references: [id])
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
 
-model TaskSets {
-  id         String   @id @default(cuid())
-  itemId     String
-  item       Items    @relation(fields: [itemId], references: [id])
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+model TaskSet {
+  id          String      @id @default(cuid())
+  itemId      String
+  item        Item       @relation(fields: [itemId], references: [id])
+  optionId    String?  // フォルダ,全体プリセットに設定中のオプション
+  created_at  DateTime    @default(now())
+  updated_at  DateTime    @updatedAt
+  taskOption TaskOption? @relation(name: "select", fields: [optionId], references: [id])
 
-  TaskOptions TaskOptions[]
+  TaskOption TaskOption[]
 }
 
-model TaskOptions {
+model TaskOption {
   id         String   @id @default(cuid())
   name       String
   optionTime Int // n分
-  taskId     String
-  task       TaskSets @relation(fields: [taskId], references: [id])
+  taskId     String //所属タスク
+  task       TaskSet @relation(fields: [taskId], references: [id])
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  TaskSet TaskSet[] @relation(name: "select")
 }
 
 // NextAuth関連
