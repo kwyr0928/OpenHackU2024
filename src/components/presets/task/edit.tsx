@@ -20,35 +20,40 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
+import { Input } from "~/components/ui/input";
 
 // childrenを受け取るために型定義を追加
-interface EditAllProps {
-    children: React.ReactNode;
-  }
+interface EditTaskProps {
+  children: React.ReactNode;
+}
 
-export default function EditTask({ children }: EditAllProps) {
-    return (
-      <Dialog>
-        <DialogTrigger asChild>
-          {/* children を表示 */}
-          <Button className="mt-4 w-full">プリセット編集</Button>
-        </DialogTrigger>
-        <DialogContent className="w-[90%] rounded-xl">
-          <DialogHeader>
-            <DialogTitle>プリセット編集</DialogTitle>
-            <DialogDescription>
-              この操作は元に戻せません。プリセットの内容を変更すると、システム全体に反映されます。
-            </DialogDescription>
-          </DialogHeader>
-          {/* 編集フォームやコンテンツを追加 */}
-          <div className="space-y-4">
-            <label>新しいプリセット名</label>
-            <input type="text" placeholder="プリセット名を入力" className="w-full p-2 border rounded-md" />
-            <Button className="mt-4 w-full">
-              保存
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    );
-  }
+export default function EditTask({ children }: EditTaskProps) {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        {/* children を表示 */}
+        <Button className="mt-4 w-full bg-yellow-200 text-black hover:bg-yellow-300">
+          {children}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="w-[90%] rounded-xl">
+        <DialogHeader>
+          <DialogTitle>{children}</DialogTitle>
+          <DialogDescription></DialogDescription>
+        </DialogHeader>
+        <Tabs defaultValue="all" className="">
+          <TabsList className="mb-4 grid w-full grid-cols-2">
+            <TabsTrigger value="pulldown">プルダウン</TabsTrigger>
+            <TabsTrigger value="static">固定値</TabsTrigger>
+          </TabsList>
+          <TabsContent value="pulldown"></TabsContent>
+          <TabsContent value="static"></TabsContent>
+        </Tabs>
+        <div className="flex justify-between mt-4">
+          <Button className="w-[30%]">削除</Button>
+          <Button className="w-[30%]">保存</Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}

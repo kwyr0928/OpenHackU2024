@@ -31,25 +31,13 @@ export default function TabTask() {
       {/* タスク */}
       <Card className="h-[700px]">
         <CardContent className="space-y-2">
-          {/* <CommandInput placeholder="Type a command or search..." /> */}
           <ScrollArea className="h-[700px] w-full">
-            <EditTask>タスクプリセットの編集（引数にid）</EditTask>
-            <EditTask>タスクプリセットの編集（引数にid）</EditTask>
-            <EditTask>タスクプリセットの編集（引数にid）</EditTask>
-            <EditTask>タスクプリセットの編集（引数にid）</EditTask>
-            <EditTask>タスクプリセットの編集（引数にid）</EditTask>
-            <EditTask>タスクプリセットの編集（引数にid）</EditTask>
-            <EditTask>タスクプリセットの編集（引数にid）</EditTask>
-            <EditTask>タスクプリセットの編集（引数にid）</EditTask>
-            <EditTask>タスクプリセットの編集（引数にid）</EditTask>
-            <EditTask>タスクプリセットの編集（引数にid）</EditTask>
-            <EditTask>タスクプリセットの編集（引数にid）</EditTask>
-            <EditTask>タスクプリセットの編集（引数にid）</EditTask>
-            <EditTask>タスクプリセットの編集（引数にid）</EditTask>
-            <EditTask>タスクプリセットの編集（引数にid）</EditTask>
-            <EditTask>タスクプリセットの編集（引数にid）</EditTask>
-            <EditTask>タスクプリセットの編集（引数にid）</EditTask>
-            <Button className="mt-4 mb-4">+</Button>
+            <EditTask>駅まで徒歩（引数にid）</EditTask>
+            <EditTask>ごはん（引数にid）</EditTask>
+            <EditTask>着替え（引数にid）</EditTask>
+            <EditTask>メイク（引数にid）</EditTask>
+            <EditTask>ヘアメイク（引数にid）</EditTask>
+            <Button className="mb-4 mt-4">+</Button>
           </ScrollArea>
         </CardContent>
       </Card>
