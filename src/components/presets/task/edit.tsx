@@ -32,7 +32,7 @@ export default function EditTask({ children }: EditTaskProps) {
     <Dialog>
       <DialogTrigger asChild>
         {/* children を表示 */}
-        <Button className="mt-4 w-full bg-yellow-200 text-black hover:bg-yellow-300">
+        <Button className="mt-4 w-full bg-yellow-200 text-black hover:bg-yellow-200">
           {children}
         </Button>
       </DialogTrigger>
