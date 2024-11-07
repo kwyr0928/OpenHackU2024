@@ -74,20 +74,21 @@ model TimeSet {
 model FolderSet {
   id         String   @id @default(cuid())
   itemId     String
-  item       Item    @relation(fields: [itemId], references: [id])
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  item       Item    @relation(fields: [itemId], references: [id])
 }
 
 model TaskSet {
   id          String      @id @default(cuid())
   itemId      String
-  item        Item       @relation(fields: [itemId], references: [id])
   optionId    String?  // フォルダ,全体プリセットに設定中のオプション
   created_at  DateTime    @default(now())
   updated_at  DateTime    @updatedAt
-  taskOption TaskOption? @relation(name: "select", fields: [optionId], references: [id])
 
+  item        Item       @relation(fields: [itemId], references: [id])
+  taskOption TaskOption? @relation(name: "select", fields: [optionId], references: [id])
   TaskOption TaskOption[]
 }
 
@@ -96,10 +97,10 @@ model TaskOption {
   name       String
   optionTime Int // n分
   taskId     String //所属タスク
-  task       TaskSet @relation(fields: [taskId], references: [id])
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
+  task       TaskSet @relation(fields: [taskId], references: [id])
   TaskSet TaskSet[] @relation(name: "select")
 }
 
