@@ -12,10 +12,10 @@ import {
 import { Label } from "~/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { ScrollArea } from "~/components/ui/scroll-area";
-import AllTab from "~/components/presets/all";
-import TimeTab from "~/components/presets/time";
-import FolderTab from "~/components/presets/folder";
-import TaskTab from "~/components/presets/task";
+import TabAll from "~/components/presets/all";
+import TabTime from "~/components/presets/time";
+import TabFolder from "~/components/presets/folder";
+import TabTask from "~/components/presets/task";
 
 export default function Presets() {
   return (
@@ -31,22 +31,22 @@ export default function Presets() {
 
         {/* 全体プリセット */}
         <TabsContent value="all">
-          <AllTab></AllTab>
+          <TabAll></TabAll>
         </TabsContent>
 
         {/* 時間プリセット */}
         <TabsContent value="time">
-          <TimeTab></TimeTab>
+          <TabTime></TabTime>
         </TabsContent>
 
         {/* フォルダプリセット */}
         <TabsContent value="folder">
-          <FolderTab></FolderTab>
+          <TabFolder></TabFolder>
         </TabsContent>
 
         {/* タスクプリセット */}
         <TabsContent value="task">
-          <TaskTab></TaskTab>
+          <TabTask></TabTask>
         </TabsContent>
 
       </Tabs>

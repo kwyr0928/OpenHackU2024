@@ -13,7 +13,7 @@ import { Label } from "~/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { ScrollArea } from "~/components/ui/scroll-area";
 
-export default function TimeTab() {
+export default function TabTime() {
   return (
     <div>
       {/* 時間 */}
@@ -21,13 +21,9 @@ export default function TimeTab() {
         <ScrollArea>
           <CardContent className="space-y-2">
             <Button className="mt-4 w-full">
-              <Link href="/presets/time/edit">
-                時間プリセットの編集（引数にid）
-              </Link>
+              時間プリセットの編集（引数にid）
             </Button>
-            <Button className="mt-4 w-full">
-              <Link href="/presets/time/new">時間プリセットの新規作成</Link>
-            </Button>
+            <Button className="mt-4">+</Button>
           </CardContent>
         </ScrollArea>
       </Card>
