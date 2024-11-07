@@ -49,7 +49,7 @@ export default function EditTask({ children }: EditTaskProps) {
           <TabsContent value="pulldown"></TabsContent>
           <TabsContent value="static"></TabsContent>
         </Tabs>
-        <div className="flex justify-between mt-4">
+        <div className="mt-4 flex justify-between">
           <Button className="w-[30%]">削除</Button>
           <Button className="w-[30%]">保存</Button>
         </div>

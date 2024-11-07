@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
 import {
@@ -20,7 +19,7 @@ import TabTask from "~/components/presets/task/tab";
 export default function Edit() {
   return (
     <div className="flex h-screen flex-col items-center justify-start text-center">
-        hensyu
+      hensyu
     </div>
   );
 }

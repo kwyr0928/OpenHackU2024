@@ -20,7 +20,7 @@ export default function TabTime() {
       {/* 時間 */}
       <Card className="h-[700px] md:h-[500px]">
         <ScrollArea>
-          <CardContent className="space-y-2 mt-4">
+          <CardContent className="mt-4 space-y-2">
             <EditTime>1限電車</EditTime>
             <EditTime>2限電車</EditTime>
             <EditTime>3限電車</EditTime>

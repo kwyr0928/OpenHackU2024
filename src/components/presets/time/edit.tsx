@@ -37,7 +37,7 @@ interface EditTimeProps {
 }
 
 export default function EditTime({ children }: EditTimeProps) {
-  const [time, setTime] = useState<string>('10:00'); // 初期値を設定
+  const [time, setTime] = useState<string>("10:00"); // 初期値を設定
 
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTime(e.target.value); // 入力された時刻を更新
@@ -50,12 +50,12 @@ export default function EditTime({ children }: EditTimeProps) {
           {children}
         </AccordionTrigger>
         <AccordionContent className="items-center justify-start bg-gray-200 text-xl">
-        <input
-              type="time" // デバイスのネイティブな時間入力フォーム
-              value={time}
-              onChange={handleTimeChange}
-              className="mt-4 border rounded-md p-2 w-full max-w-[200px]" // Shadcn UIのスタイルでカスタマイズ
-            />
+          <input
+            type="time" // デバイスのネイティブな時間入力フォーム
+            value={time}
+            onChange={handleTimeChange}
+            className="mt-4 w-full max-w-[200px] rounded-md border p-2" // Shadcn UIのスタイルでカスタマイズ
+          />
         </AccordionContent>
       </AccordionItem>
     </Accordion>

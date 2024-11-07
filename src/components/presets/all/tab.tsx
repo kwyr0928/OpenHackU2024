@@ -32,21 +32,21 @@ export default function TabAll() {
         <CardContent className="space-y-2">
           {/* <CommandInput placeholder="Type a command or search..." /> */}
           <ScrollArea className="h-[700px] w-full">
-              <Button className="mt-4 w-full bg-blue-400 text-black">
-                <Link href="presets/all/edit">おしゃれ1限（引数にid）</Link>
-              </Button>
-              <Button className="mt-4 w-full bg-blue-400 text-black">
-                <Link href="presets/all/edit">急ぎ1限（引数にid）</Link>
-              </Button>
-              <Button className="mt-4 w-full bg-blue-400 text-black">
-                <Link href="presets/all/edit">休みの日（引数にid）</Link>
-              </Button>
-              <Button className="mt-4 w-full bg-blue-400 text-black">
-                <Link href="presets/all/edit">寝落ち２限（引数にid）</Link>
-              </Button>
-              <Button className="mt-4">
-                <Link href="presets/all/new">+</Link>
-              </Button>
+            <Button className="mt-4 w-full bg-blue-400 text-black">
+              <Link href="presets/all/edit">おしゃれ1限（引数にid）</Link>
+            </Button>
+            <Button className="mt-4 w-full bg-blue-400 text-black">
+              <Link href="presets/all/edit">急ぎ1限（引数にid）</Link>
+            </Button>
+            <Button className="mt-4 w-full bg-blue-400 text-black">
+              <Link href="presets/all/edit">休みの日（引数にid）</Link>
+            </Button>
+            <Button className="mt-4 w-full bg-blue-400 text-black">
+              <Link href="presets/all/edit">寝落ち２限（引数にid）</Link>
+            </Button>
+            <Button className="mt-4">
+              <Link href="presets/all/new">+</Link>
+            </Button>
           </ScrollArea>
         </CardContent>
       </Card>
