@@ -12,10 +12,10 @@ import {
 import { Label } from "~/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { ScrollArea } from "~/components/ui/scroll-area";
-import TabAll from "~/components/presets/all";
-import TabTime from "~/components/presets/time";
-import TabFolder from "~/components/presets/folder";
-import TabTask from "~/components/presets/task";
+import TabAll from "~/components/presets/all/tab";
+import TabTime from "~/components/presets/time/tab";
+import TabFolder from "~/components/presets/folder/tab";
+import TabTask from "~/components/presets/task/tab";
 
 export default function Presets() {
   return (

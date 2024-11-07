@@ -26,14 +26,14 @@ interface EditAllProps {
     children: React.ReactNode;
   }
 
-export default function EditAll({ children }: EditAllProps) {
+export default function EditTask({ children }: EditAllProps) {
     return (
       <Dialog>
         <DialogTrigger asChild>
           {/* children を表示 */}
-          <Button className=" w-full">プリセット編集</Button>
+          <Button className="mt-4 w-full">プリセット編集</Button>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className="w-[90%] rounded-xl">
           <DialogHeader>
             <DialogTitle>プリセット編集</DialogTitle>
             <DialogDescription>

@@ -23,7 +23,6 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from "~/components/ui/command";
-import EditAll from "./edit/all";
 
 export default function TabAll() {
   return (
@@ -32,20 +31,15 @@ export default function TabAll() {
       <Card className="h-[700px]">
         <CardContent className="space-y-2">
           {/* <CommandInput placeholder="Type a command or search..." /> */}
-          <ScrollArea>
-            <div className="mt-4">
-              <EditAll>全体プリセットの編集（引数にid）</EditAll>
-            </div>
-            <div className="mt-4">
-              <EditAll>全体プリセットの編集（引数にid）</EditAll>
-            </div>
-            <div className="mt-4">
-              <EditAll>全体プリセットの編集（引数にid）</EditAll>
-            </div>
-            <div className="mt-4">
-              <EditAll>全体プリセットの編集（引数にid）</EditAll>
-            </div>
-            <Button className="mt-4">+</Button>
+          <ScrollArea className="h-[700px] w-full">
+            <Button className="mt-4 w-full">
+              <Link href="presets/all/edit">
+                全体プリセットの編集（引数にid）
+              </Link>
+            </Button>
+            <Button className="mt-4">
+              <Link href="presets/all/new">+</Link>
+            </Button>
           </ScrollArea>
         </CardContent>
       </Card>
