@@ -31,7 +31,7 @@ export default function EditTask({ children }: EditAllProps) {
       <Dialog>
         <DialogTrigger asChild>
           {/* children を表示 */}
-          <Button className=" w-full">プリセット編集</Button>
+          <Button className=" w-[90%]">プリセット編集</Button>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
