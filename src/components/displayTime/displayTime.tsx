@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { set } from "zod";
 
-export default function DisplayTime(){
+export default function DisplayTime() {
     const [time, setTime] = useState<string>("23:56");
 
     const updateTime = () => {
@@ -14,11 +14,13 @@ export default function DisplayTime(){
 
     useEffect(() => {
         updateTime();
-        const intervalId = setInterval(updateTime,1000);
+        const intervalId = setInterval(updateTime, 1000);
         return () => clearInterval(intervalId); // クリーンアップ
     })
-    return(
-        <p>{time}</p>
+    return (
+        <div className="text-7xl font-bold font-mono ">
+            {time}
+        </div>
     )
 
 }
