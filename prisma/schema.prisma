@@ -25,7 +25,7 @@ model User {
 
   session Session[]
   account Account[]
-  Item   Item[]
+  Item    Item[]
 
   TimeSet TimeSet[]
 }
@@ -40,12 +40,12 @@ model Item {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  user       User         @relation(fields: [userId], references: [id])
-  item       Item?       @relation(name: "itemParents", fields: [parentId], references: [id])
+  user      User        @relation(fields: [userId], references: [id])
+  item      Item?       @relation(name: "itemParents", fields: [parentId], references: [id])
   WholeSet  WholeSet[]
   FolderSet FolderSet[]
   TaskSet   TaskSet[]
-  Items      Item[]      @relation(name: "itemParents")
+  Items     Item[]      @relation(name: "itemParents")
 }
 
 model WholeSet {
@@ -67,7 +67,7 @@ model TimeSet {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  user      User        @relation(fields: [userId], references: [id])
+  user     User       @relation(fields: [userId], references: [id])
   WholeSet WholeSet[]
 }
 
@@ -77,18 +77,18 @@ model FolderSet {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  item       Item    @relation(fields: [itemId], references: [id])
+  item Item @relation(fields: [itemId], references: [id])
 }
 
 model TaskSet {
-  id          String      @id @default(cuid())
-  itemId      String
-  optionId    String?  // フォルダ,全体プリセットに設定中のオプション
-  created_at  DateTime    @default(now())
-  updated_at  DateTime    @updatedAt
+  id         String   @id @default(cuid())
+  itemId     String
+  optionId   String? // フォルダ,全体プリセットに設定中のオプション
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
-  item        Item       @relation(fields: [itemId], references: [id])
-  taskOption TaskOption? @relation(name: "select", fields: [optionId], references: [id])
+  item       Item         @relation(fields: [itemId], references: [id])
+  taskOption TaskOption?  @relation(name: "select", fields: [optionId], references: [id])
   TaskOption TaskOption[]
 }
 
@@ -100,7 +100,7 @@ model TaskOption {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  task       TaskSet @relation(fields: [taskId], references: [id])
+  task    TaskSet   @relation(fields: [taskId], references: [id])
   TaskSet TaskSet[] @relation(name: "select")
 }
 
