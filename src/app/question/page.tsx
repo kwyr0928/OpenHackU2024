@@ -10,47 +10,51 @@ import { Label } from "~/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 
 export default function Question() {
-  const [step, setStep] = useState(1); // ステップの状態を管理
+  const [step, setStep] = useState<number>(1); // ステップの状態を管理
   const [selectedValue, setSelectedValue] = useState<string | null>(null); // 現在の選択値
   const [inputValue, setInputValue] = useState(""); // その他入力欄の値
-  const [selectedItems, setSelectedItems] = useState<string[]>([]); // チェックされた選択肢を保存
+  const [selectedItems, setSelectedItems] = useState<number[]>([]); // チェックされた選択肢を保存
 
-  const questionRoutine = {
-    title: "あなたの朝のルーティンは？",
-    choice: [
-      { text: "ランニング", id: "running" },
-      { text: "朝食", id: "breakfast" },
-      { text: "着替え", id: "kigae" },
-    ]
+  const initialQuestionChoices:string[] = ["ランニング", "朝食", "着替え"];
+
+  type questionTime = {
+    title: string;
+    choice: { text: string; id: string; }[];
   };
 
-  const questionTypes:string[] = ["running", "breakfast", "kigae"];
+  type questionTimeArray = {
+    running: questionTime;
+    breakfast: questionTime;
+    dressing: questionTime;
+  }
 
   const questionTimes = {
-    running: {
-      "title": "ランニングの所要時間は？",
-      "choice": [
-        { text: "10分", id: "10min" },
-        { text: "20分", id: "20min" },
-        { text: "30分", id: "30min" },
-      ]
-    },
-    breakfast: {
-      "title": "朝食の所要時間は？",
-      "choice": [
-        { text: "10分", id: "10min" },
-        { text: "20分", id: "20min" },
-        { text: "30分", id: "30min" },
-      ]
-    },
-    dressing: {
-      "title": "着替えの所要時間は？",
-      "choice": [
-        { text: "10分", id: "10min" },
-        { text: "20分", id: "20min" },
-        { text: "30分", id: "30min" },
-      ]
-    }
+    member: [
+      {
+        title: "ランニングの所要時間は？",
+        choice: [
+          { text: "10分", id: "10min" },
+          { text: "20分", id: "20min" },
+          { text: "30分", id: "30min" },
+        ]
+      },
+      {
+        title: "朝食の所要時間は？",
+        choice: [
+          { text: "10分", id: "10min" },
+          { text: "20分", id: "20min" },
+          { text: "30分", id: "30min" },
+        ]
+      },
+      {
+        title: "着替えの所要時間は？",
+        choice: [
+          { text: "10分", id: "10min" },
+          { text: "20分", id: "20min" },
+          { text: "30分", id: "30min" },
+        ]
+      }
+    ]
   };
 
   const handleNextStep = () => {
@@ -66,13 +70,13 @@ export default function Question() {
           <CardTitle>アンケート</CardTitle>
         </CardHeader>
         <CardContent>
-          {selectedItems && step === 1 ? (
-            <InitialQuestion questionTypes={questionTypes} selectedItems={selectedItems} setSelectedItems={setSelectedItems} />
+          {step === 1 ? (
+            <InitialQuestion initialQuestionChoices={initialQuestionChoices} selectedItems={selectedItems} setSelectedItems={setSelectedItems} />
           ) : (
             selectedItems.length > 0 && (
               <QuestionComponent
                 // ここで["selectedItems[x]"]を指定できれば完成
-                questionData={questionTimes["breakfast"]}  //  生成に用いるjsonを渡す
+                questionData={questionTimes.member[selectedItems[step - 2]!]}  //  生成に用いるjsonを渡す
                 selectedValue={selectedValue} //  現在選択されている値を取得
                 setSelectedValue={setSelectedValue}
                 inputValue={inputValue} //  その他の入力を取得
@@ -109,23 +113,24 @@ export default function Question() {
   );
 }
 
-function InitialQuestion({questionTypes, selectedItems, setSelectedItems }: any) {
+function InitialQuestion({initialQuestionChoices, selectedItems, setSelectedItems }: any) {
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-medium">あなたの朝のルーティンはどれですか？</h2>
-      {questionTypes.map((item:string) => (
+      <h2>{selectedItems}</h2>
+      {initialQuestionChoices.map((item:string, index:number) => (
         <div key={item} className="flex items-center space-x-2">
           <Checkbox
-            checked={selectedItems.includes(item)}
+            checked={selectedItems.includes(index)}
             onCheckedChange={(checked) => {
               if (checked) {
-                setSelectedItems([...selectedItems, item]);
+                setSelectedItems([...selectedItems, index]);
               } else {
-                setSelectedItems(selectedItems.filter((i: string) => i !== item)); // 配列から消去
+                setSelectedItems(selectedItems.filter((i: number) => i !== index)); // 配列から消去
               }
             }}
           />
-          <Label>{item === "running" ? "ランニング" : item === "breakfast" ? "朝食" : "着替え"}</Label>
+          <Label>{item}</Label>
         </div>
       ))}
     </div>
