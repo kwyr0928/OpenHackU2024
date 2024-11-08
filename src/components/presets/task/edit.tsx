@@ -1,17 +1,6 @@
-import Image from "next/image";
-import Link from "next/link";
+"use client";
+import { useState } from "react";
 import { Button } from "~/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
-import { Label } from "~/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { ScrollArea } from "~/components/ui/scroll-area";
 import {
   Dialog,
   DialogContent,
@@ -21,24 +10,45 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 // childrenを受け取るために型定義を追加
 interface EditTaskProps {
-  children: React.ReactNode;
+  children: string;
 }
 
 export default function EditTask({ children }: EditTaskProps) {
+  const [name, setName] = useState<string>(children); // 表示される名前
+  const [tempName, setTempName] = useState<string>(children); // 入力用の一時的な名前
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false); // 削除確認ダイアログの状態
+  const [isDialogOpen, setDialogOpen] = useState(false); // ダイアログの状態
+
+  const handleSave = () => {
+    setName(tempName); // データベースに保存
+    setDialogOpen(false);
+  };
+
+  const handleDelete = async () => {};
+
   return (
-    <Dialog>
+    <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
         {/* children を表示 */}
         <Button className="mt-4 w-full bg-yellow-200 text-black hover:bg-yellow-200">
-          {children}
+          {name}
         </Button>
       </DialogTrigger>
       <DialogContent className="w-[90%] rounded-xl">
         <DialogHeader>
-          <DialogTitle>{children}</DialogTitle>
+          <DialogTitle>
+            <Input
+              value={tempName}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setTempName(e.target.value)
+              }
+              className="mt-2 text-black"
+            />
+          </DialogTitle>
           <DialogDescription></DialogDescription>
         </DialogHeader>
         <Tabs defaultValue="all" className="">
@@ -50,10 +60,40 @@ export default function EditTask({ children }: EditTaskProps) {
           <TabsContent value="static"></TabsContent>
         </Tabs>
         <div className="mt-4 flex justify-between">
-          <Button className="w-[30%]">削除</Button>
-          <Button className="w-[30%]">保存</Button>
+          <Button
+            className="w-[30%]"
+            onClick={() => setIsDeleteDialogOpen(true)}
+          >
+            削除
+          </Button>
+          <Button className="w-[30%]" onClick={handleSave}>
+            変更
+          </Button>
         </div>
       </DialogContent>
+
+      {/* 削除確認ダイアログ */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>確認</DialogTitle>
+            <DialogDescription>
+              このタスクを削除しますか？この操作は元に戻せません。
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-4 flex justify-end">
+            <Button
+              className="mr-4"
+              onClick={() => setIsDeleteDialogOpen(false)}
+            >
+              キャンセル
+            </Button>
+            <Button className="bg-red-600 text-white" onClick={handleDelete}>
+              削除
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Dialog>
   );
 }
