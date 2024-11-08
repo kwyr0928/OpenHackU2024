@@ -40,14 +40,15 @@ const memberNumber = 1;
 
 export default function Home() {
   return (
-    <div className="flex h-screen flex-col items-center justify-center text-center bg-indigo-300">
+    <div className="flex h-screen flex-col items-center justify-center text-center bg-slate-50">
       {/* 現在時刻の表示 */}
       <h1 className="mb-1">
         <DisplayTime />
       </h1>
       <Card className="mt-4 w-3/4 max-w-md">
         <CardHeader className="pb-2">
-          <div className="text-3xl font-bold text-gray-900 mb-1 border border-gray-300 rounded-lg p-4 shadow-sm bg-lime-200	">
+          <div className="text-3xl font-bold text-gray-900 mb-1 border border-gray-300 rounded-lg p-4 shadow-sm text-slate-100"
+          style={{ backgroundColor: "#ACC763" }}>
             <p className="mb-1 text-lg font-medium leading-none">
               起床時刻
             </p>
@@ -65,14 +66,14 @@ export default function Home() {
               ))}
             </div>
           </ScrollArea>
-          <h1 className="text-3xl font-bold mt-4 mb-1 border border-gray-300 rounded-lg p-4 shadow-sm bg-red-400">
+          <h1 className="text-3xl font-bold mt-4 mb-1 border border-gray-300 rounded-lg p-4 shadow-sm bg-pink-200 text-blue-950">
             <p className="mb-1 text-lg font-medium leading-none">
               達成時刻
             </p>
             {data.member[memberNumber]?.goleTime}
           </h1>
-          <Button size="sm" className="mt-3 bg-blue-500 hover:bg-blue-600">
-            <Link href="/schedule/new">　　　　　変更　　　　　</Link>
+          <Button size="sm" className="mt-3 bg-customColor hover:bg-blue-900 text-lg text-slate-100">
+            <Link href="/schedule/new">　　　　変更　　　　</Link>
           </Button>
         </CardContent>
       </Card>
@@ -80,25 +81,34 @@ export default function Home() {
       <div className="flex  space-x-4">
         <div className="mt-4 flex-col">
           <p>
-            プリセット一覧
+            プリセット
           </p>
-          <Button>
-            <Link href="/presets">
+          <Link href="/presets">
+            <Button>
               <Image
                 src="/image/file.svg"
                 alt="newAllPreset"
                 width={30}
                 height={30}
               />
-            </Link>
-          </Button>
+            </Button>
+          </Link>
         </div>
 
         <div className="mt-4 flex-col">
-          <p className="mt-2"></p>
-          <Button className="mt-4">
-            <Link href="/settings">設定</Link>
-          </Button>
+          <p>
+            設定
+          </p>
+          <Link href="/settings">
+            <Button className="fill-blue-100">
+              <Image
+                src="/image/setting.svg"
+                alt="newAllPreset"
+                width={30}
+                height={30}
+              />
+            </Button>
+          </Link>
         </div>
       </div>
     </div>
