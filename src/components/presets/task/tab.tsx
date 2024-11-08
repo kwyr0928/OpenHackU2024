@@ -29,16 +29,55 @@ export default function TabTask() {
   return (
     <div>
       {/* タスク */}
-      <Card className="h-[700px]">
+      <Card className="h-[700px] ">
         <CardContent className="space-y-2">
-          <ScrollArea className="h-[700px] w-full">
-            <EditTask>駅まで徒歩（引数にid）</EditTask>
-            <EditTask>ごはん（引数にid）</EditTask>
-            <EditTask>着替え（引数にid）</EditTask>
-            <EditTask>メイク（引数にid）</EditTask>
-            <EditTask>ヘアメイク（引数にid）</EditTask>
-            <Button className="mb-4 mt-4">+</Button>
-          </ScrollArea>
+          <Command className=" ">
+            <CommandInput placeholder="検索" />
+            <ScrollArea className="h-[640px] w-full">
+              <CommandList className="">
+                <CommandEmpty>見つかりません</CommandEmpty>
+                <CommandGroup>
+                  <CommandItem>
+                    <EditTask>駅まで徒歩（引数にid）</EditTask>
+                  </CommandItem>
+                  <CommandItem>
+                    <EditTask>ごはん（引数にid）</EditTask>
+                  </CommandItem>
+                  <CommandItem>
+                    <EditTask>着替え（引数にid）</EditTask>
+                  </CommandItem>
+                  <CommandItem>
+                    <EditTask>メイク（引数にid）</EditTask>
+                  </CommandItem>
+                  <CommandItem>
+                    <EditTask>ヘアメイク（引数にid）</EditTask>
+                  </CommandItem>
+                  <CommandItem>
+                    <EditTask>ヘアメイク（引数にid）</EditTask>
+                  </CommandItem>
+                  <CommandItem>
+                    <EditTask>ヘアメイク（引数にid）</EditTask>
+                  </CommandItem>
+                  <CommandItem>
+                    <EditTask>ヘアメイク（引数にid）</EditTask>
+                  </CommandItem>
+                  <CommandItem>
+                    <EditTask>ヘアメイク（引数にid）</EditTask>
+                  </CommandItem>
+                  <CommandItem>
+                    <EditTask>ヘアメイク（引数にid）</EditTask>
+                  </CommandItem>
+                  <CommandItem>
+                    <EditTask>ヘアメイク（引数にid）</EditTask>
+                  </CommandItem>
+                  <CommandItem>
+                    <EditTask>ヘアメイク（引数にid）</EditTask>
+                  </CommandItem>
+                </CommandGroup>
+                <Button className="mt-4">+</Button>
+              </CommandList>
+            </ScrollArea>
+          </Command>
         </CardContent>
       </Card>
     </div>

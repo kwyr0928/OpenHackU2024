@@ -12,7 +12,6 @@ import {
 import { Input } from "~/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
-// childrenを受け取るために型定義を追加
 interface EditTaskProps {
   children: string;
 }
@@ -23,22 +22,25 @@ export default function EditTask({ children }: EditTaskProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false); // 削除確認ダイアログの状態
   const [isDialogOpen, setDialogOpen] = useState(false); // ダイアログの状態
 
-  const handleSave = () => {
-    setName(tempName); // データベースに保存
+  const handleSave = () => {// データベースに保存
+    setName(tempName); 
     setDialogOpen(false);
   };
 
-  const handleDelete = async () => {};
+  const handleDelete = async () => { //データベースから削除
+    setDialogOpen(false);
+    setIsDeleteDialogOpen(false)
+  };
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
         {/* children を表示 */}
-        <Button className="mt-4 w-full bg-yellow-200 text-black hover:bg-yellow-200">
+        <Button className="mt-2 w-full bg-yellow-200 text-black hover:bg-yellow-200">
           {name}
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-[90%] rounded-xl">
+      <DialogContent className="w-[90%] rounded-xl h-[50%]">
         <DialogHeader>
           <DialogTitle>
             <Input
@@ -51,7 +53,7 @@ export default function EditTask({ children }: EditTaskProps) {
           </DialogTitle>
           <DialogDescription></DialogDescription>
         </DialogHeader>
-        <Tabs defaultValue="all" className="">
+        <Tabs defaultValue="pulldown" className="">
           <TabsList className="mb-4 grid w-full grid-cols-2">
             <TabsTrigger value="pulldown">プルダウン</TabsTrigger>
             <TabsTrigger value="static">固定値</TabsTrigger>
