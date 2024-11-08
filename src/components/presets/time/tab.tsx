@@ -24,7 +24,7 @@ export default function TabTime() {
             <EditTime>1限電車</EditTime>
             <EditTime>2限電車</EditTime>
             <EditTime>3限電車</EditTime>
-            <Button className="mt-4">+</Button>
+            <Button className="mt-4">新規作成+</Button>
           </CardContent>
         </ScrollArea>
       </Card>

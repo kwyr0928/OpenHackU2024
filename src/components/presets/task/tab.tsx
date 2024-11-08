@@ -74,7 +74,7 @@ export default function TabTask() {
                     <EditTask>ヘアメイク（引数にid）</EditTask>
                   </CommandItem>
                 </CommandGroup>
-                <Button className="mt-4">+</Button>
+                <Button className="mt-4">新規作成+</Button>
               </CommandList>
             </ScrollArea>
           </Command>

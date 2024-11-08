@@ -23,7 +23,7 @@ export default function TabFolder() {
             <Button className="mt-4 w-full">
               フォルダプリセットの編集（引数にid）
             </Button>
-            <Button className="mt-4">+</Button>
+            <Button className="mt-4">新規作成+</Button>
           </CardContent>
         </ScrollArea>
       </Card>

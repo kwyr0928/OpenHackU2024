@@ -45,7 +45,7 @@ export default function TabAll() {
               <Link href="presets/all/edit">寝落ち２限（引数にid）</Link>
             </Button>
             <Button className="mt-4">
-              <Link href="presets/all/new">+</Link>
+              <Link href="presets/all/new">新規作成+</Link>
             </Button>
           </ScrollArea>
         </CardContent>
