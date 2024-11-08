@@ -12,21 +12,42 @@ import {
 import { Label } from "~/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { ScrollArea } from "~/components/ui/scroll-area";
-import EditTime from "~/components/presets/time/edit";
+import EditTime from "./edit";
+import NewTime from "./new"
+
+import {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
+} from "~/components/ui/command";
 
 export default function TabTime() {
   return (
-    <div className="">
-      {/* 時間 */}
-      <Card className="h-[700px] md:h-[500px]">
-        <ScrollArea>
-          <CardContent className="mt-4 space-y-2">
-            <EditTime>1限電車</EditTime>
-            <EditTime>2限電車</EditTime>
-            <EditTime>3限電車</EditTime>
-            <Button className="mt-4">新規作成+</Button>
-          </CardContent>
-        </ScrollArea>
+    <div>
+      {/* タスク */}
+      <Card className="h-[700px] ">
+        <CardContent className="space-y-2">
+          <Command className=" ">
+            <CommandInput placeholder="検索" />
+            <ScrollArea className="h-[640px] w-full">
+              <CommandList className="">
+                <CommandEmpty>見つかりません</CommandEmpty>
+                <CommandGroup>
+                  <CommandItem>
+                    <EditTime>1限電車</EditTime>
+                  </CommandItem>
+                </CommandGroup>
+                <NewTime></NewTime>
+              </CommandList>
+            </ScrollArea>
+          </Command>
+        </CardContent>
       </Card>
     </div>
   );

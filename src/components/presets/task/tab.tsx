@@ -24,6 +24,7 @@ import {
   CommandShortcut,
 } from "~/components/ui/command";
 import EditTask from "./edit";
+import NewTask from "./new"
 
 export default function TabTask() {
   return (
@@ -52,29 +53,8 @@ export default function TabTask() {
                   <CommandItem>
                     <EditTask>ヘアメイク（引数にid）</EditTask>
                   </CommandItem>
-                  <CommandItem>
-                    <EditTask>ヘアメイク（引数にid）</EditTask>
-                  </CommandItem>
-                  <CommandItem>
-                    <EditTask>ヘアメイク（引数にid）</EditTask>
-                  </CommandItem>
-                  <CommandItem>
-                    <EditTask>ヘアメイク（引数にid）</EditTask>
-                  </CommandItem>
-                  <CommandItem>
-                    <EditTask>ヘアメイク（引数にid）</EditTask>
-                  </CommandItem>
-                  <CommandItem>
-                    <EditTask>ヘアメイク（引数にid）</EditTask>
-                  </CommandItem>
-                  <CommandItem>
-                    <EditTask>ヘアメイク（引数にid）</EditTask>
-                  </CommandItem>
-                  <CommandItem>
-                    <EditTask>ヘアメイク（引数にid）</EditTask>
-                  </CommandItem>
                 </CommandGroup>
-                <Button className="mt-4">新規作成+</Button>
+                <NewTask></NewTask>
               </CommandList>
             </ScrollArea>
           </Command>

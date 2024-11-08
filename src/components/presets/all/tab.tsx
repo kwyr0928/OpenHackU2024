@@ -12,6 +12,7 @@ import {
 import { Label } from "~/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { ScrollArea } from "~/components/ui/scroll-area";
+
 import {
   Command,
   CommandDialog,
@@ -30,24 +31,33 @@ export default function TabAll() {
       {/* 全体 */}
       <Card className="h-[700px]">
         <CardContent className="space-y-2">
-          {/* <CommandInput placeholder="Type a command or search..." /> */}
-          <ScrollArea className="h-[700px] w-full">
-            <Button className="mt-4 w-full bg-blue-400 text-black">
-              <Link href="presets/all/edit">おしゃれ1限（引数にid）</Link>
-            </Button>
-            <Button className="mt-4 w-full bg-blue-400 text-black">
-              <Link href="presets/all/edit">急ぎ1限（引数にid）</Link>
-            </Button>
-            <Button className="mt-4 w-full bg-blue-400 text-black">
-              <Link href="presets/all/edit">休みの日（引数にid）</Link>
-            </Button>
-            <Button className="mt-4 w-full bg-blue-400 text-black">
-              <Link href="presets/all/edit">寝落ち２限（引数にid）</Link>
-            </Button>
-            <Button className="mt-4">
-              <Link href="presets/all/new">新規作成+</Link>
-            </Button>
-          </ScrollArea>
+          <Command className=" ">
+            <CommandInput placeholder="検索" />
+            <ScrollArea className="h-[640px] w-full">
+              <CommandList className="">
+                <CommandEmpty>見つかりません</CommandEmpty>
+                <CommandGroup className="">
+                  <CommandItem>
+                    <Button className="mt-2 w-full bg-blue-400 text-black">
+                      <Link href="presets/all/edit">
+                        おしゃれ1限（引数にid）
+                      </Link>
+                    </Button>
+                  </CommandItem>
+                  <CommandItem>
+                    <Button className="mt-2 w-full bg-blue-400 text-black">
+                      <Link href="presets/all/edit">
+                        おしゃれ1限（引数にid）
+                      </Link>
+                    </Button>
+                  </CommandItem>
+                </CommandGroup>
+                <Button className="mt-4 bg-blue-400">
+                  <Link href="presets/all/new">新規作成+</Link>
+                </Button>
+              </CommandList>
+            </ScrollArea>
+          </Command>
         </CardContent>
       </Card>
     </div>
