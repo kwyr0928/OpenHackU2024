@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import Image from "next/image";
 import { useState } from "react";
@@ -19,40 +19,39 @@ export default function Question() {
           <CardTitle>アンケート</CardTitle>
         </CardHeader>
         <CardContent>
-          
-        {step === 1 ? (
+          {step === 1 ? (
             // Question 1
-          <div className="space-y-2">
-            <h2 className="text-lg font-medium">あなたの習慣は？</h2>
-            <div className="flex items-center space-x-2">
-              <Checkbox id="running" />
-              <label
-                htmlFor="running"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                ランニング
-              </label>
+            <div className="space-y-2">
+              <h2 className="text-lg font-medium">あなたの習慣は？</h2>
+              <div className="flex items-center space-x-2">
+                <Checkbox id="running" />
+                <label
+                  htmlFor="running"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  ランニング
+                </label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox id="breakfast" />
+                <label
+                  htmlFor="breakfast"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  朝食
+                </label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox id="morningShower" />
+                <label
+                  htmlFor="morningShower"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  朝シャン
+                </label>
+              </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox id="breakfast" />
-              <label
-                htmlFor="breakfast"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                朝食
-              </label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox id="morningShower" />
-              <label
-                htmlFor="morningShower"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                朝シャン
-              </label>
-            </div>
-          </div>
-           ) : (
+          ) : (
             // Question 2
             <div className="space-y-4">
               <h2 className="text-lg font-medium">運動の所要時間は？</h2>

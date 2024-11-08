@@ -1,21 +1,25 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Button } from "~/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
+import { Label } from "~/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { ScrollArea } from "~/components/ui/scroll-area";
+import TabAll from "~/components/presets/all/tab";
+import TabTime from "~/components/presets/time/tab";
+import TabFolder from "~/components/presets/folder/tab";
+import TabTask from "~/components/presets/task/tab";
 
-export default function NewPreset() {
+export default function New() {
   return (
-    <div>
-      <p className="text-2xl text-red-500">src/app/presets/all/new/page.tsx</p>
-      <p>新規プリセット作成（全体）</p>
-      <Image
-        src="/image/newAllPreset.png"
-        alt="newAllPreset"
-        width={300}
-        height={300}
-      />
-      <Button>
-        <Link href="/presets">戻る</Link>
-      </Button>
+    <div className="flex h-screen flex-col items-center justify-start text-center">
+      sinki
     </div>
   );
 }
