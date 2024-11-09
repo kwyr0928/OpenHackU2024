@@ -18,13 +18,15 @@ const data = {
       name: "yusuke",
       age: 30,
       wakeUpTime: "6:30",
-      goleTime: "9:20"
+      goleTime: "9:20",
+      lastEditedTime: "2024/11/14 22:33"
     },
     {
       name: "tanaka",
       age: 40,
       wakeUpTime: "7:30",
-      goleTime: "9:20"
+      goleTime: "9:20",
+      lastEditedTime: "2024/11/14 22:33"
     },
     {
       name: "sasaki",
@@ -45,14 +47,19 @@ export default function Home() {
       <h1 className="mb-1">
         <DisplayTime />
       </h1>
-      <Card className="mt-4 w-3/4 max-w-md">
-        <CardHeader className="pb-2">
-          <div className="text-3xl font-bold text-gray-900 mb-1 border border-gray-300 rounded-lg p-4 shadow-sm text-slate-100"
-          style={{ backgroundColor: "#ACC763" }}>
-            <p className="mb-1 text-lg font-medium leading-none">
+      <Card className="mt-4 w-3/4 max-w-md border-darkBlue">
+        <h5 className="pt-1 pb-1 font-mPlus">
+          最終更新時刻：{data.member[memberNumber]?.lastEditedTime}
+        </h5>
+        <CardHeader className="pb-2 pt-0">
+          <div className="text-3xl text-gray-900 mb-1 border rounded-lg p-4 shadow-sm text-slate-800 bg-slate-0 font-mPlus font-Medium"
+            style={{ borderColor: "#ACC763" }}>
+            <p className="mb-1 text-lg leading-none">
               起床時刻
             </p>
-            {data.member[memberNumber]?.wakeUpTime}
+            <p className="font-bold">
+              {data.member[memberNumber]?.wakeUpTime}
+            </p>
           </div>
         </CardHeader>
         <CardContent>
@@ -66,41 +73,42 @@ export default function Home() {
               ))}
             </div>
           </ScrollArea>
-          <h1 className="text-3xl font-bold mt-4 mb-1 border border-gray-300 rounded-lg p-4 shadow-sm bg-pink-200 text-blue-950">
-            <p className="mb-1 text-lg font-medium leading-none">
+          <h1 className="text-3xl mt-4 mb-1 border border-pink-300 rounded-lg p-4 shadow-sm  text-blue-950">
+            <p className="mb-1 text-lg leading-none">
               達成時刻
             </p>
-            {data.member[memberNumber]?.goleTime}
+            <p className="font-bold">
+              {data.member[memberNumber]?.goleTime}
+            </p>
           </h1>
-          <Button size="sm" className="mt-3 bg-customColor hover:bg-blue-900 text-lg text-slate-100">
-            <Link href="/schedule/new">　　　　変更　　　　</Link>
-          </Button>
+          <Link href="/schedule/new">
+            <Button size="sm" className="px-8 py-5 mt-3 bg-darkBlue hover:bg-blue-900 text-lg font-mPlus text-slate-100 shadow-lg">
+              変更
+            </Button>
+          </Link>
         </CardContent>
       </Card>
 
-      <div className="flex  space-x-4">
+      <div className="flex  space-x-12 mt-2 font-mPlus">
         <div className="mt-4 flex-col">
-          <p>
-            プリセット
-          </p>
           <Link href="/presets">
-            <Button>
+            <Button className="bg-darkBlue shadow-lg">
               <Image
-                src="/image/file.svg"
+                src="/image/folder.svg"
                 alt="newAllPreset"
                 width={30}
                 height={30}
               />
             </Button>
           </Link>
+          <h1 className="text-darkBlue">
+            プリセット
+          </h1>
         </div>
 
         <div className="mt-4 flex-col">
-          <p>
-            設定
-          </p>
           <Link href="/settings">
-            <Button className="fill-blue-100">
+            <Button className="bg-darkBlue shadow-lg">
               <Image
                 src="/image/setting.svg"
                 alt="newAllPreset"
@@ -109,6 +117,9 @@ export default function Home() {
               />
             </Button>
           </Link>
+          <h1 className="text-darkBlue">
+            設定
+          </h1>
         </div>
       </div>
     </div>
