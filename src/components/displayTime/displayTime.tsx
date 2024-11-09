@@ -18,6 +18,7 @@ export default function DisplayTime() {
         setTime(toFullWidth(`${hours}:${minutes}`));
     }
 
+
     useEffect(() => {
         updateTime();
         const intervalId = setInterval(updateTime, 1000);
