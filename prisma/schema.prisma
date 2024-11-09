@@ -14,7 +14,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model Users {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
@@ -23,14 +23,14 @@ model User {
   created_at    DateTime  @default(now())
   updated_at    DateTime  @updatedAt
 
-  session Session[]
-  account Account[]
-  Item    Item[]
+  session Sessions[]
+  account Accounts[]
+  Item    Items[]
 
-  TimeSet TimeSet[]
+  TimeSet TimeSets[]
 }
 
-model Item {
+model Items {
   id         String   @id @default(cuid())
   userId     String
   setNext    Boolean  @default(false) // 設定中でtrue
@@ -40,26 +40,26 @@ model Item {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  user      User        @relation(fields: [userId], references: [id])
-  item      Item?       @relation(name: "itemParents", fields: [parentId], references: [id])
-  WholeSet  WholeSet[]
-  FolderSet FolderSet[]
-  TaskSet   TaskSet[]
-  Items     Item[]      @relation(name: "itemParents")
+  user      Users        @relation(fields: [userId], references: [id])
+  item      Items?       @relation(name: "itemParents", fields: [parentId], references: [id])
+  WholeSet  WholeSets[]
+  FolderSet FolderSets[]
+  TaskSet   TaskSets[]
+  Items     Items[]      @relation(name: "itemParents")
 }
 
-model WholeSet {
+model WholeSets {
   id         String   @id @default(cuid())
   itemId     String
   timeSetId  String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  item    Item    @relation(fields: [itemId], references: [id])
-  timeSet TimeSet @relation(fields: [timeSetId], references: [id])
+  item    Items    @relation(fields: [itemId], references: [id])
+  timeSet TimeSets @relation(fields: [timeSetId], references: [id])
 }
 
-model TimeSet {
+model TimeSets {
   id         String   @id @default(cuid())
   userId     String
   name       String   @default("カスタム")
@@ -67,32 +67,32 @@ model TimeSet {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  user     User       @relation(fields: [userId], references: [id])
-  WholeSet WholeSet[]
+  user     Users       @relation(fields: [userId], references: [id])
+  WholeSet WholeSets[]
 }
 
-model FolderSet {
+model FolderSets {
   id         String   @id @default(cuid())
   itemId     String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  item Item @relation(fields: [itemId], references: [id])
+  item Items @relation(fields: [itemId], references: [id])
 }
 
-model TaskSet {
+model TaskSets {
   id         String   @id @default(cuid())
   itemId     String
   optionId   String? // フォルダ,全体プリセットに設定中のオプション
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  item       Item         @relation(fields: [itemId], references: [id])
-  taskOption TaskOption?  @relation(name: "select", fields: [optionId], references: [id])
-  TaskOption TaskOption[]
+  item       Items         @relation(fields: [itemId], references: [id])
+  taskOption TaskOptions?  @relation(name: "select", fields: [optionId], references: [id])
+  TaskOption TaskOptions[]
 }
 
-model TaskOption {
+model TaskOptions {
   id         String   @id @default(cuid())
   name       String
   optionTime Int // n分
@@ -100,12 +100,12 @@ model TaskOption {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  task    TaskSet   @relation(fields: [taskId], references: [id])
-  TaskSet TaskSet[] @relation(name: "select")
+  task    TaskSets   @relation(fields: [taskId], references: [id])
+  TaskSet TaskSets[] @relation(name: "select")
 }
 
 // NextAuth関連
-model Account {
+model Accounts {
   id                       Int     @id @default(autoincrement())
   userId                   String
   type                     String
@@ -118,21 +118,21 @@ model Account {
   scope                    String?
   id_token                 String? @db.Text
   session_state            String?
-  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                     Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
   refresh_token_expires_in Int?
 
   @@unique([provider, providerAccountId])
 }
 
-model Session {
+model Sessions {
   id           String   @id @default(cuid())
   sessionToken String   @unique
   userId       String
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model VerificationToken {
+model VerificationTokens {
   identifier String
   token      String   @unique
   expires    DateTime

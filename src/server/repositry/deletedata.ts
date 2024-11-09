@@ -3,7 +3,7 @@ import { db } from "../db";
 
 // itemをitemIdで削除
 export async function deleteItem(itemId: string) {
-  const deleteItem = await db.item.delete({
+  const deleteItem = await db.items.delete({
     where: {
       id: itemId,
     },

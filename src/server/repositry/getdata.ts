@@ -56,7 +56,7 @@ export type optionStruct = {
 
 // userId to ユーザー名
 export async function getUserName(userId: string) {
-  const user = await db.user.findUnique({
+  const user = await db.users.findUnique({
     select: {
       name: true,
     },
@@ -70,7 +70,7 @@ export async function getUserName(userId: string) {
 
 // userId to 任意タイプのSetsのid一覧
 export async function getKindPresets(userId: string, type: number) {
-  const itemIds = await db.item.findMany({
+  const itemIds = await db.items.findMany({
     select: {
       id: true,
     },
@@ -85,7 +85,7 @@ export async function getKindPresets(userId: string, type: number) {
 
 // userId to TimeSetsのid一覧
 export async function getTimePresets(userId: string) {
-  const timeIds = await db.timeSet.findMany({
+  const timeIds = await db.timeSets.findMany({
     select: {
       id: true,
     },
@@ -99,7 +99,7 @@ export async function getTimePresets(userId: string) {
 
 // folderId to 中にあるtaskId一覧
 export async function getTasksInFolder(userId: string, folderId: string) {
-  const taskIds = await db.item.findMany({
+  const taskIds = await db.items.findMany({
     select: {
       id: true,
     },
@@ -115,7 +115,7 @@ export async function getTasksInFolder(userId: string, folderId: string) {
 
 // taskId to タスクの持つオプション一覧
 export async function getOptionsInTask(taskId: string) {
-  const optionIds = await db.taskOption.findMany({
+  const optionIds = await db.taskOptions.findMany({
     select: {
       id: true,
     },
