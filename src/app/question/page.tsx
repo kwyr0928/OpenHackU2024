@@ -12,23 +12,11 @@ import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 export default function Question() {
   const [step, setStep] = useState<number>(1); // ステップの状態を管理
   const [selectedValue, setSelectedValue] = useState<string | null>(null); // 現在の選択値
-  const [inputValue, setInputValue] = useState(""); // その他入力欄の値
+  const [inputValue, setInputValue] = useState<string | null>(""); // その他入力欄の値
   const [selectedItems, setSelectedItems] = useState<number[]>([]); // チェックされた選択肢を保存
 
-  const initialQuestionChoices:string[] = ["ランニング", "朝食", "着替え"];
-
-  type questionTime = {
-    title: string;
-    choice: { text: string; id: string; }[];
-  };
-
-  type questionTimeArray = {
-    running: questionTime;
-    breakfast: questionTime;
-    dressing: questionTime;
-  }
-
-  const questionTimes = {
+  const initialQuestionChoices: string[] = ["ランニング", "朝食", "着替え", "薪割り", "ブルアカ", "ポケポケ", "ラジオ体操"];
+  const questionContext = {
     member: [
       {
         title: "ランニングの所要時間は？",
@@ -53,9 +41,72 @@ export default function Question() {
           { text: "20分", id: "20min" },
           { text: "30分", id: "30min" },
         ]
+      },
+      {
+        title: "薪割りの所要時間は？",
+        choice: [
+          { text: "10分", id: "10min" },
+          { text: "20分", id: "20min" },
+          { text: "30分", id: "30min" },
+        ]
+      },
+      {
+        title: "ブルアカの所要時間は？",
+        choice: [
+          { text: "10分", id: "10min" },
+          { text: "20分", id: "20min" },
+          { text: "30分", id: "30min" },
+        ]
+      },
+      {
+        title: "ポケポケの所要時間は？",
+        choice: [
+          { text: "10分", id: "10min" },
+          { text: "20分", id: "20min" },
+          { text: "30分", id: "30min" },
+        ]
+      },
+      {
+        title: "ラジオ体操の所要時間は？",
+        choice: [
+          { text: "10分", id: "10min" },
+          { text: "20分", id: "20min" },
+          { text: "30分", id: "30min" },
+        ]
       }
     ]
   };
+
+  /**
+   * 達成時刻を決める設問
+   */
+  const GOAL_TIME_QUESTION = 1;
+
+  /**
+   * 質問するタスクを決める設問
+   */
+  const INITIAL_QUESTION = 2;
+
+  /**
+   * 設問のHTMLオブジェクト
+   */
+  let questionContent = null;
+
+  /**
+   * 「次へ」ボタンのHTMLオブジェクト
+   */
+  let nextButtonContent = null;
+
+  type questionTime = {
+    title: string;
+    choice: { text: string; id: string; }[];
+  };
+
+  type questionTimeArray = {
+    running: questionTime;
+    breakfast: questionTime;
+    dressing: questionTime;
+  }
 
   const handleNextStep = () => {
     setStep(step + 1);
@@ -63,63 +114,102 @@ export default function Question() {
     setInputValue(""); // 入力欄をリセット
   };
 
+  //  stepの値に応じて質問と「次へ」ボタンを設定
+  switch (step) {
+    case GOAL_TIME_QUESTION:
+      questionContent = <GoalTimeQuestionComponent></GoalTimeQuestionComponent>;
+      nextButtonContent = <Button onClick={handleNextStep}>
+        次へ
+      </Button>
+      break;
+
+    case INITIAL_QUESTION:
+      questionContent = <InitialQuestion initialQuestionChoices={initialQuestionChoices} selectedItems={selectedItems} setSelectedItems={setSelectedItems} />;
+      nextButtonContent = <Button onClick={handleNextStep}>
+        次へ
+      </Button>
+      break;
+
+    default:
+      questionContent = <QuestionComponent
+        // ここで["selectedItems[x]"]を指定できれば完成
+        questionData={questionContext.member[selectedItems[step - 3]!]}  //  生成に用いるjsonを渡す
+        selectedValue={selectedValue} //  現在選択されている値を取得
+        setSelectedValue={setSelectedValue}
+        inputValue={inputValue} //  その他の入力を取得
+        setInputValue={setInputValue}
+      />
+      if (step < selectedItems.length + 2) {
+        nextButtonContent = <Button onClick={handleNextStep} disabled={!selectedValue}>
+          次へ
+        </Button>
+      }
+      else {
+        nextButtonContent = <Button disabled={!selectedValue}>
+          <Link href="/home">次へ</Link>
+        </Button>
+      }
+  }
+
   return (
     <div className="flex h-screen flex-col items-center justify-center text-center">
-      <h1 className="m-2">アンケート</h1>
-      <h2>回答結果に基づきアプリがカスタマイズされます。</h2>
-      <Card className="w-3/4 max-w-md border-4 border-blue-400 ">
+      <h1 className="m-2 text-darkBlue text-4xl">アンケート</h1>
+      <h2 className="text-darkBlue m-3">回答結果に基づき<br></br>アプリがカスタマイズされます。</h2>
+      <Card className="w-2/3 max-w-md border-2 border-darkBlue">
         <CardHeader>
-          <CardTitle>( {step} / {selectedItems.length + 1} )</CardTitle>
+          <CardTitle>( {step} / {selectedItems.length + 2} )</CardTitle>
         </CardHeader>
+
         <CardContent>
-          {step === 1 ? (
-            <InitialQuestion initialQuestionChoices={initialQuestionChoices} selectedItems={selectedItems} setSelectedItems={setSelectedItems} />
-          ) : (
-            selectedItems.length > 0 && (
-              <QuestionComponent
-                // ここで["selectedItems[x]"]を指定できれば完成
-                questionData={questionTimes.member[selectedItems[step - 2]!]}  //  生成に用いるjsonを渡す
-                selectedValue={selectedValue} //  現在選択されている値を取得
-                setSelectedValue={setSelectedValue}
-                inputValue={inputValue} //  その他の入力を取得
-                setInputValue={setInputValue}
-              />
-            )
-          )}
+          {questionContent}
         </CardContent>
 
         <div className="mb-4">
-          {step < selectedItems.length + 1 ? (
-            <div>
-              <Button onClick={handleNextStep} disabled={!selectedValue}>
-                次へ
-              </Button>
-              <Button onClick={handleNextStep}>
-                スキップ
-              </Button>
-            </div>
-          ) : (
-            <div>
-              <Button disabled={!selectedValue}>
-                <Link href="/home">次へ</Link>
-              </Button>
-              <Button>
-                <Link href="/home">スキップ</Link>
-              </Button>
-            </div>
-          )}
+          {nextButtonContent}
         </div>
-        <StepIndicator currentStep={step} totalSteps={selectedItems.length + 1} />
       </Card>
+
+      <StepIndicator currentStep={step} totalSteps={selectedItems.length + 2} />
     </div>
   );
 }
 
-function InitialQuestion({initialQuestionChoices, selectedItems, setSelectedItems }: any) {
+/** 
+ * 設問コンポーネント：達成時刻を入力
+ * @returns HTMLオブジェクト
+*/
+function GoalTimeQuestionComponent() {
+  const [time, setTime] = useState<string>("10:00"); // 初期値を設定
+
+  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTime(e.target.value); // 入力された時刻を更新
+  };
+
+  return (
+    <div className="space-y-4">
+      <h2 className="text-lg font-medium">達成時刻を入力してください<br></br></h2>
+      <input
+        type="time"
+        value={time}
+        onChange={handleTimeChange}
+        className="mt-4 w-full max-w-[200px] rounded-md border p-2"
+      />
+    </div>
+  );
+}
+
+/** 
+ * 設問コンポーネント：質問するタスクの種類を選択
+ * @param initialQuestionChoices 同名のstring[]フィールド
+ * @param selectedItems 同名のnumber[]フィールド
+ * @param setSelectedItems 同名のsetメソッド
+ * @returns HTMLオブジェクト
+*/
+function InitialQuestion({ initialQuestionChoices, selectedItems, setSelectedItems }: any) {
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-medium">あなたの朝のルーティンは<br></br>どれですか？</h2>
-      {initialQuestionChoices.map((item:string, index:number) => (
+      {initialQuestionChoices.map((item: string, index: number) => (
         <div key={item} className="flex items-center space-x-2">
           <Checkbox
             checked={selectedItems.includes(index)}
@@ -138,12 +228,21 @@ function InitialQuestion({initialQuestionChoices, selectedItems, setSelectedItem
   );
 }
 
+/**
+ * 設問コンポーネント：そのタスクにかかる時間を入力
+ * @param questionData questipnContext.member[任意のindex]
+ * @param selectedValue 同名のstringフィールド
+ * @param selectedValue 同名のsetメソッド
+ * @param inputValue 同名のstringフィールド
+ * @param setInputValue 同名のsetメソッド
+ * @returns HTMLオブジェクト
+ */
 function QuestionComponent({ questionData, selectedValue, setSelectedValue, inputValue, setInputValue }: any) {
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-medium">{questionData.title}</h2>
       <RadioGroup
-        value={selectedValue} 
+        value={selectedValue}
         onValueChange={(value: string) => {
           setSelectedValue(value);
         }}
@@ -172,14 +271,19 @@ function QuestionComponent({ questionData, selectedValue, setSelectedValue, inpu
   );
 }
 
-// インジケーターコンポーネント
+/**
+ * インジケータコンポーネント：アンケートの進度を表示する
+ * @param currentStep 現在のアンケートの進度:number
+ * @param totalSteps 設問の総数:number
+ * @returns 
+ */
 function StepIndicator({ currentStep, totalSteps }: { currentStep: number; totalSteps: number }) {
   return (
-    <div className="flex justify-center space-x-2 mt-4 mb-4">
+    <div className="flex justify-center space-x-2 mt-4 mb-4 flex items-end">
       {Array.from({ length: totalSteps }).map((_, index) => (
         <div
           key={index}
-          className={`h-2 w-2 rounded-full transition-all ${currentStep === index + 1 ? "bg-slate-950 scale-125" : "bg-gray-300"}`}
+          className={`h-2 w-2 rounded-full transition-all ${currentStep === index + 1 ? "bg-darkBlue scale-125" : "bg-gray-300"}`}
         />
       ))}
     </div>
