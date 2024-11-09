@@ -22,25 +22,25 @@ export default function NewFolder() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false); // 削除確認ダイアログの状態
   const [isDialogOpen, setDialogOpen] = useState(false); // ダイアログの状態
 
-  const handleSave = () => {// データベースに保存
-    setName(tempName); 
+  const handleSave = () => {
+    // データベースに保存
+    setName(tempName);
     setDialogOpen(false);
   };
 
-  const handleDelete = async () => { //データベースから削除
+  const handleDelete = async () => {
+    //データベースから削除
     setDialogOpen(false);
-    setIsDeleteDialogOpen(false)
+    setIsDeleteDialogOpen(false);
   };
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
         {/* children を表示 */}
-        <Button className="mt-2 bg-purple-300 text-black hover:bg-purple-200">
-          新規作成＋
-        </Button>
+        <Button className="mt-2 bg-darkBlue text-white">新規作成＋</Button>
       </DialogTrigger>
-      <DialogContent className="w-[90%] rounded-xl h-[50%]">
+      <DialogContent className="h-[50%] w-[90%] rounded-xl">
         <DialogHeader>
           <DialogTitle>
             <Input
