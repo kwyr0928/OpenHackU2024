@@ -65,9 +65,11 @@ export default function Question() {
 
   return (
     <div className="flex h-screen flex-col items-center justify-center text-center">
-      <Card className="w-3/4 max-w-md">
+      <h1 className="m-2">アンケート</h1>
+      <h2>回答結果に基づきアプリがカスタマイズされます。</h2>
+      <Card className="w-3/4 max-w-md border-4 border-blue-400 ">
         <CardHeader>
-          <CardTitle>アンケート</CardTitle>
+          <CardTitle>( {step} / {selectedItems.length + 1} )</CardTitle>
         </CardHeader>
         <CardContent>
           {step === 1 ? (
@@ -116,8 +118,7 @@ export default function Question() {
 function InitialQuestion({initialQuestionChoices, selectedItems, setSelectedItems }: any) {
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-medium">あなたの朝のルーティンはどれですか？</h2>
-      <h2>{selectedItems}</h2>
+      <h2 className="text-lg font-medium">あなたの朝のルーティンは<br></br>どれですか？</h2>
       {initialQuestionChoices.map((item:string, index:number) => (
         <div key={item} className="flex items-center space-x-2">
           <Checkbox
