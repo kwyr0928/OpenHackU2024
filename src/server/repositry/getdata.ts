@@ -2,13 +2,14 @@ import { db } from "../db";
 
 // プリセットタイプ
 const presetType = {
-  "whole": 0,
-  "folder": 1,
-  "task": 2
-}
+  whole: 0,
+  folder: 1,
+  task: 2,
+};
 // itemsテーブル用構造体
 export type itemStruct = {
-  item: { //これなに？
+  item: {
+    //これなに？
     id: string;
     created_at: Date;
     updated_at: Date;
@@ -18,7 +19,7 @@ export type itemStruct = {
     parentId: string | null;
     order: number;
   } | null;
-}
+};
 // timeSetsテーブル構造体
 export type timeStruct = {
   id: string;
@@ -27,14 +28,14 @@ export type timeStruct = {
   time: Date; //Dateなのか？
   created_at: Date;
   updated_at: Date;
-}
+};
 // folderSetsテーブル構造体
 export type folderStruct = {
   id: string;
-  itemId: string
+  itemId: string;
   created_at: Date;
   updated_at: Date;
-}
+};
 // taskSetsテーブル構造体
 export type taskStruct = {
   id: string;
@@ -42,7 +43,7 @@ export type taskStruct = {
   optionId: string | null;
   created_at: Date;
   updated_at: Date;
-}
+};
 // optionSetsテーブル構造体
 export type optionStruct = {
   id: string;
@@ -51,8 +52,7 @@ export type optionStruct = {
   taskId: string;
   created_at: Date;
   updated_at: Date;
-}
-
+};
 
 // userId to ユーザー名
 export async function getUserName(userId: string) {
@@ -62,7 +62,7 @@ export async function getUserName(userId: string) {
     },
     where: {
       id: userId,
-    }
+    },
   });
   if (user == null) return null;
   return user.name;
@@ -76,8 +76,8 @@ export async function getKindPresets(userId: string, type: number) {
     },
     where: {
       userId: userId,
-      itemType: type
-    }
+      itemType: type,
+    },
   });
   if (itemIds == null) return null;
   return itemIds;
@@ -106,8 +106,8 @@ export async function getTasksInFolder(userId: string, folderId: string) {
     where: {
       userId: userId,
       parentId: folderId,
-      itemType: presetType["task"]
-    }
+      itemType: presetType.task,
+    },
   });
   if (taskIds == null) return null;
   return taskIds;
@@ -120,8 +120,8 @@ export async function getOptionsInTask(taskId: string) {
       id: true,
     },
     where: {
-      taskId: taskId
-    }
+      taskId: taskId,
+    },
   });
   if (optionIds == null) return null;
   return optionIds;

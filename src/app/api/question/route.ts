@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { getUserName } from "~/server/repositry/getdata";
 
 export async function POST(req: NextRequest) {

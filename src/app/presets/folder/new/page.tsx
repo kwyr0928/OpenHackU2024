@@ -5,7 +5,9 @@ import { Button } from "~/components/ui/button";
 export default function NewPreset() {
   return (
     <div>
-      <p className="text-2xl text-red-500">src/app/presets/folder/new/page.tsx</p>
+      <p className="text-2xl text-red-500">
+        src/app/presets/folder/new/page.tsx
+      </p>
       <p>新規プリセット作成（フォルダ）</p>
       <Image
         src="/image/newFolderPreset.png"

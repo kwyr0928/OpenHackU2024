@@ -1,16 +1,14 @@
 import error from "next/error";
 import { db } from "../db";
-import { optionStruct, taskStruct } from "./getdata";
-
+import { type optionStruct, type taskStruct } from "./getdata";
 
 // presetをItemとして追加
-
 
 // taskを作成
 export async function createTaskSet(task: taskStruct) {
   if (task == null) return error;
   const createTask = await db.taskSets.create({
-    data: task
+    data: task,
   });
   if (createTask == null) return error;
   return createTask;
@@ -20,7 +18,7 @@ export async function createTaskSet(task: taskStruct) {
 export async function createOption(option: optionStruct) {
   if (option == null) return error;
   const createOption = await db.taskOptions.create({
-    data: option
+    data: option,
   });
   if (createOption == null) return error;
   return createOption;

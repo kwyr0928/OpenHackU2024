@@ -16,7 +16,6 @@ import { ScrollArea } from "~/components/ui/scroll-area";
 export default function Presets() {
   return (
     <div className="flex h-screen flex-col items-center justify-start text-center">
-
       {/*タブ*/}
       <Tabs defaultValue="all" className="mt-8 w-[90%]">
         <TabsList className="mb-4 grid w-full grid-cols-4">
