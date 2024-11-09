@@ -56,7 +56,7 @@ export type optionStruct = {
 
 // userId to ユーザー名
 export async function getUserName(userId: string) {
-  const user = await db.users.findUnique({
+  const user = await db.user.findFirst({
     select: {
       name: true,
     },
