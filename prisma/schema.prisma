@@ -33,19 +33,31 @@ model User {
 model Items {
   id         String   @id @default(cuid())
   userId     String
-  setNext    Boolean  @default(false) // 設定中でtrue
+  isSetting  Boolean  @default(false) // 設定中でtrue
   itemType   Int // 全体0, フォルダ1, タスク2
   parentId   String? //Itemsのidを持つ
+  master_id  String?
   order      Int      @default(0) //順序
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  user      User        @relation(fields: [userId], references: [id])
-  item      Items?       @relation(name: "itemParents", fields: [parentId], references: [id])
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  master    Master?      @relation(fields: [master_id], references: [id], onDelete: Cascade)
+  item      Items?       @relation(name: "itemParents", fields: [parentId], references: [id], onDelete: Cascade)
   WholeSet  WholeSets[]
   FolderSet FolderSets[]
   TaskSet   TaskSets[]
   Items     Items[]      @relation(name: "itemParents")
+}
+
+model Master {
+  id         String   @id @default(cuid())
+  name       String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  Items    Items[]
+  TimeSets TimeSets[]
 }
 
 model WholeSets {
@@ -55,19 +67,21 @@ model WholeSets {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  item    Items    @relation(fields: [itemId], references: [id])
-  timeSet TimeSets @relation(fields: [timeSetId], references: [id])
+  item    Items    @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  timeSet TimeSets @relation(fields: [timeSetId], references: [id], onDelete: Cascade)
 }
 
 model TimeSets {
   id         String   @id @default(cuid())
   userId     String
-  name       String   @default("カスタム")
+  name       String   @default("")
   time       DateTime @db.Time()
+  master_id  String?
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  user     User       @relation(fields: [userId], references: [id])
+  user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  master   Master?     @relation(fields: [master_id], references: [id], onDelete: Cascade)
   WholeSet WholeSets[]
 }
 
@@ -77,7 +91,7 @@ model FolderSets {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  item Items @relation(fields: [itemId], references: [id])
+  item Items @relation(fields: [itemId], references: [id], onDelete: Cascade)
 }
 
 model TaskSets {
@@ -87,20 +101,22 @@ model TaskSets {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  item       Items         @relation(fields: [itemId], references: [id])
+  item       Items         @relation(fields: [itemId], references: [id], onDelete: Cascade)
   taskOption TaskOptions?  @relation(name: "select", fields: [optionId], references: [id])
   TaskOption TaskOptions[]
 }
 
 model TaskOptions {
   id         String   @id @default(cuid())
-  name       String
+  name       String?
   optionTime Int // n分
+  order      Int      @default(0)
   taskId     String //所属タスク
+  isStatic   Boolean //固定値で1
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  task    TaskSets   @relation(fields: [taskId], references: [id])
+  task    TaskSets   @relation(fields: [taskId], references: [id], onDelete: Cascade)
   TaskSet TaskSets[] @relation(name: "select")
 }
 
