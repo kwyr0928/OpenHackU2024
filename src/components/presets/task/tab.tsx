@@ -24,13 +24,13 @@ import {
   CommandShortcut,
 } from "~/components/ui/command";
 import EditTask from "./edit";
-import NewTask from "./new"
+import NewTask from "./new";
 
 export default function TabTask() {
   return (
     <div>
       {/* タスク */}
-      <Card className="h-[700px] ">
+      <Card className="h-[700px]">
         <CardContent className="space-y-2">
           <Command className=" ">
             <CommandInput placeholder="検索" />

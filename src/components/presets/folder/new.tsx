@@ -22,14 +22,16 @@ export default function NewFolder() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false); // 削除確認ダイアログの状態
   const [isDialogOpen, setDialogOpen] = useState(false); // ダイアログの状態
 
-  const handleSave = () => {// データベースに保存
-    setName(tempName); 
+  const handleSave = () => {
+    // データベースに保存
+    setName(tempName);
     setDialogOpen(false);
   };
 
-  const handleDelete = async () => { //データベースから削除
+  const handleDelete = async () => {
+    //データベースから削除
     setDialogOpen(false);
-    setIsDeleteDialogOpen(false)
+    setIsDeleteDialogOpen(false);
   };
 
   return (
@@ -40,7 +42,7 @@ export default function NewFolder() {
           新規作成＋
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-[90%] rounded-xl h-[50%]">
+      <DialogContent className="h-[50%] w-[90%] rounded-xl">
         <DialogHeader>
           <DialogTitle>
             <Input
