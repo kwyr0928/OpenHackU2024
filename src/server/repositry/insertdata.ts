@@ -9,7 +9,7 @@ import { optionStruct, taskStruct } from "./getdata";
 // taskを作成
 export async function createTaskSet(task: taskStruct) {
   if (task == null) return error;
-  const createTask = await db.taskSet.create({
+  const createTask = await db.taskSets.create({
     data: task
   });
   if (createTask == null) return error;
@@ -19,7 +19,7 @@ export async function createTaskSet(task: taskStruct) {
 // optionを作成
 export async function createOption(option: optionStruct) {
   if (option == null) return error;
-  const createOption = await db.taskOption.create({
+  const createOption = await db.taskOptions.create({
     data: option
   });
   if (createOption == null) return error;
