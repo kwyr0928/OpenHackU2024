@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["typedSql"]
 }
 
 datasource db {
@@ -32,6 +33,7 @@ model User {
 
 model Items {
   id         String   @id @default(cuid())
+  name       String
   userId     String
   isSetting  Boolean  @default(false) // 設定中でtrue
   itemType   Int // 全体0, フォルダ1, タスク2
