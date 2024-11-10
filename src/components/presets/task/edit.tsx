@@ -69,11 +69,11 @@ export default function EditTask({ children }: EditTaskProps) {
     >
       <DialogTrigger asChild>
         {/* children を表示 */}
-        <Button className="mt-2 w-full bg-yellow-200 text-black hover:bg-yellow-200">
+        <Button className="mt-2 w-full  bg-yellow-200 text-black hover:bg-yellow-200">
           {name}
         </Button>
       </DialogTrigger>
-      <DialogContent className="rounded-xl">
+      <DialogContent className="w-[90%] rounded-xl">
         <DialogHeader>
           <DialogTitle>
             {isEditing ? (
@@ -93,7 +93,7 @@ export default function EditTask({ children }: EditTaskProps) {
                 className="mt-2 w-full bg-yellow-200 text-left text-black"
                 onClick={() => setIsEditing(true)}
               >
-                {newName || ""}
+                {newName || "新しい名前を入力"}
               </Button>
             )}
           </DialogTitle>
@@ -137,12 +137,16 @@ export default function EditTask({ children }: EditTaskProps) {
         </Tabs>
         <div className="mt-auto flex justify-around">
           <Button
-            className="w-[30%]"
+            className="bg-red-600"
             onClick={() => setIsDeleteDialogOpen(true)}
           >
             削除
           </Button>
-          <Button className="w-[30%]" onClick={handleSave}>
+          <Button
+            className=""
+            onClick={handleSave}
+            disabled={!newName} // newNameが空の場合はボタンを無効化
+          >
             変更
           </Button>
         </div>

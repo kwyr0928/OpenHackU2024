@@ -90,7 +90,13 @@ export default function EditTime({ children }: EditTimeProps) {
                 >
                   削除
                 </Button>
-                <Button onClick={handleSave}>保存</Button>
+                <Button
+                  className=""
+                  onClick={handleSave}
+                  disabled={!newName} // newNameが空の場合はボタンを無効化
+                >
+                  保存
+                </Button>
               </div>
             </DialogContent>
           </Dialog>
