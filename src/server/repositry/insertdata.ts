@@ -1,5 +1,6 @@
 import { db } from "../db";
 import {
+  timeStruct,
   type folderStruct,
   type itemStruct,
   type optionStruct,
@@ -15,6 +16,21 @@ export async function createNewItem(item: itemStruct) {
     });
 
     return createItem;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+// timeSetを作成
+export async function createTimeSet(timeSet: timeStruct) {
+  try {
+    if (timeSet == null) throw new Error("Invalid timeSet data");
+    const createTimeSet = await db.timeSets.create({
+      data: timeSet,
+    });
+
+    return createTimeSet;
   } catch (error) {
     console.error(error);
     return null;

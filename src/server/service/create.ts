@@ -1,6 +1,7 @@
 import {
-  type folderStruct,
   presetType,
+  timeStruct,
+  type folderStruct,
   type itemStruct,
   type optionStruct,
   type taskStruct,
@@ -10,10 +11,12 @@ import {
   createNewItem,
   createOption,
   createTaskSet,
+  createTimeSet,
 } from "../repositry/insertdata";
 import {
   setExistMasterItem,
   setNewMasterItem,
+  setNewMasterTimeSet,
 } from "../repositry/manageMaster";
 import { setSelectingTaskOption, setTaskParent } from "../repositry/updatedata";
 
@@ -168,4 +171,59 @@ export async function createNewFolder(
     console.error("Error in createNewTask:", error);
     return null;
   }
+}
+
+// 時間プリセット
+export async function createNewTimeSet(
+  userId: string,
+  name: string,
+  time: string,
+) {
+  try {
+    if (!userId || !name || !time) {
+      throw new Error(
+        "Invalid input: userId and folderName and taskIds are required",
+      );
+    }
+    const dateTime = parseTimeString(time);
+    if(dateTime==null) throw new Error( "Invalid timeString: failed parseTimeString");
+    
+
+    const timeData: timeStruct = {
+      userId: userId,
+      name: name,
+      time: dateTime,
+    }
+    //timeを作る
+    const newTimeSet = await createTimeSet(timeData);
+    if (newTimeSet == null) {
+      throw new Error("Failed to create timeSet.");
+    }
+    //masterをセット
+    const masterSetTimeSet = await setNewMasterTimeSet(newTimeSet);
+    if (masterSetTimeSet == null) {
+      throw new Error("Failed to create timeSet.");
+    }
+
+    return masterSetTimeSet;
+  } catch (error) {
+    console.error("Error in createNewTimeSet:", error);
+    return null;
+  }
+}
+
+// 時間フォーマット
+function parseTimeString(time: string){
+  const timeRegex = /^(\d{1,2}):(\d{2})$/;
+  const match = timeRegex.exec(time);
+  if (!match) return null;
+  const hours = parseInt(match[1], 10);
+  const minutes = parseInt(match[2], 10);
+
+  // 時刻が有効範囲かどうか確認 (0 <= hours < 24, 0 <= minutes < 60)
+  if (hours < 0 || hours >= 24 || minutes < 0 || minutes >= 60) return null;
+  
+  const date = new Date();
+  date.setHours(hours, minutes, 0, 0);
+  return date;
 }

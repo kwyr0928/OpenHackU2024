@@ -19,7 +19,7 @@ export type itemStruct = {
 };
 // timeSetsテーブル構造体
 export type timeStruct = {
-  id: string;
+  id?: string;
   userId: string;
   name: string;
   time: Date; //Dateなのか？
