@@ -170,7 +170,7 @@ export default function Question() {
   }
 
   return (
-    <div className="items-center justify-center bg-slate-50 text-center">
+    <div className="flex-col items-center justify-center bg-slate-50 text-center">
       <div className="pb-20 pt-20">
         <h1 className="m-2 text-5xl text-darkBlue">アンケート</h1>
         <h2 className="pt-2 text-xl text-darkBlue">
@@ -178,8 +178,8 @@ export default function Question() {
         </h2>
       </div>
 
-      <div className="flex flex-col items-center text-center">
-        <Card className="w-2/3 max-w-md border-2 border-darkBlue">
+      <div className="flex h-screen flex-col items-center text-center">
+        <Card className="w-3/4 max-w-md border-2 border-darkBlue">
           <CardHeader>
             <CardTitle>
               ( {step} / {selectedItems.length + 2} )
@@ -327,7 +327,7 @@ function StepIndicator({
   totalSteps: number;
 }) {
   return (
-    <div className="mb-4 mt-8 flex items-end justify-center space-x-2">
+    <div className="mb-4 mt-8 flex justify-center space-x-2">
       {Array.from({ length: totalSteps }).map((_, index) => (
         <div
           key={index}

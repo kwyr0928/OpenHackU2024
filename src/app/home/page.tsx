@@ -1,11 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
 import DisplayTime from "~/components/displayTime/displayTime";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { ScrollArea } from "~/components/ui/scroll-area";
-import { Separator } from "~/components/ui/separator";
 
 const tags = Array.from({ length: 50 }).map(
   (_, i, a) => `v1.2.0-beta.${a.length - i}`,
@@ -14,24 +12,47 @@ const tags = Array.from({ length: 50 }).map(
 const data = {
   member: [
     {
-      name: "yusuke",
-      age: 30,
-      wakeUpTime: "6:30",
-      goleTime: "9:20",
-    },
-    {
-      name: "tanaka",
-      age: 40,
-      wakeUpTime: "7:30",
-      goleTime: "9:20",
-    },
-    {
       name: "sasaki",
-      age: 50,
-      wakeUpTime: "9:30",
       goleTime: "11:10",
-    },
-  ],
+      lastEditedTime: "2024/11/14 22:33",
+      items: [
+        {
+          tasks: [
+            { taskName: "駅まで歩く", timeRequired: 5 },
+            { taskName: "自転車移動", timeRequired: 15 },
+            { taskName: "英単語暗記", timeRequired: 5, },
+          ],
+        },
+        {
+          folders: [
+            {
+              name: "おしゃれ",
+              tasks: [
+                { name: "着替え", timeRequired: 10 },
+                { name: "メイク", timeRequired: 10 },
+                { name: "ヘアメイク", timeRequired: 10 }
+              ]
+            },
+            {
+              name: "おしゃれ2",
+              tasks: [
+                { name: "着替え2", timeRequired: 10 },
+                { name: "メイク2", timeRequired: 10 },
+                { name: "ヘアメイク2", timeRequired: 10 }
+              ]
+            }
+          ],
+        },
+        {
+          tasks: [
+            { taskName: "シャワー", timeRequired: 20, },
+            { taskName: "朝ごはん", timeRequired: 20, },
+            { taskName: "洗顔", timeRequired: 10, },
+          ],
+        }
+      ]
+    }
+  ]
 };
 
 //個人を識別するための仮の番号、データベースが完成したらidになるのかな？
@@ -86,48 +107,90 @@ export default function Home() {
   const wakeUpTime = calculateWakeUpTime(member.goleTime, totalTime);
 
   return (
-    <div className="flex h-screen flex-col items-center justify-center bg-slate-50 text-center">
+    <div className="flex h-screen flex-col items-center justify-center text-center bg-slate-50">
       {/* 現在時刻の表示 */}
       <h1 className="mb-1">
         <DisplayTime />
       </h1>
-      <Card className="mt-4 w-3/4 max-w-md">
-        <CardHeader className="pb-2">
-          <div
-            className="mb-1 rounded-lg border border-gray-300 p-4 text-3xl font-bold text-gray-900 text-slate-100 shadow-sm"
-            style={{ backgroundColor: "#ACC763" }}
-          >
-            <p className="mb-1 text-lg font-medium leading-none">起床時刻</p>
-            {data.member[memberNumber]?.wakeUpTime}
+      <Card className="mt-4 w-3/4 max-w-md border-darkBlue">
+        <h5 className="pt-1 pb-1 font-mPlus">
+          最終更新時刻：{member?.lastEditedTime}
+        </h5>
+        <CardHeader className="pb-2 pt-0">
+          <div className="text-3xl text-gray-900 mb-1 border border-pink-300 rounded-lg p-4 shadow-sm text-slate-800 bg-slate-0 font-mPlus font-Medium">
+            <p className="mb-1 text-lg leading-none">
+              達成時刻
+            </p>
+            <p className="font-bold">
+              {member?.goleTime}
+            </p>
           </div>
         </CardHeader>
         <CardContent>
-          <ScrollArea className="h-64 w-full rounded-md border p-0">
-            <div>
-              {tags.map((tag) => (
-                <React.Fragment key={tag}>
-                  <div className="text-sm">{tag}</div>
-                  <Separator className="my-2" />
-                </React.Fragment>
-              ))}
-            </div>
-          </ScrollArea>
-          <h1 className="mb-1 mt-4 rounded-lg border border-gray-300 bg-pink-200 p-4 text-3xl font-bold text-blue-950 shadow-sm">
-            <p className="mb-1 text-lg font-medium leading-none">達成時刻</p>
-            {data.member[memberNumber]?.goleTime}
-          </h1>
-          <Button
-            size="sm"
-            className="bg-customColor mt-3 text-lg text-slate-100 hover:bg-blue-900"
-          >
-            <Link href="/schedule/new">　　　　変更　　　　</Link>
-          </Button>
+            <ScrollArea className="p-0 h-64 w-full rounded-md border font-mPlus">
+              {/* タスクとフォルダを表示 */}
+              <div className="space-y-3">
+                {member.items.map((item, index) => (
+                  <div key={index} className="space-y-4">
+                    {/* items内のタスク */}
+                    {item.tasks && (
+                        <div className="space-y-2">
+                          {item.tasks.map((task, taskIndex) => (
+                            <div
+                              key={taskIndex}
+                              className="m-2 flex justify-between items-center bg-yellow-200 p-3 rounded-md shadow-sm"
+                            >
+                              <p className="text-lg font-medium text-gray-800">{task.taskName}</p>
+                              <p className="text-sm text-gray-600">{task.timeRequired}分</p>
+                            </div>
+                          ))}
+                        </div>
+                    )}
+
+                    {/* フォルダ内タスク */}
+                    {item.folders && (
+                        <div className="space-y-2">
+                          {item.folders.map((folder, folderIndex) => (
+                            <div key={folderIndex} className="m-2 border rounded-lg bg-purple-300 p-4 ">
+                              <h4 className="text-lg font-bold text-gray-800 mb-2">{folder.name}</h4>
+                              <div className="space-y-2">
+                                {folder.tasks.map((task, taskIndex) => (
+                                  <div
+                                    key={taskIndex}
+                                    className="flex justify-between items-center bg-yellow-200 p-3 rounded-md shadow-sm"
+                                  >
+                                    <p className="text-lg font-medium text-gray-800">{task.name}</p>
+                                    <p className="text-sm text-gray-600">{task.timeRequired}分</p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+          <div className="text-3xl mt-4 mb-1 border rounded-lg p-4 shadow-sm  text-blue-950"
+            style={{ borderColor: "#ACC763" }}>
+            <p className="mb-1 text-lg leading-none">
+              起床時刻
+            </p>
+            <p className="font-bold">
+              {wakeUpTime}
+            </p>
+          </div>
+          <Link href="/schedule/new">
+            <Button size="sm" className="px-8 py-5 mt-3 bg-darkBlue hover:bg-blue-900 text-lg font-mPlus text-slate-100 shadow-lg">
+              変更
+            </Button>
+          </Link>
         </CardContent>
       </Card>
 
-      <div className="flex space-x-4">
+      <div className="flex  space-x-12 mt-2 font-mPlus">
         <div className="mt-4 flex-col">
-          <p>プリセット</p>
           <Link href="/presets">
             <Button className="bg-darkBlue shadow-lg">
               <Image
@@ -144,7 +207,6 @@ export default function Home() {
         </div>
 
         <div className="mt-4 flex-col">
-          <p>設定</p>
           <Link href="/settings">
             <Button className="bg-darkBlue shadow-lg">
               <Image
@@ -161,5 +223,6 @@ export default function Home() {
         </div>
       </div>
     </div>
+
   );
 }
