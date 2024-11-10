@@ -1,64 +1,39 @@
 import {
+  folderStruct,
   presetType,
   type itemStruct,
   type optionStruct,
-  type taskStruct,
+  type taskStruct
 } from "../repositry/constants";
 import {
+  createFolderSet,
+  createNewItem,
   createOption,
-  createTaskItem,
-  createTaskSet,
+  createTaskSet
 } from "../repositry/insertdata";
 import { setNewMasterItem } from "../repositry/manageMaster";
-import { setSelectingTaskOption } from "../repositry/updatedata";
+import { setSelectingTaskOption, setTaskParent } from "../repositry/updatedata";
 
-// optionつきtaskを作成
+// optionつきtaskを新規作成
 export async function createNewTask(
   userId: string,
-  task?: taskStruct,
-  options?: optionStruct[],
+  name: string,
+  options: optionStruct[],
 ) {
   try {
-    // if (!task || options.length === 0) {
-    //   throw new Error("Invalid input: task or options are missing.");
-    // }
-
-    // test data
-    const taskname = "タスク1";
-
-    const optionName1 = "オプション1";
-    const optionTime1 = 10;
-    const order1 = 0;
-
-    const optionName2 = "オプション2";
-    const optionTime2 = 5;
-    const order2 = 1;
+    if (!userId || !name || options.length === 0) {
+      throw new Error("Invalid input: task or options are missing.");
+    }
 
     const item: itemStruct = {
-      name: taskname,
+      name: name,
       userId: userId,
       itemType: presetType.task,
       order: 0,
     };
-    options = [
-      {
-        name: optionName1,
-        optionTime: optionTime1,
-        order: order1,
-        isStatic: false,
-        taskId: "",
-      },
-      {
-        name: optionName2,
-        optionTime: optionTime2,
-        order: order2,
-        isStatic: false,
-        taskId: "",
-      },
-    ];
 
     //itemを作る
-    const newItem = await createTaskItem(item);
+    const newItem = await createNewItem(item);
     if (newItem == null) {
       throw new Error("Failed to create item.");
     }
@@ -99,6 +74,65 @@ export async function createNewTask(
     );
 
     return setOptionTaskId;
+  } catch (error) {
+    console.error("Error in createNewTask:", error);
+    return null;
+  }
+}
+
+// 新規フォルダを作成
+export async function createNewFolder(
+  userId: string,
+  folderName: string,
+  taskIds?: string[], //?はテスト
+) {
+  try {
+    // if (!task || options.length === 0) {
+    //   throw new Error("Invalid input: task or options are missing.");
+    // }
+
+    // test data
+    const foldername = "フォルダ1";
+
+    const taskId1 = "";
+    const taskId2 = "";
+
+    const item: itemStruct = {
+      userId: userId,
+      name: folderName,
+      itemType: presetType.folder,
+      order: 0,
+    };
+    taskIds = [taskId1,taskId2];
+
+    //itemを作る
+    const newItem = await createNewItem(item);
+    if (newItem == null) {
+      throw new Error("Failed to create item.");
+    }
+    //masterをセット
+    const masterSetItem = await setNewMasterItem(newItem);
+    if (masterSetItem == null) {
+      throw new Error("Failed to create master.");
+    }
+    //folderを作る
+    const folder: folderStruct = {
+      itemId: masterSetItem.id,
+    };
+    const newFolder = await createFolderSet(folder);
+    if (newFolder == null) {
+      throw new Error("Failed to create folder.");
+    }
+
+    // taskのparentにfolderを設定
+    for (const taskId of taskIds) {
+      const parentedTask = await setTaskParent(taskId, newFolder.id);
+      if (parentedTask == null) {
+        throw new Error("Failed to parent folder and task.");
+      }
+    }
+
+    return newFolder;
   } catch (error) {
     console.error("Error in createNewTask:", error);
     return null;

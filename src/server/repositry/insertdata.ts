@@ -1,8 +1,8 @@
 import { db } from "../db";
-import { type itemStruct, type optionStruct, type taskStruct } from "./constants";
+import { folderStruct, type itemStruct, type optionStruct, type taskStruct } from "./constants";
 
 // presetをItemとして追加
-export async function createTaskItem(item: itemStruct) {
+export async function createNewItem(item: itemStruct) {
   try {
     if (item == null) throw new Error("Invalid option data");
     const createItem = await db.items.create({
@@ -10,6 +10,21 @@ export async function createTaskItem(item: itemStruct) {
     });
 
     return createItem;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+// folderを作成
+export async function createFolderSet(folder: folderStruct) {
+  try {
+    if (folder == null) throw new Error("Invalid folder data");
+    const createFolder = await db.folderSets.create({
+      data: folder,
+    });
+
+    return createFolder;
   } catch (error) {
     console.error(error);
     return null;

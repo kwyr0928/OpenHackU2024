@@ -38,7 +38,7 @@ model Items {
   isSetting  Boolean  @default(false) // 設定中でtrue
   itemType   Int // 全体0, フォルダ1, タスク2
   parentId   String? //Itemsのidを持つ
-  masterId  String?
+  masterId   String?
   order      Int      @default(0) //順序
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -78,7 +78,7 @@ model TimeSets {
   userId     String
   name       String   @default("")
   time       DateTime @db.Time()
-  masterId  String?
+  masterId   String?
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
@@ -98,7 +98,7 @@ model FolderSets {
 
 model TaskSets {
   id         String   @id @default(cuid())
-  itemId     String
+  itemId     String   @unique
   optionId   String? // フォルダ,全体プリセットに設定中のオプション
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

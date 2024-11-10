@@ -16,9 +16,7 @@ type RequestBody = {
 
 export async function POST(req: Request) {
   try {
-
-    // userId to userName TEST
-    const { userId, task }: RequestBody = await req.json();
+    const { userId, task }: RequestBody = await req.json() as RequestBody;
 
     if (!userId || !task) {
       return NextResponse.json(
@@ -32,10 +30,11 @@ export async function POST(req: Request) {
 
     if(task.isStatic){
       const opst: optionStruct = {
-        name: task.options[0].name,  // Assuming you want to use the first option
-        optionTime: task.options[0].time,
+        name: task.options[0]!.name,
+        optionTime: task.options[0]!.time,
+        order: 0,
         isStatic: true,
-        taskId: "",  // Should be populated with actual taskId later
+        taskId: "",
       };
       options.push(opst);
     } else {

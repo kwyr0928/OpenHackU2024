@@ -3,7 +3,7 @@ import {
   getUniqueMasterTimeset,
 } from "@prisma/client/sql";
 import { db } from "../db";
-import { presetType } from "./constants";
+import { itemStruct, presetType } from "./constants";
 
 // userId to ユーザー名
 export async function getUserName(userId: string) {
@@ -19,18 +19,36 @@ export async function getUserName(userId: string) {
   return user.name;
 }
 
-// userId to 任意タイプのSetsのid一覧
-export async function getKindPresets(userId: string, type: number) {
-  const itemIds = db.$queryRawTyped(getUniqueMasterItem(userId, type));
-  if (itemIds == null) return null;
-  return itemIds;
+// itemId to taskSet
+export async function getTaskInfo(itemId: string) {
+  itemId = "cm3bkivq50006yepb2691mndy";
+  try {
+    const task = await db.taskSets.findUnique({
+      where: {
+        itemId: itemId,
+      }
+    });
+
+    if (!task) throw new Error("not found taskSet");
+    return task;
+  } catch (error) {
+    console.error("Error in getTaskInfo:", error);
+    return null;
+  }
+}
+
+// userId to 任意タイプのitem配列
+export async function getKindItems(userId: string, type: number): Promise<itemStruct[]> {
+  const items = await db.$queryRawTyped(getUniqueMasterItem(userId, type));
+  if (items == null) return null;
+  return items;
 }
 
 // userId to TimeSetsのid一覧
 export async function getTimePresets(userId: string) {
-  const timeIds = db.$queryRawTyped(getUniqueMasterTimeset(userId));
-  if (timeIds == null) return null;
-  return timeIds;
+  const timeSets = await db.$queryRawTyped(getUniqueMasterTimeset(userId));
+  if (timeSets == null) return null;
+  return timeSets;
 }
 
 // folderId to 中にあるtaskId一覧
@@ -45,6 +63,9 @@ export async function getTasksInFolder(userId: string, folderId: string) {
         parentId: folderId,
         itemType: presetType.task,
       },
+      orderBy: {
+        created_at: "asc",
+      }
     });
 
     if (taskIds.length === 0) return null;
@@ -58,17 +79,14 @@ export async function getTasksInFolder(userId: string, folderId: string) {
 // taskId to タスクの持つオプション一覧
 export async function getOptionsInTask(taskId: string) {
   try {
-    const optionIds = await db.taskOptions.findMany({
-      select: {
-        id: true,
-      },
+    const options = await db.taskOptions.findMany({
       where: {
         taskId: taskId,
       },
     });
 
-    if (optionIds.length === 0) return null;
-    return optionIds;
+    if (options.length === 0) throw new Error("not found task options");
+    return options;
   } catch (error) {
     console.error("Error in getOptionsInTask:", error);
     return null;
