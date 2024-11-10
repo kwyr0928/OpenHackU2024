@@ -1,6 +1,6 @@
 import { db } from "../db";
 import {
-  timeStruct,
+  type timeStruct,
   type folderStruct,
   type itemStruct,
   type optionStruct,

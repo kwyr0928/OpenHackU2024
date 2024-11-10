@@ -1,6 +1,6 @@
 import {
   presetType,
-  timeStruct,
+  type timeStruct,
   type folderStruct,
   type itemStruct,
   type optionStruct,
@@ -186,14 +186,14 @@ export async function createNewTimeSet(
       );
     }
     const dateTime = parseTimeString(time);
-    if(dateTime==null) throw new Error( "Invalid timeString: failed parseTimeString");
-    
+    if (dateTime == null)
+      throw new Error("Invalid timeString: failed parseTimeString");
 
     const timeData: timeStruct = {
       userId: userId,
       name: name,
       time: dateTime,
-    }
+    };
     //timeを作る
     const newTimeSet = await createTimeSet(timeData);
     if (newTimeSet == null) {
@@ -213,7 +213,7 @@ export async function createNewTimeSet(
 }
 
 // 時間フォーマット
-function parseTimeString(time: string){
+function parseTimeString(time: string) {
   const timeRegex = /^(\d{1,2}):(\d{2})$/;
   const match = timeRegex.exec(time);
   if (!match) return null;
@@ -222,7 +222,7 @@ function parseTimeString(time: string){
 
   // 時刻が有効範囲かどうか確認 (0 <= hours < 24, 0 <= minutes < 60)
   if (hours < 0 || hours >= 24 || minutes < 0 || minutes >= 60) return null;
-  
+
   const date = new Date();
   date.setHours(hours, minutes, 0, 0);
   return date;

@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { timeStruct, type itemStruct } from "./constants";
+import { type timeStruct, type itemStruct } from "./constants";
 
 type masterStruct = {
   name: string;
