@@ -3,7 +3,7 @@ import {
   type itemStruct,
   type optionStruct,
   type taskStruct,
-} from "../repositry/getdata";
+} from "../repositry/constants";
 import {
   createOption,
   createTaskItem,
@@ -11,8 +11,6 @@ import {
 } from "../repositry/insertdata";
 import { setNewMasterItem } from "../repositry/manageMaster";
 import { setSelectingTaskOption } from "../repositry/updatedata";
-
-//データ追加処理
 
 // optionつきtaskを作成
 export async function createNewTask(
@@ -78,7 +76,7 @@ export async function createNewTask(
     if (newTask == null) {
       throw new Error("Failed to create task.");
     }
-
+    //optionを作る
     let selectedOptionId = "";
     const newOptions: string[] = [];
     for (const op of options) {
@@ -94,6 +92,7 @@ export async function createNewTask(
         throw new Error("Failed to create option.");
       }
     }
+    // taskに設定中のオプションをセット(現在は最後に作ったオプションを設定)
     const setOptionTaskId = await setSelectingTaskOption(
       selectedOptionId,
       newTask.id,
