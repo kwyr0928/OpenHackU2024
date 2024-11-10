@@ -35,7 +35,7 @@ export async function getItemName(itemId: string) {
     });
 
     if (!taskName) throw new Error("not found item name");
-    return taskName.name;
+    return taskName.name as string;
   } catch (error) {
     console.error("Error in getItemName:", error);
     return null;
