@@ -29,7 +29,7 @@ export default function TabAll() {
   return (
     <div>
       {/* 全体 */}
-      <Card className="h-[700px]">
+      <Card className="h-[700px] border-darkBlue">
         <CardContent className="space-y-2">
           <Command className=" ">
             <CommandInput placeholder="検索" />
@@ -38,21 +38,14 @@ export default function TabAll() {
                 <CommandEmpty>見つかりません</CommandEmpty>
                 <CommandGroup className="">
                   <CommandItem>
-                    <Button className="mt-2 w-full bg-blue-400 text-black">
-                      <Link href="presets/all/edit">
-                        おしゃれ1限（引数にid）
-                      </Link>
-                    </Button>
-                  </CommandItem>
-                  <CommandItem>
-                    <Button className="mt-2 w-full bg-blue-400 text-black">
+                    <Button className="mt-2 w-full bg-cyan-200 text-black">
                       <Link href="presets/all/edit">
                         おしゃれ1限（引数にid）
                       </Link>
                     </Button>
                   </CommandItem>
                 </CommandGroup>
-                <Button className="mt-4 bg-blue-400">
+                <Button className="mt-4 bg-darkBlue">
                   <Link href="presets/all/new">新規作成+</Link>
                 </Button>
               </CommandList>
