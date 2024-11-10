@@ -185,7 +185,7 @@ export default function Home() {
             </p>
           </div>
           <Link href="/schedule/new">
-            <Button size="sm" className="px-8 py-5 mt-3 bg-darkBlue hover:bg-blue-900 text-lg font-mPlus text-slate-100 shadow-lg">
+            <Button size="sm" className="px-8 py-5 mt-3 bg-darkBlue hover:bg-blue-950 text-lg font-mPlus text-slate-100 shadow-lg">
               変更
             </Button>
           </Link>
@@ -195,7 +195,7 @@ export default function Home() {
       <div className="flex  space-x-12 mt-2 font-mPlus">
         <div className="mt-4 flex-col">
           <Link href="/presets">
-            <Button className="bg-darkBlue shadow-lg">
+            <Button className="bg-darkBlue hover:bg-blue-950 shadow-lg">
               <Image
                 src="/image/folder.svg"
                 alt="newAllPreset"
@@ -211,7 +211,7 @@ export default function Home() {
 
         <div className="mt-4 flex-col">
           <Link href="/settings">
-            <Button className="bg-darkBlue shadow-lg">
+            <Button className="bg-darkBlue hover:bg-blue-950 shadow-lg">
               <Image
                 src="/image/setting.svg"
                 alt="newAllPreset"
