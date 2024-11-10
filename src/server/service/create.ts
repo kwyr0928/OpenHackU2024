@@ -9,6 +9,7 @@ import {
   createTaskItem,
   createTaskSet,
 } from "../repositry/insertdata";
+import { setNewMasterItem } from "../repositry/manageMaster";
 import { setSelectingTaskOption } from "../repositry/updatedata";
 
 //データ追加処理
@@ -61,17 +62,23 @@ export async function createNewTask(
     //itemを作る
     const newItem = await createTaskItem(item);
     if (newItem == null) {
-      throw new Error("Failed to create task.");
+      throw new Error("Failed to create item.");
+    }
+    //masterをセット
+    const masterSetItem = await setNewMasterItem(newItem);
+    if (masterSetItem == null) {
+      throw new Error("Failed to create master.");
     }
     //taskを作る
     const taskData: taskStruct = {
       // ...task,
-      itemId: newItem.id,
+      itemId: masterSetItem.id,
     };
     const newTask = await createTaskSet(taskData);
     if (newTask == null) {
       throw new Error("Failed to create task.");
     }
+
     let selectedOptionId = "";
     const newOptions: string[] = [];
     for (const op of options) {

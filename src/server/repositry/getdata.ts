@@ -19,7 +19,7 @@ export type itemStruct = {
   userId: string;
   isSetting?: boolean;
   itemType: number;
-  parentId?: string;
+  parentId?: string | null;
   master_id?: string;
   order: number;
 };
