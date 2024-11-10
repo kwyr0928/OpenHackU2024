@@ -126,7 +126,7 @@ export default function Question() {
   switch (step) {
     case GOAL_TIME_QUESTION:
       questionContent = <GoalTimeQuestionComponent></GoalTimeQuestionComponent>;
-      nextButtonContent = <Button onClick={handleNextStep}>次へ</Button>;
+      nextButtonContent = <Button onClick={handleNextStep} className="bg-darkBlue">次へ</Button>;
       break;
 
     case INITIAL_QUESTION:
@@ -138,7 +138,7 @@ export default function Question() {
         />
       );
       nextButtonContent = (
-        <Button onClick={handleNextStep} disabled={selectedItems.length == 0}>
+        <Button onClick={handleNextStep} disabled={selectedItems.length == 0} className="bg-darkBlue">
           次へ
         </Button>
       );
@@ -156,13 +156,13 @@ export default function Question() {
       );
       if (step < selectedItems.length + 2) {
         nextButtonContent = (
-          <Button onClick={handleNextStep} disabled={!selectedValue}>
+          <Button onClick={handleNextStep} disabled={!selectedValue} className="bg-darkBlue">
             次へ
           </Button>
         );
       } else {
         nextButtonContent = (
-          <Button disabled={!selectedValue}>
+          <Button disabled={!selectedValue} className="bg-darkBlue">
             <Link href="/home">次へ</Link>
           </Button>
         );
@@ -170,7 +170,7 @@ export default function Question() {
   }
 
   return (
-    <div className="flex-col items-center justify-center bg-slate-50 text-center">
+    <div className="flex-col items-center justify-center bg-slate-50 text-center font-mPlus">
       <div className="pb-20 pt-20">
         <h1 className="m-2 text-5xl text-darkBlue">アンケート</h1>
         <h2 className="pt-2 text-xl text-darkBlue">
