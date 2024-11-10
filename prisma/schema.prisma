@@ -38,13 +38,13 @@ model Items {
   isSetting  Boolean  @default(false) // 設定中でtrue
   itemType   Int // 全体0, フォルダ1, タスク2
   parentId   String? //Itemsのidを持つ
-  master_id  String?
+  masterId  String?
   order      Int      @default(0) //順序
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
   user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  master    Master?      @relation(fields: [master_id], references: [id], onDelete: Cascade)
+  master    Master?      @relation(fields: [masterId], references: [id], onDelete: Cascade)
   item      Items?       @relation(name: "itemParents", fields: [parentId], references: [id], onDelete: Cascade)
   WholeSet  WholeSets[]
   FolderSet FolderSets[]
