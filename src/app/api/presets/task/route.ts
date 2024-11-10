@@ -34,7 +34,6 @@ export async function GET(req: Request) {
           { status: 400 }
         );
       }
-      console.log("!!!!!"+item.id);
       const taskRes = await fetchTask(item.id!, item.name);
       if (!taskRes) {
         return NextResponse.json(
@@ -56,16 +55,4 @@ export async function GET(req: Request) {
       { status: 500 },
     );
   }
-}
-
-export async function PUT() {
-  return NextResponse.json({
-    message: "特定のプリセットを更新",
-  });
-}
-
-export async function DELETE(req: Request) {
-  return NextResponse.json({
-    message: "特定のプリセットを削除",
-  });
 }

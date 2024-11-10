@@ -19,9 +19,28 @@ export async function getUserName(userId: string) {
   return user.name;
 }
 
+// itemId to itemName
+export async function getItemName(itemId: string){
+  try {
+    const taskName = await db.items.findUnique({
+      select: {
+        name: true,
+      },
+      where: {
+        id: itemId,
+      }
+    });
+
+    if (!taskName) throw new Error("not found item name");
+    return taskName.name as string;
+  } catch (error) {
+    console.error("Error in getItemName:", error);
+    return null;
+  }
+}
+
 // itemId to taskSet
 export async function getTaskInfo(itemId: string) {
-  itemId = "cm3bkivq50006yepb2691mndy";
   try {
     const task = await db.taskSets.findUnique({
       where: {
