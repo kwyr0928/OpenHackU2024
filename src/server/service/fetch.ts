@@ -1,5 +1,5 @@
 import { optionResponse, taskResponse } from "../repositry/constants";
-import { getOptionsInTask, getTaskInfo } from "../repositry/getdata";
+import { getOptionsInTask, getTaskInfoByItemId } from "../repositry/getdata";
 
 export async function fetchOptions(taskId: string) {
   try {
@@ -28,7 +28,7 @@ export async function fetchOptions(taskId: string) {
 export async function fetchTask(itemId: string, name: string) {
   try {
       if(!itemId || !name) throw new Error("itemId and name are required");
-      const task = await getTaskInfo(itemId);
+      const task = await getTaskInfoByItemId(itemId);
       if (!task) throw new Error("not found task");
       const options = await fetchOptions(task.id);
       if (!options) throw new Error("not found task options");

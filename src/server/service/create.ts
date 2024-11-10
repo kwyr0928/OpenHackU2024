@@ -11,14 +11,35 @@ import {
   createOption,
   createTaskSet
 } from "../repositry/insertdata";
-import { setNewMasterItem } from "../repositry/manageMaster";
+import { setExistMasterItem, setNewMasterItem } from "../repositry/manageMaster";
 import { setSelectingTaskOption, setTaskParent } from "../repositry/updatedata";
 
-// optionつきtaskを新規作成
+// taskを新規作成
 export async function createNewTask(
   userId: string,
   name: string,
   options: optionStruct[],
+  select: number,
+) {
+  try {
+    const ret = await createTask(userId, name, options, select);
+    if (ret == null) {
+      throw new Error("Failed on createTask");
+    }
+    return ret.task;
+  } catch (error) {
+    console.error("Error in createNewTask:", error);
+    return null;
+  }
+}
+
+// task作成
+export async function createTask(
+  userId: string,
+  name: string,
+  options: optionStruct[],
+  select: number,
+  prehab?: itemStruct,
 ) {
   try {
     if (!userId || !name || options.length === 0) {
@@ -37,14 +58,20 @@ export async function createNewTask(
     if (newItem == null) {
       throw new Error("Failed to create item.");
     }
-    //masterをセット
-    const masterSetItem = await setNewMasterItem(newItem);
+
+    let masterSetItem;
+    if(prehab==null){
+      //新規masterをセット
+      masterSetItem = await setNewMasterItem(newItem);
+    } else if(prehab.masterId!=null) {
+      //既存masterをセット
+      masterSetItem = await setExistMasterItem(newItem.id, prehab.masterId);
+    }
     if (masterSetItem == null) {
-      throw new Error("Failed to create master.");
+      throw new Error("Failed to set master.");
     }
     //taskを作る
     const taskData: taskStruct = {
-      // ...task,
       itemId: masterSetItem.id,
     };
     const newTask = await createTaskSet(taskData);
@@ -53,27 +80,33 @@ export async function createNewTask(
     }
     //optionを作る
     let selectedOptionId = "";
+    let count = 0;
     const newOptions: string[] = [];
     for (const op of options) {
       const data: optionStruct = {
         ...op,
+        id: undefined,
         taskId: newTask.id,
       };
+      console.log("Option Data:", data); //大丈夫
       const newOption = await createOption(data);
       if (newOption != null) {
         newOptions.push(newOption.id);
-        selectedOptionId = newOption.id;
+        if(count===select){
+          selectedOptionId = newOption.id;
+        }
       } else {
         throw new Error("Failed to create option.");
       }
+      count++;
     }
-    // taskに設定中のオプションをセット(現在は最後に作ったオプションを設定)
-    const setOptionTaskId = await setSelectingTaskOption(
+    // taskに設定中のオプションをセット
+    const setOptionedTask = await setSelectingTaskOption(
       selectedOptionId,
       newTask.id,
     );
 
-    return setOptionTaskId;
+    return { task:setOptionedTask, item:masterSetItem};
   } catch (error) {
     console.error("Error in createNewTask:", error);
     return null;
@@ -84,18 +117,12 @@ export async function createNewTask(
 export async function createNewFolder(
   userId: string,
   folderName: string,
-  taskIds?: string[], //?はテスト
+  taskItemIds: string[],
 ) {
   try {
-    // if (!task || options.length === 0) {
-    //   throw new Error("Invalid input: task or options are missing.");
-    // }
-
-    // test data
-    const foldername = "フォルダ1";
-
-    const taskId1 = "";
-    const taskId2 = "";
+    if (!userId || !folderName || taskItemIds.length === 0) {
+      throw new Error("Invalid input: userId and folderName and taskIds are required");
+    }
 
     const item: itemStruct = {
       userId: userId,
@@ -103,7 +130,6 @@ export async function createNewFolder(
       itemType: presetType.folder,
       order: 0,
     };
-    taskIds = [taskId1,taskId2];
 
     //itemを作る
     const newItem = await createNewItem(item);
@@ -125,8 +151,8 @@ export async function createNewFolder(
     }
 
     // taskのparentにfolderを設定
-    for (const taskId of taskIds) {
-      const parentedTask = await setTaskParent(taskId, newFolder.id);
+    for (const taskItemId of taskItemIds) {
+      const parentedTask = await setTaskParent(taskItemId, masterSetItem.id);
       if (parentedTask == null) {
         throw new Error("Failed to parent folder and task.");
       }

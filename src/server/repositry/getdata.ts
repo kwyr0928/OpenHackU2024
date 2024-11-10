@@ -18,6 +18,9 @@ export async function getUserName(userId: string) {
   if (user == null) return null;
   return user.name;
 }
+//
+// id to object
+//
 
 // itemId to itemName
 export async function getItemName(itemId: string){
@@ -39,8 +42,61 @@ export async function getItemName(itemId: string){
   }
 }
 
-// itemId to taskSet
-export async function getTaskInfo(itemId: string) {
+// taskId to task
+export async function getTaskInfoBytaskId(taskId: string){
+  try {
+    const task = await db.taskSets.findUnique({
+      where: {
+        id: taskId,
+      }
+    });
+
+    if (!task) throw new Error("not found task");
+    return task;
+  } catch (error) {
+    console.error("Error in getTaskInfoBytaskId:", error);
+    return null;
+  }
+}
+
+// itemId to item
+export async function getItemInfoByItemId(itemId: string){
+  try {
+    const item = await db.items.findUnique({
+      where: {
+        id: itemId,
+      }
+    });
+
+    if (!item) throw new Error("not found item");
+    return item;
+  } catch (error) {
+    console.error("Error in getItemName:", error);
+    return null;
+  }
+}
+
+//
+// id to other object
+//
+
+// taskId to item
+export async function getItemInfoByTaskId(taskId: string) {
+  try {
+    const task = await getTaskInfoBytaskId(taskId);
+    if (!task) throw new Error("not found taskSet");
+    const item = await getItemInfoByItemId(task?.itemId)
+    if (!item) throw new Error("not found itemSet");
+
+    return item;
+  } catch (error) {
+    console.error("Error in getItemInfoByTaskId:", error);
+    return null;
+  }
+}
+
+// itemId to task
+export async function getTaskInfoByItemId(itemId: string) {
   try {
     const task = await db.taskSets.findUnique({
       where: {
@@ -56,6 +112,23 @@ export async function getTaskInfo(itemId: string) {
   }
 }
 
+// optionId to optionInfo
+export async function getOptionInfo(optionId: string) {
+  try {
+    const option = await db.taskOptions.findUnique({
+      where: {
+        id: optionId,
+      }
+    });
+
+    if (!option) throw new Error("not found taskOption");
+    return option;
+  } catch (error) {
+    console.error("Error in getOptionInfo:", error);
+    return null;
+  }
+}
+
 // userId to 任意タイプのitem配列
 export async function getKindItems(userId: string, type: number): Promise<itemStruct[]> {
   const items = await db.$queryRawTyped(getUniqueMasterItem(userId, type));
@@ -63,20 +136,17 @@ export async function getKindItems(userId: string, type: number): Promise<itemSt
   return items;
 }
 
-// userId to TimeSetsのid一覧
+// userId to TimeSets一覧
 export async function getTimePresets(userId: string) {
   const timeSets = await db.$queryRawTyped(getUniqueMasterTimeset(userId));
   if (timeSets == null) return null;
   return timeSets;
 }
 
-// folderId to 中にあるtaskId一覧
+// folderId to 中にあるtask一覧
 export async function getTasksInFolder(userId: string, folderId: string) {
   try {
     const taskIds = await db.items.findMany({
-      select: {
-        id: true,
-      },
       where: {
         userId: userId,
         parentId: folderId,

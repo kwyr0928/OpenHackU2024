@@ -21,6 +21,26 @@ export async function createMasterItem(item: itemStruct) {
     return null;
   }
 }
+
+// 既存masterセット
+export async function setExistMasterItem(itemId: string, masterId: string) {
+  try {
+    if (itemId == null || masterId == null) throw new Error("Invalid item data");
+    const setItem = await db.items.update({
+      where: {
+        id: itemId,
+      },
+      data: {
+        masterId: masterId,
+      },
+    });
+
+    return setItem;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
 // 新規masterセット
 export async function setNewMasterItem(item: itemStruct) {
   try {

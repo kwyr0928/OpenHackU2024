@@ -14,26 +14,26 @@ export type itemStruct = {
   isSetting?: boolean;
   itemType: number;
   parentId?: string | null;
-  master_id?: string;
+  masterId?: string | null;
   order: number;
-} | null;
+};
 // timeSetsテーブル構造体
 export type timeStruct = {
   id: string;
   userId: string;
   name: string;
   time: Date; //Dateなのか？
-  master_id?: string;
+  masterId?: string | null;
   created_at?: Date;
   updated_at?: Date;
-} | null;
+};
 // folderSetsテーブル構造体
 export type folderStruct = {
   id?: string;
   itemId: string;
   created_at?: Date;
   updated_at?: Date;
-} | null;
+};
 // taskSetsテーブル構造体
 export type taskStruct = {
   id?: string;
@@ -41,18 +41,18 @@ export type taskStruct = {
   optionId?: string;
   created_at?: Date;
   updated_at?: Date;
-} | null;
+};
 // optionSetsテーブル構造体
 export type optionStruct = {
   id?: string;
-  name: string;
+  name?: string;
   optionTime: number;
   order: number;
   isStatic: boolean;
   taskId: string;
   created_at?: Date;
   updated_at?: Date;
-} | null;
+};
 
 export type taskResponse = {
   task: {

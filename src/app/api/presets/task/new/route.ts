@@ -7,6 +7,7 @@ type RequestBody = {
   task: {
     name: string;
     isStatic: boolean;
+    select: number;
     options: {
       name: string;
       time: number;
@@ -25,12 +26,10 @@ export async function POST(req: Request) {
       );
     }
 
-    // test data
-    let options: optionStruct[] = [];
+    const options: optionStruct[] = [];
 
     if(task.isStatic){
       const opst: optionStruct = {
-        name: task.options[0]!.name,
         optionTime: task.options[0]!.time,
         order: 0,
         isStatic: true,
@@ -52,9 +51,7 @@ export async function POST(req: Request) {
       }
     }
 
-
-    // create task TEST
-    const taskId = await createNewTask(userId, task.name, options);
+    const taskId = await createNewTask(userId, task.name, options, task.select);
 
     return NextResponse.json({
       message: "Task created successfully",

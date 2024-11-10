@@ -21,17 +21,17 @@ export async function setSelectingTaskOption(optionId: string, taskId: string) {
   }
 }
 
-// タスクに親を設定
-export async function setTaskParent(taskId: string, folderId: string) {
+// itemに親を設定
+export async function setTaskParent(myItemId: string, parentItemId: string) {
   try {
-    if (taskId == null || folderId == null)
+    if (myItemId == null || parentItemId == null)
       throw new Error("Invalid args data");
     const updateTask = await db.items.update({
       where: {
-        id: taskId,
+        id: myItemId,
       },
       data: {
-        parentId: folderId,
+        parentId: parentItemId,
       },
     });
 

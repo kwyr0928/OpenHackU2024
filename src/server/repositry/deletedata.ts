@@ -15,3 +15,18 @@ export async function deleteItem(itemId: string, type: number) {
     return null;
   }
 }
+
+// itemをitemIdで削除
+export async function deleteMaster(masterId: string) {
+  try {
+    const deleteMaster = await db.master.delete({
+      where: {
+        id: masterId
+      },
+    });
+    return deleteMaster;
+  } catch (error) {
+    console.error("Error deleting item:", error);
+    return null;
+  }
+}
