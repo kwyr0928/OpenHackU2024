@@ -6,7 +6,7 @@ export async function deleteItem(itemId: string, type: number) {
     const deleteItem = await db.items.delete({
       where: {
         id: itemId,
-        itemType: type
+        itemType: type,
       },
     });
     return deleteItem;
@@ -21,7 +21,7 @@ export async function deleteMaster(masterId: string) {
   try {
     const deleteMaster = await db.master.delete({
       where: {
-        id: masterId
+        id: masterId,
       },
     });
     return deleteMaster;

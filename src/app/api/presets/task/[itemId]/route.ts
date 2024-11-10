@@ -12,7 +12,7 @@ export async function GET(req: Request) {
     if (!userId || !itemId) {
       return NextResponse.json(
         { error: "Invalid input: userId is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -20,20 +20,17 @@ export async function GET(req: Request) {
     if (!itemName) {
       return NextResponse.json(
         { error: "Not found itemName" },
-        { status: 404 }
+        { status: 404 },
       );
     }
     const taskRes = await fetchTask(itemId, itemName);
     if (!taskRes) {
-      return NextResponse.json(
-        { error: "Not found tasks" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Not found tasks" }, { status: 404 });
     }
 
     return NextResponse.json({
       message: "get all tasks successfully",
-      task: taskRes.task
+      task: taskRes.task,
     });
   } catch (error) {
     console.error("Error in POST request:", error);
@@ -57,13 +54,13 @@ export async function DELETE(req: Request) {
     if (!itemId) {
       return NextResponse.json(
         { error: "Invalid input: itemId is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
     const deletedTask = await deleteItem(itemId, presetType.task);
     return NextResponse.json({
       message: "delete tasks successfully",
-      task: deletedTask
+      task: deletedTask,
     });
   } catch (error) {
     console.error("Error in POST request:", error);

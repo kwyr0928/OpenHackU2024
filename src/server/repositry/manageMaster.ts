@@ -2,17 +2,17 @@ import { db } from "../db";
 import { type itemStruct } from "./constants";
 
 type masterStruct = {
-  name: string
-}
+  name: string;
+};
 // master生成
 export async function createMasterItem(item: itemStruct) {
   try {
     if (item == null) throw new Error("Invalid item data");
     const masterData: masterStruct = {
-      name: item.name
-    }
+      name: item.name,
+    };
     const createMaster = await db.master.create({
-      data: masterData
+      data: masterData,
     });
 
     return createMaster;
@@ -25,7 +25,8 @@ export async function createMasterItem(item: itemStruct) {
 // 既存masterセット
 export async function setExistMasterItem(itemId: string, masterId: string) {
   try {
-    if (itemId == null || masterId == null) throw new Error("Invalid item data");
+    if (itemId == null || masterId == null)
+      throw new Error("Invalid item data");
     const setItem = await db.items.update({
       where: {
         id: itemId,

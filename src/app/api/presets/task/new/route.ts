@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { optionStruct } from "~/server/repositry/constants";
+import { type optionStruct } from "~/server/repositry/constants";
 import { createNewTask } from "~/server/service/create";
 
 type RequestBody = {
@@ -17,18 +17,18 @@ type RequestBody = {
 
 export async function POST(req: Request) {
   try {
-    const { userId, task }: RequestBody = await req.json() as RequestBody;
+    const { userId, task }: RequestBody = (await req.json()) as RequestBody;
 
     if (!userId || !task) {
       return NextResponse.json(
         { error: "Invalid input: userId and task are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const options: optionStruct[] = [];
 
-    if(task.isStatic){
+    if (task.isStatic) {
       const opst: optionStruct = {
         optionTime: task.options[0]!.time,
         order: 0,
@@ -38,14 +38,14 @@ export async function POST(req: Request) {
       options.push(opst);
     } else {
       let order = 0;
-      for(const op of task.options){
+      for (const op of task.options) {
         const opst: optionStruct = {
           name: op.name,
           optionTime: op.time,
           order: order,
           isStatic: false,
           taskId: "",
-        }
+        };
         options.push(opst);
         order++;
       }

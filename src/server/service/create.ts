@@ -1,17 +1,20 @@
 import {
-  folderStruct,
+  type folderStruct,
   presetType,
   type itemStruct,
   type optionStruct,
-  type taskStruct
+  type taskStruct,
 } from "../repositry/constants";
 import {
   createFolderSet,
   createNewItem,
   createOption,
-  createTaskSet
+  createTaskSet,
 } from "../repositry/insertdata";
-import { setExistMasterItem, setNewMasterItem } from "../repositry/manageMaster";
+import {
+  setExistMasterItem,
+  setNewMasterItem,
+} from "../repositry/manageMaster";
 import { setSelectingTaskOption, setTaskParent } from "../repositry/updatedata";
 
 // taskを新規作成
@@ -60,10 +63,10 @@ export async function createTask(
     }
 
     let masterSetItem;
-    if(prehab==null){
+    if (prehab == null) {
       //新規masterをセット
       masterSetItem = await setNewMasterItem(newItem);
-    } else if(prehab.masterId!=null) {
+    } else if (prehab.masterId != null) {
       //既存masterをセット
       masterSetItem = await setExistMasterItem(newItem.id, prehab.masterId);
     }
@@ -92,7 +95,7 @@ export async function createTask(
       const newOption = await createOption(data);
       if (newOption != null) {
         newOptions.push(newOption.id);
-        if(count===select){
+        if (count === select) {
           selectedOptionId = newOption.id;
         }
       } else {
@@ -106,7 +109,7 @@ export async function createTask(
       newTask.id,
     );
 
-    return { task:setOptionedTask, item:masterSetItem};
+    return { task: setOptionedTask, item: masterSetItem };
   } catch (error) {
     console.error("Error in createNewTask:", error);
     return null;
@@ -121,7 +124,9 @@ export async function createNewFolder(
 ) {
   try {
     if (!userId || !folderName || taskItemIds.length === 0) {
-      throw new Error("Invalid input: userId and folderName and taskIds are required");
+      throw new Error(
+        "Invalid input: userId and folderName and taskIds are required",
+      );
     }
 
     const item: itemStruct = {

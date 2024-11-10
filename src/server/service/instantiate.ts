@@ -1,9 +1,12 @@
-import { getItemInfoByItemId, getOptionInfo, getOptionsInTask, getTaskInfoByItemId } from "../repositry/getdata";
+import {
+  getItemInfoByItemId,
+  getOptionInfo,
+  getOptionsInTask,
+  getTaskInfoByItemId,
+} from "../repositry/getdata";
 import { createTask } from "./create";
 
-export async function instanciateTask(
-  itemId: string
-) {
+export async function instanciateTask(itemId: string) {
   try {
     if (!itemId) {
       throw new Error("Invalid input: itemId is missing.");
@@ -12,7 +15,7 @@ export async function instanciateTask(
     const task = await getTaskInfoByItemId(itemId);
     if (task == null) {
       throw new Error("Not found task");
-    } else if(task.optionId == null){
+    } else if (task.optionId == null) {
       throw new Error("Not found task optionId");
     }
     const item = await getItemInfoByItemId(itemId);
@@ -28,10 +31,16 @@ export async function instanciateTask(
     const selectedOption = await getOptionInfo(task.optionId);
     if (selectedOption == null) {
       throw new Error("Failed find order");
-    } else if(selectedOption.order == null){
+    } else if (selectedOption.order == null) {
       throw new Error("Not found option order");
     }
-    const taskInstanciate = await createTask(item.userId, item.name as string, options, selectedOption.order, item);
+    const taskInstanciate = await createTask(
+      item.userId,
+      item.name,
+      options,
+      selectedOption.order,
+      item,
+    );
     if (taskInstanciate == null) {
       throw new Error("Failed on createTask");
     }

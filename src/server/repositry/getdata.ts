@@ -3,7 +3,7 @@ import {
   getUniqueMasterTimeset,
 } from "@prisma/client/sql";
 import { db } from "../db";
-import { itemStruct, presetType } from "./constants";
+import { type itemStruct, presetType } from "./constants";
 
 // userId to ユーザー名
 export async function getUserName(userId: string) {
@@ -23,7 +23,7 @@ export async function getUserName(userId: string) {
 //
 
 // itemId to itemName
-export async function getItemName(itemId: string){
+export async function getItemName(itemId: string) {
   try {
     const taskName = await db.items.findUnique({
       select: {
@@ -31,11 +31,11 @@ export async function getItemName(itemId: string){
       },
       where: {
         id: itemId,
-      }
+      },
     });
 
     if (!taskName) throw new Error("not found item name");
-    return taskName.name as string;
+    return taskName.name;
   } catch (error) {
     console.error("Error in getItemName:", error);
     return null;
@@ -43,12 +43,12 @@ export async function getItemName(itemId: string){
 }
 
 // taskId to task
-export async function getTaskInfoBytaskId(taskId: string){
+export async function getTaskInfoBytaskId(taskId: string) {
   try {
     const task = await db.taskSets.findUnique({
       where: {
         id: taskId,
-      }
+      },
     });
 
     if (!task) throw new Error("not found task");
@@ -60,12 +60,12 @@ export async function getTaskInfoBytaskId(taskId: string){
 }
 
 // itemId to item
-export async function getItemInfoByItemId(itemId: string){
+export async function getItemInfoByItemId(itemId: string) {
   try {
     const item = await db.items.findUnique({
       where: {
         id: itemId,
-      }
+      },
     });
 
     if (!item) throw new Error("not found item");
@@ -85,7 +85,7 @@ export async function getItemInfoByTaskId(taskId: string) {
   try {
     const task = await getTaskInfoBytaskId(taskId);
     if (!task) throw new Error("not found taskSet");
-    const item = await getItemInfoByItemId(task?.itemId)
+    const item = await getItemInfoByItemId(task?.itemId);
     if (!item) throw new Error("not found itemSet");
 
     return item;
@@ -101,7 +101,7 @@ export async function getTaskInfoByItemId(itemId: string) {
     const task = await db.taskSets.findUnique({
       where: {
         itemId: itemId,
-      }
+      },
     });
 
     if (!task) throw new Error("not found taskSet");
@@ -118,7 +118,7 @@ export async function getOptionInfo(optionId: string) {
     const option = await db.taskOptions.findUnique({
       where: {
         id: optionId,
-      }
+      },
     });
 
     if (!option) throw new Error("not found taskOption");
@@ -130,7 +130,10 @@ export async function getOptionInfo(optionId: string) {
 }
 
 // userId to 任意タイプのitem配列
-export async function getKindItems(userId: string, type: number): Promise<itemStruct[]> {
+export async function getKindItems(
+  userId: string,
+  type: number,
+): Promise<itemStruct[]> {
   const items = await db.$queryRawTyped(getUniqueMasterItem(userId, type));
   if (items == null) return null;
   return items;
@@ -154,7 +157,7 @@ export async function getTasksInFolder(userId: string, folderId: string) {
       },
       orderBy: {
         created_at: "asc",
-      }
+      },
     });
 
     if (taskIds.length === 0) return null;

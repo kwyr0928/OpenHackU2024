@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { presetType, taskResponse } from "~/server/repositry/constants";
+import { presetType, type taskResponse } from "~/server/repositry/constants";
 import { getKindItems } from "~/server/repositry/getdata";
 import { fetchTask } from "~/server/service/fetch";
 
@@ -10,36 +10,27 @@ export async function GET(req: Request) {
     if (!userId) {
       return NextResponse.json(
         { error: "Invalid input: userId is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
     const items = await getKindItems(userId, presetType.task);
     if (!items) {
       return NextResponse.json(
         { error: "Invalid input: userId is required" },
-        { status: 400 }
+        { status: 400 },
       );
-    } else if (items?.length === 0){
-      return NextResponse.json(
-        { error: "Not found tasks" },
-        { status: 404 }
-      );
+    } else if (items?.length === 0) {
+      return NextResponse.json({ error: "Not found tasks" }, { status: 404 });
     }
 
-    const res: taskResponse[] = []
-    for(const item of items){
+    const res: taskResponse[] = [];
+    for (const item of items) {
       if (!item) {
-        return NextResponse.json(
-          { error: "Not found task" },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: "Not found task" }, { status: 400 });
       }
       const taskRes = await fetchTask(item.id!, item.name);
       if (!taskRes) {
-        return NextResponse.json(
-          { error: "Not found tasks" },
-          { status: 404 }
-        );
+        return NextResponse.json({ error: "Not found tasks" }, { status: 404 });
       }
       res.push(taskRes);
     }

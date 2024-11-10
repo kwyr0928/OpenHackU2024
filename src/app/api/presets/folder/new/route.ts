@@ -10,17 +10,18 @@ type RequestBody = {
 
 export async function POST(req: Request) {
   try {
-    const { userId, folderName, itemIds }: RequestBody = await req.json() as RequestBody;
+    const { userId, folderName, itemIds }: RequestBody =
+      (await req.json()) as RequestBody;
 
     if (!userId || !folderName || itemIds.length === 0) {
       return NextResponse.json(
         { error: "Invalid input: userId and name and itemIds are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const instances: string[] = [];
-    for(const itemId of itemIds){
+    for (const itemId of itemIds) {
       const taskInstance = await instanciateTask(itemId);
       if (taskInstance == null) {
         throw new Error("Failed to instanciate task.");
