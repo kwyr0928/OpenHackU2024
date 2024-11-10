@@ -9,6 +9,7 @@ export default function DisplayTime() {
             return String.fromCharCode(s.charCodeAt(0) + 0xFEE0);
         });
     }
+
     const updateTime = () => {
         const now = new Date();
         const hours = String(now.getHours()).padStart(2, "0");
@@ -16,10 +17,19 @@ export default function DisplayTime() {
         setTime(toFullWidth(`${hours}:${minutes}`));
     }
 
-  useEffect(() => {
-    updateTime();
-    const intervalId = setInterval(updateTime, 1000);
-    return () => clearInterval(intervalId); // クリーンアップ
-  });
-  return <div className="font-mono text-7xl font-bold">{time}</div>;
+
+    useEffect(() => {
+        updateTime();
+        const intervalId = setInterval(updateTime, 1000);
+        return () => clearInterval(intervalId); // クリーンアップ
+    })
+
+
+
+    return (
+        <div className="text-7xl text-darkBlue font-mPlus">
+            {time}
+        </div>
+    )
+
 }
