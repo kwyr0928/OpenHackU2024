@@ -39,7 +39,7 @@ export default function TabFolder() {
                 <CommandEmpty>見つかりません</CommandEmpty>
                 <CommandGroup>
                   <CommandItem>
-                    <EditFolder>駅まで徒歩（引数にid）</EditFolder>
+                    <EditFolder>メイク（引数にid）</EditFolder>
                   </CommandItem>
                 </CommandGroup>
                 <NewFolder></NewFolder>
