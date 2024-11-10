@@ -1,88 +1,339 @@
 "use client";
 
-import Image from "next/image";
-import { useState } from "react";
 import Link from "next/link";
+import { useState } from "react";
 import { Button } from "~/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "~/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Checkbox } from "~/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
+import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 
 export default function Question() {
-  const [step, setStep] = useState(1); // ステップの状態を管理
+  const [step, setStep] = useState<number>(1); // ステップの状態を管理
+  const [selectedValue, setSelectedValue] = useState<string | null>(null); // 現在の選択値
+  const [inputValue, setInputValue] = useState<string | null>(""); // その他入力欄の値
+  const [selectedItems, setSelectedItems] = useState<number[]>([]); // チェックされた選択肢を保存
+
+  const initialQuestionChoices: string[] = [
+    "ランニング",
+    "朝食",
+    "着替え",
+    "薪割り",
+    "ブルアカ",
+    "ポケポケ",
+    "ラジオ体操",
+  ];
+  const questionContext = {
+    member: [
+      {
+        title: "ランニングの所要時間は？",
+        choice: [
+          { text: "10分", id: "10min" },
+          { text: "20分", id: "20min" },
+          { text: "30分", id: "30min" },
+        ],
+      },
+      {
+        title: "朝食の所要時間は？",
+        choice: [
+          { text: "10分", id: "10min" },
+          { text: "20分", id: "20min" },
+          { text: "30分", id: "30min" },
+        ],
+      },
+      {
+        title: "着替えの所要時間は？",
+        choice: [
+          { text: "10分", id: "10min" },
+          { text: "20分", id: "20min" },
+          { text: "30分", id: "30min" },
+        ],
+      },
+      {
+        title: "薪割りの所要時間は？",
+        choice: [
+          { text: "10分", id: "10min" },
+          { text: "20分", id: "20min" },
+          { text: "30分", id: "30min" },
+        ],
+      },
+      {
+        title: "ブルアカの所要時間は？",
+        choice: [
+          { text: "10分", id: "10min" },
+          { text: "20分", id: "20min" },
+          { text: "30分", id: "30min" },
+        ],
+      },
+      {
+        title: "ポケポケの所要時間は？",
+        choice: [
+          { text: "10分", id: "10min" },
+          { text: "20分", id: "20min" },
+          { text: "30分", id: "30min" },
+        ],
+      },
+      {
+        title: "ラジオ体操の所要時間は？",
+        choice: [
+          { text: "10分", id: "10min" },
+          { text: "20分", id: "20min" },
+          { text: "30分", id: "30min" },
+        ],
+      },
+    ],
+  };
+
+  /**
+   * 達成時刻を決める設問
+   */
+  const GOAL_TIME_QUESTION = 1;
+
+  /**
+   * 質問するタスクを決める設問
+   */
+  const INITIAL_QUESTION = 2;
+
+  /**
+   * 設問のHTMLオブジェクト
+   */
+  let questionContent = null;
+
+  /**
+   * 「次へ」ボタンのHTMLオブジェクト
+   */
+  let nextButtonContent = null;
+
+  type questionTime = {
+    title: string;
+    choice: { text: string; id: string }[];
+  };
+
+  type questionTimeArray = {
+    running: questionTime;
+    breakfast: questionTime;
+    dressing: questionTime;
+  };
+
+  const handleNextStep = () => {
+    setStep(step + 1);
+    setSelectedValue(null); // 選択をリセット
+    setInputValue(""); // 入力欄をリセット
+  };
+
+  //  stepの値に応じて質問と「次へ」ボタンを設定
+  switch (step) {
+    case GOAL_TIME_QUESTION:
+      questionContent = <GoalTimeQuestionComponent></GoalTimeQuestionComponent>;
+      nextButtonContent = <Button onClick={handleNextStep} className="bg-darkBlue">次へ</Button>;
+      break;
+
+    case INITIAL_QUESTION:
+      questionContent = (
+        <InitialQuestion
+          initialQuestionChoices={initialQuestionChoices}
+          selectedItems={selectedItems}
+          setSelectedItems={setSelectedItems}
+        />
+      );
+      nextButtonContent = (
+        <Button onClick={handleNextStep} disabled={selectedItems.length == 0} className="bg-darkBlue">
+          次へ
+        </Button>
+      );
+      break;
+
+    default:
+      questionContent = (
+        <QuestionComponent
+          questionData={questionContext.member[selectedItems[step - 3]!]} //  生成に用いるjsonを渡す
+          selectedValue={selectedValue} //  現在選択されている値を取得
+          setSelectedValue={setSelectedValue}
+          inputValue={inputValue} //  その他の入力を取得
+          setInputValue={setInputValue}
+        />
+      );
+      if (step < selectedItems.length + 2) {
+        nextButtonContent = (
+          <Button onClick={handleNextStep} disabled={!selectedValue} className="bg-darkBlue">
+            次へ
+          </Button>
+        );
+      } else {
+        nextButtonContent = (
+          <Button disabled={!selectedValue} className="bg-darkBlue">
+            <Link href="/home">次へ</Link>
+          </Button>
+        );
+      }
+  }
 
   return (
-    <div className="flex h-screen flex-col items-center justify-center text-center">
-      <Card className="w-3/4 max-w-md">
-        <CardHeader>
-          <CardTitle>アンケート</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {step === 1 ? (
-            // Question 1
-            <div className="space-y-2">
-              <h2 className="text-lg font-medium">あなたの習慣は？</h2>
-              <div className="flex items-center space-x-2">
-                <Checkbox id="running" />
-                <label
-                  htmlFor="running"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  ランニング
-                </label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox id="breakfast" />
-                <label
-                  htmlFor="breakfast"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  朝食
-                </label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox id="morningShower" />
-                <label
-                  htmlFor="morningShower"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  朝シャン
-                </label>
-              </div>
-            </div>
-          ) : (
-            // Question 2
-            <div className="space-y-4">
-              <h2 className="text-lg font-medium">運動の所要時間は？</h2>
-              <RadioGroup>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="10min" id="10min" />
-                  <Label htmlFor="10min">10分</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="20min" id="20min" />
-                  <Label htmlFor="20min">20分</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="30min" id="30min" />
-                  <Label htmlFor="30min">30分</Label>
-                </div>
-              </RadioGroup>
-            </div>
-          )}
-        </CardContent>
+    <div className="flex-col items-center justify-center bg-slate-50 text-center font-mPlus">
+      <div className="pb-20 pt-20">
+        <h1 className="m-2 text-5xl text-darkBlue">アンケート</h1>
+        <h2 className="pt-2 text-xl text-darkBlue">
+          回答結果に基づき<br></br>アプリがカスタマイズされます。
+        </h2>
+      </div>
 
-        <div className="mb-4">
-          {step === 1 ? (
-            <Button onClick={() => setStep(2)}>次へ</Button>
-          ) : (
-            <Button>
-              <Link href="/home">次へ</Link>
-            </Button>
-          )}
+      <div className="flex h-screen flex-col items-center text-center">
+        <Card className="w-3/4 max-w-md border-2 border-darkBlue">
+          <CardHeader>
+            <CardTitle>
+              ( {step} / {selectedItems.length + 2} )
+            </CardTitle>
+          </CardHeader>
+
+          <CardContent>{questionContent}</CardContent>
+
+          <div className="mb-4">{nextButtonContent}</div>
+        </Card>
+        <StepIndicator
+          currentStep={step}
+          totalSteps={selectedItems.length + 2}
+        />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * 設問コンポーネント：達成時刻を入力
+ * @returns HTMLオブジェクト
+ */
+function GoalTimeQuestionComponent() {
+  const [time, setTime] = useState<string>("10:00"); // 初期値を設定
+
+  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTime(e.target.value); // 入力された時刻を更新
+  };
+
+  return (
+    <div className="space-y-4">
+      <h2 className="text-lg font-medium">
+        達成時刻を入力してください<br></br>
+      </h2>
+      <input
+        type="time"
+        value={time}
+        onChange={handleTimeChange}
+        className="mt-4 w-full max-w-[200px] rounded-md border p-2"
+      />
+    </div>
+  );
+}
+
+/**
+ * 設問コンポーネント：質問するタスクの種類を選択
+ * @param initialQuestionChoices 同名のstring[]フィールド
+ * @param selectedItems 同名のnumber[]フィールド
+ * @param setSelectedItems 同名のsetメソッド
+ * @returns HTMLオブジェクト
+ */
+function InitialQuestion({
+  initialQuestionChoices,
+  selectedItems,
+  setSelectedItems,
+}: any) {
+  return (
+    <div className="space-y-4">
+      <h2 className="text-lg font-medium">
+        あなたの朝のルーティンは<br></br>どれですか？
+      </h2>
+      {initialQuestionChoices.map((item: string, index: number) => (
+        <div key={item} className="flex items-center space-x-2">
+          <Checkbox
+            checked={selectedItems.includes(index)}
+            onCheckedChange={(checked) => {
+              if (checked) {
+                setSelectedItems([...selectedItems, index]);
+              } else {
+                setSelectedItems(
+                  selectedItems.filter((i: number) => i !== index),
+                ); // 配列から消去
+              }
+            }}
+          />
+          <Label>{item}</Label>
         </div>
-      </Card>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * 設問コンポーネント：そのタスクにかかる時間を入力
+ * @param questionData questipnContext.member[任意のindex]
+ * @param selectedValue 同名のstringフィールド
+ * @param selectedValue 同名のsetメソッド
+ * @param inputValue 同名のstringフィールド
+ * @param setInputValue 同名のsetメソッド
+ * @returns HTMLオブジェクト
+ */
+function QuestionComponent({
+  questionData,
+  selectedValue,
+  setSelectedValue,
+  inputValue,
+  setInputValue,
+}: any) {
+  return (
+    <div className="space-y-4">
+      <h2 className="text-lg font-medium">{questionData.title}</h2>
+      <RadioGroup
+        value={selectedValue}
+        onValueChange={(value: string) => {
+          setSelectedValue(value);
+        }}
+        className=""
+      >
+        {questionData.choice.map((choice: any) => (
+          <div key={choice.id} className="flex items-center space-x-4">
+            <RadioGroupItem value={choice.id} id={choice.id} />
+            <Label htmlFor={choice.id}>{choice.text}</Label>
+          </div>
+        ))}
+        <div className="flex items-center space-x-4">
+          <RadioGroupItem value="other" id="other" />
+          <Input
+            type="text"
+            placeholder="その他"
+            value={inputValue}
+            onChange={(e) => {
+              setInputValue(e.target.value);
+              setSelectedValue("other");
+            }}
+            disabled={selectedValue !== "other"}
+          />
+        </div>
+      </RadioGroup>
+    </div>
+  );
+}
+
+/**
+ * インジケータコンポーネント：アンケートの進度を表示する
+ * @param currentStep 現在のアンケートの進度:number
+ * @param totalSteps 設問の総数:number
+ * @returns
+ */
+function StepIndicator({
+  currentStep,
+  totalSteps,
+}: {
+  currentStep: number;
+  totalSteps: number;
+}) {
+  return (
+    <div className="mb-4 mt-8 flex justify-center space-x-2">
+      {Array.from({ length: totalSteps }).map((_, index) => (
+        <div
+          key={index}
+          className={`h-2 w-2 rounded-full transition-all ${currentStep === index + 1 ? "scale-125 bg-darkBlue" : "bg-gray-300"}`}
+        />
+      ))}
     </div>
   );
 }
