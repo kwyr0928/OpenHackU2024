@@ -1,12 +1,11 @@
-import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import React from "react";
+import DisplayTime from "~/components/displayTime/displayTime";
 import { Button } from "~/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "~/components/ui/card";
-import { Checkbox } from "~/components/ui/checkbox";
+import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { Separator } from "~/components/ui/separator";
-import DisplayTime from "~/components/displayTime/displayTime";
 
 const tags = Array.from({ length: 50 }).map(
   (_, i, a) => `v1.2.0-beta.${a.length - i}`,
@@ -36,9 +35,56 @@ const data = {
 };
 
 //個人を識別するための仮の番号、データベースが完成したらidになるのかな？
-const memberNumber = 1;
+const memberNumber = 0;
+
+// タスクの合計時間を求める関数
+const calculateTotalTime = (items: any[]) => {
+  return items.reduce((totalTime: number, item: any) => {
+    if (item.tasks) {
+      totalTime += item.tasks.reduce(
+        (sum: number, task: any) => sum + task.timeRequired,
+        0
+      );
+    }
+    if (item.folders) {
+      item.folders.forEach((folder: any) => {
+        totalTime += folder.tasks.reduce(
+          (sum: number, task: any) => sum + task.timeRequired,
+          0
+        );
+      });
+    }
+    return totalTime;
+  }, 0);
+};
+
+// 起床時刻の計算
+const calculateWakeUpTime = (goalTime: string, totalTime: number) => {
+  const [goalHour, goalMinute] = goalTime ? goalTime.split(":").map(Number) : [0, 0];
+  let goalInMinutes = 0;
+  if (goalHour !== undefined && goalMinute !== undefined) {
+    goalInMinutes = goalHour * 60 + goalMinute;
+  }
+  const wakeUpTimeInMinutes = goalInMinutes - totalTime;
+
+  const wakeUpHour = Math.floor(wakeUpTimeInMinutes / 60);
+  const wakeUpMinute = wakeUpTimeInMinutes % 60;
+
+  return `${wakeUpHour < 10 ? "0" : ""}${wakeUpHour}:${wakeUpMinute < 10 ? "0" : ""}${wakeUpMinute}`;
+};
+
+
 
 export default function Home() {
+  const member = data.member[memberNumber];
+
+  if (!member) {
+    return <div>Loading...</div>;
+  }
+  
+  const totalTime = calculateTotalTime(member.items);
+  const wakeUpTime = calculateWakeUpTime(member.goleTime, totalTime);
+
   return (
     <div className="flex h-screen flex-col items-center justify-center bg-slate-50 text-center">
       {/* 現在時刻の表示 */}
@@ -83,21 +129,24 @@ export default function Home() {
         <div className="mt-4 flex-col">
           <p>プリセット</p>
           <Link href="/presets">
-            <Button>
+            <Button className="bg-darkBlue shadow-lg">
               <Image
-                src="/image/file.svg"
+                src="/image/folder.svg"
                 alt="newAllPreset"
                 width={30}
                 height={30}
               />
             </Button>
           </Link>
+          <h1 className="text-darkBlue">
+            プリセット
+          </h1>
         </div>
 
         <div className="mt-4 flex-col">
           <p>設定</p>
           <Link href="/settings">
-            <Button className="fill-blue-100">
+            <Button className="bg-darkBlue shadow-lg">
               <Image
                 src="/image/setting.svg"
                 alt="newAllPreset"
@@ -106,6 +155,9 @@ export default function Home() {
               />
             </Button>
           </Link>
+          <h1 className="text-darkBlue">
+            設定
+          </h1>
         </div>
       </div>
     </div>
