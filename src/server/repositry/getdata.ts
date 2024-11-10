@@ -2,7 +2,7 @@ import { getUniqueMasterItem, getUniqueMasterTimeset } from '@prisma/client/sql'
 import { db } from "../db";
 
 // プリセットタイプ
-const presetType = {
+export const presetType = {
   whole: 0,
   folder: 1,
   task: 2,
@@ -10,10 +10,11 @@ const presetType = {
 // itemsテーブル用構造体
 export type itemStruct = {
   id?: string;
+  name: string;
   created_at?: Date;
   updated_at?: Date;
   userId: string;
-  setNext: boolean;
+  isSetting?: boolean;
   itemType: number;
   parentId?: string;
   master_id?: string;
@@ -40,7 +41,7 @@ export type folderStruct = {
 export type taskStruct = {
   id?: string;
   itemId: string;
-  optionId: string;
+  optionId?: string;
   created_at?: Date;
   updated_at?: Date;
 };
