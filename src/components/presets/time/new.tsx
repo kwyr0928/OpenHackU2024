@@ -38,9 +38,7 @@ export default function NewTime() {
     <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
         {/* children を表示 */}
-        <Button className="mt-2 bg-pink-400 text-black hover:bg-pink-400">
-          新規作成＋
-        </Button>
+        <Button className="mt-2 bg-darkBlue text-white">新規作成＋</Button>
       </DialogTrigger>
       <DialogContent className="h-[50%] w-[90%] rounded-xl">
         <DialogHeader>

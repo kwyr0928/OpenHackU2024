@@ -49,7 +49,7 @@ export default function Presets() {
         </TabsContent>
       </Tabs>
 
-      <Button className="mt-4">
+      <Button className="mt-4 bg-gray-500">
         <Link href="/home">戻る</Link>
       </Button>
     </div>

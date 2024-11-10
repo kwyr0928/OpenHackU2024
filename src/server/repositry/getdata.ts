@@ -1,24 +1,27 @@
+import {
+  getUniqueMasterItem,
+  getUniqueMasterTimeset,
+} from "@prisma/client/sql";
 import { db } from "../db";
 
 // プリセットタイプ
-const presetType = {
+export const presetType = {
   whole: 0,
   folder: 1,
   task: 2,
 };
 // itemsテーブル用構造体
 export type itemStruct = {
-  item: {
-    //これなに？
-    id: string;
-    created_at: Date;
-    updated_at: Date;
-    userId: string;
-    setNext: boolean;
-    itemType: number;
-    parentId: string | null;
-    order: number;
-  } | null;
+  id?: string;
+  name: string;
+  created_at?: Date;
+  updated_at?: Date;
+  userId: string;
+  isSetting?: boolean;
+  itemType: number;
+  parentId?: string | null;
+  master_id?: string;
+  order: number;
 };
 // timeSetsテーブル構造体
 export type timeStruct = {
@@ -26,32 +29,35 @@ export type timeStruct = {
   userId: string;
   name: string;
   time: Date; //Dateなのか？
-  created_at: Date;
-  updated_at: Date;
+  master_id?: string;
+  created_at?: Date;
+  updated_at?: Date;
 };
 // folderSetsテーブル構造体
 export type folderStruct = {
-  id: string;
+  id?: string;
   itemId: string;
-  created_at: Date;
-  updated_at: Date;
+  created_at?: Date;
+  updated_at?: Date;
 };
 // taskSetsテーブル構造体
 export type taskStruct = {
-  id: string;
+  id?: string;
   itemId: string;
-  optionId: string | null;
-  created_at: Date;
-  updated_at: Date;
+  optionId?: string;
+  created_at?: Date;
+  updated_at?: Date;
 };
 // optionSetsテーブル構造体
 export type optionStruct = {
-  id: string;
+  id?: string;
   name: string;
   optionTime: number;
+  order: number;
+  isStatic: boolean;
   taskId: string;
-  created_at: Date;
-  updated_at: Date;
+  created_at?: Date;
+  updated_at?: Date;
 };
 
 // userId to ユーザー名
@@ -70,59 +76,56 @@ export async function getUserName(userId: string) {
 
 // userId to 任意タイプのSetsのid一覧
 export async function getKindPresets(userId: string, type: number) {
-  const itemIds = await db.items.findMany({
-    select: {
-      id: true,
-    },
-    where: {
-      userId: userId,
-      itemType: type,
-    },
-  });
+  const itemIds = db.$queryRawTyped(getUniqueMasterItem(userId, type));
   if (itemIds == null) return null;
   return itemIds;
 }
 
 // userId to TimeSetsのid一覧
 export async function getTimePresets(userId: string) {
-  const timeIds = await db.timeSets.findMany({
-    select: {
-      id: true,
-    },
-    where: {
-      userId: userId,
-    },
-  });
+  const timeIds = db.$queryRawTyped(getUniqueMasterTimeset(userId));
   if (timeIds == null) return null;
   return timeIds;
 }
 
 // folderId to 中にあるtaskId一覧
 export async function getTasksInFolder(userId: string, folderId: string) {
-  const taskIds = await db.items.findMany({
-    select: {
-      id: true,
-    },
-    where: {
-      userId: userId,
-      parentId: folderId,
-      itemType: presetType.task,
-    },
-  });
-  if (taskIds == null) return null;
-  return taskIds;
+  try {
+    const taskIds = await db.items.findMany({
+      select: {
+        id: true,
+      },
+      where: {
+        userId: userId,
+        parentId: folderId,
+        itemType: presetType.task,
+      },
+    });
+
+    if (taskIds.length === 0) return null;
+    return taskIds;
+  } catch (error) {
+    console.error("Error in getTasksInFolder:", error);
+    return null;
+  }
 }
 
 // taskId to タスクの持つオプション一覧
 export async function getOptionsInTask(taskId: string) {
-  const optionIds = await db.taskOptions.findMany({
-    select: {
-      id: true,
-    },
-    where: {
-      taskId: taskId,
-    },
-  });
-  if (optionIds == null) return null;
-  return optionIds;
+  try {
+    const optionIds = await db.taskOptions.findMany({
+      select: {
+        id: true,
+      },
+      where: {
+        taskId: taskId,
+      },
+    });
+
+    if (optionIds.length === 0) return null;
+    return optionIds;
+  } catch (error) {
+    console.error("Error in getOptionsInTask:", error);
+    return null;
+  }
 }

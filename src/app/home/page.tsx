@@ -113,80 +113,73 @@ export default function Home() {
         <DisplayTime />
       </h1>
       <Card className="mt-4 w-3/4 max-w-md border-darkBlue">
-        <h5 className="pb-1 pt-1 font-mPlus">
+   <h5 className="pt-1 pb-1 font-mPlus">
           最終更新時刻：{member?.lastEditedTime}
         </h5>
         <CardHeader className="pb-2 pt-0">
-          <div className="bg-slate-0 font-Medium mb-1 rounded-lg border border-pink-300 p-4 font-mPlus text-3xl text-gray-900 text-slate-800 shadow-sm">
-            <p className="mb-1 text-lg leading-none">達成時刻</p>
-            <p className="font-bold">{member?.goleTime}</p>
+          <div className="text-3xl text-gray-900 mb-1 border border-pink-300 rounded-lg p-4 shadow-sm text-slate-800 bg-slate-0 font-mPlus font-Medium">
+            <p className="mb-1 text-lg leading-none">
+              達成時刻
+            </p>
+            <p className="font-bold">
+              {member?.goleTime}
+            </p>
           </div>
         </CardHeader>
         <CardContent>
-          <ScrollArea className="h-64 w-full rounded-md border p-0 font-mPlus">
-            {/* タスクとフォルダを表示 */}
-            <div className="space-y-3">
-              {member.items.map((item, index) => (
-                <div key={index} className="space-y-4">
-                  {/* items内のタスク */}
-                  {item.tasks && (
-                    <div className="space-y-2">
-                      {item.tasks.map((task, taskIndex) => (
-                        <div
-                          key={taskIndex}
-                          className="m-2 flex items-center justify-between rounded-md bg-yellow-200 p-3 shadow-sm"
-                        >
-                          <p className="text-lg font-medium text-gray-800">
-                            {task.taskName}
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            {task.timeRequired}分
-                          </p>
+            <ScrollArea className="p-0 h-64 w-full rounded-md border font-mPlus">
+              {/* タスクとフォルダを表示 */}
+              <div className="space-y-3">
+                {member.items.map((item, index) => (
+                  <div key={index} className="space-y-4">
+                    {/* items内のタスク */}
+                    {item.tasks && (
+                        <div className="space-y-2">
+                          {item.tasks.map((task, taskIndex) => (
+                            <div
+                              key={taskIndex}
+                              className="m-2 flex justify-between items-center bg-yellow-200 p-3 rounded-md shadow-sm"
+                            >
+                              <p className="text-lg font-medium text-gray-800">{task.taskName}</p>
+                              <p className="text-sm text-gray-600">{task.timeRequired}分</p>
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
-                  )}
+                    )}
 
-                  {/* フォルダ内タスク */}
-                  {item.folders && (
-                    <div className="space-y-2">
-                      {item.folders.map((folder, folderIndex) => (
-                        <div
-                          key={folderIndex}
-                          className="m-2 rounded-lg border bg-purple-300 p-4"
-                        >
-                          <h4 className="mb-2 text-lg font-bold text-gray-800">
-                            {folder.name}
-                          </h4>
-                          <div className="space-y-2">
-                            {folder.tasks.map((task, taskIndex) => (
-                              <div
-                                key={taskIndex}
-                                className="flex items-center justify-between rounded-md bg-yellow-200 p-3 shadow-sm"
-                              >
-                                <p className="text-lg font-medium text-gray-800">
-                                  {task.name}
-                                </p>
-                                <p className="text-sm text-gray-600">
-                                  {task.timeRequired}分
-                                </p>
+                    {/* フォルダ内タスク */}
+                    {item.folders && (
+                        <div className="space-y-2">
+                          {item.folders.map((folder, folderIndex) => (
+                            <div key={folderIndex} className="m-2 border rounded-lg bg-purple-300 p-4 ">
+                              <h4 className="text-lg font-bold text-gray-800 mb-2">{folder.name}</h4>
+                              <div className="space-y-2">
+                                {folder.tasks.map((task, taskIndex) => (
+                                  <div
+                                    key={taskIndex}
+                                    className="flex justify-between items-center bg-yellow-200 p-3 rounded-md shadow-sm"
+                                  >
+                                    <p className="text-lg font-medium text-gray-800">{task.name}</p>
+                                    <p className="text-sm text-gray-600">{task.timeRequired}分</p>
+                                  </div>
+                                ))}
                               </div>
-                            ))}
-                          </div>
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </ScrollArea>
-          <div
-            className="mb-1 mt-4 rounded-lg border p-4 text-3xl text-blue-950 shadow-sm"
-            style={{ borderColor: "#ACC763" }}
-          >
-            <p className="mb-1 text-lg leading-none">起床時刻</p>
-            <p className="font-bold">{wakeUpTime}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+          <div className="text-3xl mt-4 mb-1 border rounded-lg p-4 shadow-sm  text-blue-950"
+            style={{ borderColor: "#ACC763" }}>
+            <p className="mb-1 text-lg leading-none">
+              起床時刻
+            </p>
+            <p className="font-bold">
+              {wakeUpTime}
+            </p>
           </div>
           <Link href="/schedule/new">
             <Button
@@ -202,7 +195,7 @@ export default function Home() {
       <div className="mt-2 flex space-x-12 font-mPlus">
         <div className="mt-4 flex-col">
           <Link href="/presets">
-            <Button className="bg-darkBlue shadow-lg">
+            <Button className="bg-darkBlue hover:bg-blue-950 shadow-lg">
               <Image
                 src="/image/folder.svg"
                 alt="newAllPreset"
@@ -216,7 +209,7 @@ export default function Home() {
 
         <div className="mt-4 flex-col">
           <Link href="/settings">
-            <Button className="bg-darkBlue shadow-lg">
+            <Button className="bg-darkBlue hover:bg-blue-950 shadow-lg">
               <Image
                 src="/image/setting.svg"
                 alt="newAllPreset"

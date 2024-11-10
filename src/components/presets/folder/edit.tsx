@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -21,6 +21,7 @@ export default function EditFolder({ children }: EditFolderProps) {
   const [tempName, setTempName] = useState<string>(children); // 入力用の一時的な名前
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false); // 削除確認ダイアログの状態
   const [isDialogOpen, setDialogOpen] = useState(false); // ダイアログの状態
+  const [isEditing, setIsEditing] = useState(false); // 編集状態
 
   const handleSave = () => {
     // データベースに保存
@@ -34,24 +35,64 @@ export default function EditFolder({ children }: EditFolderProps) {
     setIsDeleteDialogOpen(false);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    //エンターキーで編集をやめる
+    if (e.key === "Enter") {
+      setIsEditing(false);
+    }
+  };
+
+  useEffect(() => {
+    //名前を編集中に画面をタップすると編集をやめる
+    const handleTouchOutside = () => setIsEditing(false);
+
+    if (isEditing) {
+      document.addEventListener("touchstart", handleTouchOutside);
+    } else {
+      document.removeEventListener("touchstart", handleTouchOutside);
+    }
+
+    return () => document.removeEventListener("touchstart", handleTouchOutside);
+  }, [isEditing]);
+
   return (
-    <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
+    <Dialog
+      open={isDialogOpen}
+      onOpenChange={(open) => {
+        setDialogOpen(open);
+        if (!open) {
+          setTempName(name); // ダイアログが閉じた時に tempName を元の name にリセット
+        }
+      }}
+    >
       <DialogTrigger asChild>
         {/* children を表示 */}
         <Button className="mt-2 w-full bg-purple-300 text-black hover:bg-purple-200">
           {name}
         </Button>
       </DialogTrigger>
-      <DialogContent className="h-[50%] w-[90%] rounded-xl">
+      <DialogContent className="h-[60%] w-[90%] rounded-xl">
         <DialogHeader>
           <DialogTitle>
-            <Input
-              value={tempName}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setTempName(e.target.value)
-              }
-              className="mt-2 text-black"
-            />
+            {isEditing ? (
+              <Input
+                value={tempName}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setTempName(e.target.value)
+                }
+                onBlur={handleSave}
+                onKeyDown={handleKeyDown} // Enter キーを押したときに編集を終了
+                autoFocus
+                className="mt-2 w-[90%] justify-center text-black"
+              />
+            ) : (
+              <Button
+                className="mt-2 w-[90%] bg-purple-300 text-left text-black"
+                onClick={() => setIsEditing(true)}
+              >
+                {tempName || "名前を入力"}
+              </Button>
+            )}
           </DialogTitle>
           <DialogDescription></DialogDescription>
         </DialogHeader>
@@ -75,7 +116,6 @@ export default function EditFolder({ children }: EditFolderProps) {
           </Button>
         </div>
       </DialogContent>
-
       {/* 削除確認ダイアログ */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <DialogContent>

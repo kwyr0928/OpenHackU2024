@@ -31,7 +31,7 @@ export default function TabTime() {
   return (
     <div>
       {/* タスク */}
-      <Card className="h-[700px]">
+      <Card className="h-[700px] border-darkBlue">
         <CardContent className="space-y-2">
           <Command className=" ">
             <CommandInput placeholder="検索" />
