@@ -11,6 +11,6 @@ export async function deleteItem(itemId: string) {
     return deleteItem;
   } catch (error) {
     console.error("Error deleting item:", error);
-    return null;  // または適切なエラーメッセージやエラーコードを返す
+    return null; // または適切なエラーメッセージやエラーコードを返す
   }
 }

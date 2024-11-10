@@ -1,4 +1,7 @@
-import { getUniqueMasterItem, getUniqueMasterTimeset } from '@prisma/client/sql';
+import {
+  getUniqueMasterItem,
+  getUniqueMasterTimeset,
+} from "@prisma/client/sql";
 import { db } from "../db";
 
 // プリセットタイプ
@@ -118,7 +121,7 @@ export async function getOptionsInTask(taskId: string) {
         taskId: taskId,
       },
     });
-    
+
     if (optionIds.length === 0) return null;
     return optionIds;
   } catch (error) {
