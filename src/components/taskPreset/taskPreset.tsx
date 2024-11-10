@@ -9,9 +9,13 @@ type TaskPresetProps = {
   duration: number;
 };
 
-const handleSave = () => {};
+const handleSave = () => {
+  console.log("保存しました！")
+};
 
-const handleDelete = () => {};
+const handleDelete = () => {
+    console.log("削除しました！")
+};
 
 export default function TaskPreset({ id, name, duration }: TaskPresetProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
