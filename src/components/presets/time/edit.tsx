@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import Image from "next/image";
+import React, { useState } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -8,15 +9,13 @@ import {
   AccordionTrigger,
 } from "~/components/ui/accordion";
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  DialogTitle
 } from "~/components/ui/dialog";
-import Image from "next/image";
+import { Input } from "~/components/ui/input";
 
 // childrenを受け取るために型定義を追加
 interface EditTimeProps {
@@ -49,7 +48,7 @@ export default function EditTime({ children }: EditTimeProps) {
   return (
     <Accordion type="single" collapsible className="w-full">
       <AccordionItem value="item-1">
-        <AccordionTrigger className="mt-2 flex w-full items-center justify-center rounded-md bg-red-200 p-2 text-black">
+        <AccordionTrigger className="flex w-full items-center justify-center rounded-md bg-rose-100 text-black p-3 text-xl shadow-sm">
           {name}
         </AccordionTrigger>
         <AccordionContent className="items-center justify-start space-x-4 rounded-xl bg-gray-200 text-xl">

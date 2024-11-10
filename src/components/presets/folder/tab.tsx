@@ -1,28 +1,16 @@
-import Image from "next/image";
-import Link from "next/link";
-import { Button } from "~/components/ui/button";
 import {
   Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+  CardContent
 } from "~/components/ui/card";
-import { Label } from "~/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { ScrollArea } from "~/components/ui/scroll-area";
 import {
   Command,
-  CommandDialog,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
-  CommandList,
-  CommandSeparator,
-  CommandShortcut,
+  CommandList
 } from "~/components/ui/command";
+import { ScrollArea } from "~/components/ui/scroll-area";
 import EditFolder from "./edit";
 import NewFolder from "./new";
 
@@ -35,11 +23,17 @@ export default function TabFolder() {
           <Command className=" ">
             <CommandInput placeholder="検索" />
             <ScrollArea className="h-[640px] w-full">
-              <CommandList className="">
+              <CommandList>
                 <CommandEmpty>見つかりません</CommandEmpty>
-                <CommandGroup>
+                <CommandGroup className="mt-2">
                   <CommandItem>
-                    <EditFolder>駅まで徒歩（引数にid）</EditFolder>
+                    <EditFolder>おしゃれする</EditFolder>
+                  </CommandItem>
+                  <CommandItem>
+                    <EditFolder>2限電車</EditFolder>
+                  </CommandItem>
+                  <CommandItem>
+                    <EditFolder>17時バイト</EditFolder>
                   </CommandItem>
                 </CommandGroup>
                 <NewFolder></NewFolder>

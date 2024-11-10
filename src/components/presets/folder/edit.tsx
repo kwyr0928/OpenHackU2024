@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -67,7 +67,7 @@ export default function EditFolder({ children }: EditFolderProps) {
     >
       <DialogTrigger asChild>
         {/* children を表示 */}
-        <Button className="mt-2 w-full bg-purple-300 text-black hover:bg-purple-200">
+        <Button className="w-full bg-violet-200 text-gray-700 hover:bg-violet-300 py-6 text-xl">
           {name}
         </Button>
       </DialogTrigger>

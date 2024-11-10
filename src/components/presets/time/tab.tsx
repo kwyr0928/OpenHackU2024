@@ -1,30 +1,18 @@
-import Image from "next/image";
-import Link from "next/link";
-import { Button } from "~/components/ui/button";
 import {
   Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+  CardContent
 } from "~/components/ui/card";
-import { Label } from "~/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import EditTime from "./edit";
 import NewTime from "./new";
 
 import {
   Command,
-  CommandDialog,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
-  CommandList,
-  CommandSeparator,
-  CommandShortcut,
+  CommandList
 } from "~/components/ui/command";
 
 export default function TabTime() {
@@ -38,9 +26,15 @@ export default function TabTime() {
             <ScrollArea className="h-[640px] w-full">
               <CommandList className="">
                 <CommandEmpty>見つかりません</CommandEmpty>
-                <CommandGroup>
+                <CommandGroup className="mt-2">
                   <CommandItem>
                     <EditTime>1限電車</EditTime>
+                  </CommandItem>
+                  <CommandItem>
+                    <EditTime>2限電車</EditTime>
+                  </CommandItem>
+                  <CommandItem>
+                    <EditTime>17時バイト</EditTime>
                   </CommandItem>
                 </CommandGroup>
                 <NewTime></NewTime>

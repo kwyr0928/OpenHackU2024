@@ -5,9 +5,20 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { ScrollArea } from "~/components/ui/scroll-area";
 
-const tags = Array.from({ length: 50 }).map(
-  (_, i, a) => `v1.2.0-beta.${a.length - i}`,
-);
+type Task = {
+  name: string;
+  timeRequired: number;
+};
+
+type Folder = {
+  name: string;
+  tasks: Task[];
+};
+
+type Item = {
+  tasks?: Task[];
+  folders?: Folder[];
+};
 
 const data = {
   member: [
@@ -18,9 +29,9 @@ const data = {
       items: [
         {
           tasks: [
-            { taskName: "駅まで歩く", timeRequired: 5 },
-            { taskName: "自転車移動", timeRequired: 15 },
-            { taskName: "英単語暗記", timeRequired: 5 },
+            { name: "駅まで歩く", timeRequired: 5 },
+            { name: "自転車移動", timeRequired: 15 },
+            { name: "英単語暗記", timeRequired: 5 },
           ],
         },
         {
@@ -45,9 +56,9 @@ const data = {
         },
         {
           tasks: [
-            { taskName: "シャワー", timeRequired: 20 },
-            { taskName: "朝ごはん", timeRequired: 20 },
-            { taskName: "洗顔", timeRequired: 10 },
+            { name: "シャワー", timeRequired: 20 },
+            { name: "朝ごはん", timeRequired: 20 },
+            { name: "洗顔", timeRequired: 10 },
           ],
         },
       ],
@@ -59,18 +70,18 @@ const data = {
 const memberNumber = 0;
 
 // タスクの合計時間を求める関数
-const calculateTotalTime = (items: any[]) => {
-  return items.reduce((totalTime: number, item: any) => {
+const calculateTotalTime = (items: Item[]) => {
+  return items.reduce((totalTime: number, item: Item) => {
     if (item.tasks) {
       totalTime += item.tasks.reduce(
-        (sum: number, task: any) => sum + task.timeRequired,
+        (sum: number, task: Task) => sum + task.timeRequired,
         0,
       );
     }
     if (item.folders) {
-      item.folders.forEach((folder: any) => {
+      item.folders.forEach((folder: Folder) => {
         totalTime += folder.tasks.reduce(
-          (sum: number, task: any) => sum + task.timeRequired,
+          (sum: number, task: Task) => sum + task.timeRequired,
           0,
         );
       });
@@ -107,7 +118,7 @@ export default function Home() {
   const wakeUpTime = calculateWakeUpTime(member.goleTime, totalTime);
 
   return (
-    <div className="flex h-screen flex-col items-center justify-center bg-slate-50 text-center">
+    <div className="flex h-screen flex-col items-center justify-center bg-slate-50 text-center max-w-md mx-auto">
       {/* 現在時刻の表示 */}
       <h1 className="mb-1">
         <DisplayTime />
@@ -117,7 +128,7 @@ export default function Home() {
           最終更新時刻：{member?.lastEditedTime}
         </h5>
         <CardHeader className="pb-2 pt-0">
-          <div className="text-3xl text-gray-900 mb-1 border border-pink-300 rounded-lg p-4 shadow-sm text-slate-800 bg-slate-0 font-mPlus font-Medium">
+          <div className="text-3xl mb-1 border border-pink-300 rounded-lg p-4 shadow-sm text-slate-800 bg-slate-0 font-mPlus font-Medium">
             <p className="mb-1 text-lg leading-none">
               達成時刻
             </p>
@@ -140,7 +151,7 @@ export default function Home() {
                               key={taskIndex}
                               className="m-2 flex justify-between items-center bg-yellow-200 p-3 rounded-md shadow-sm"
                             >
-                              <p className="text-lg font-medium text-gray-800">{task.taskName}</p>
+                              <p className="text-lg font-medium text-gray-800">{task.name}</p>
                               <p className="text-sm text-gray-600">{task.timeRequired}分</p>
                             </div>
                           ))}

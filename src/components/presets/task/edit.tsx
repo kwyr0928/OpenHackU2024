@@ -1,6 +1,6 @@
 "use client";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -69,7 +69,7 @@ export default function EditTask({ children }: EditTaskProps) {
     >
       <DialogTrigger asChild>
         {/* children を表示 */}
-        <Button className="mt-2 w-full bg-yellow-200 text-black hover:bg-yellow-200">
+        <Button className="w-full bg-lime-100 text-gray-700 hover:bg-lime-200 py-6 text-xl">
           {name}
         </Button>
       </DialogTrigger>
