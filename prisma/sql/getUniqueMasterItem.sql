@@ -1,9 +1,7 @@
-SELECT DISTINCT ON ("master_id")
-  "id",
-  "master_id",
-  "updated_at"
+SELECT DISTINCT ON ("masterId")
+  *
   FROM "Items"
   WHERE
     "userId" = $1 AND
     "itemType" = $2
-  ORDER BY "master_id", "created_at" DESC;
+  ORDER BY "masterId", "created_at" DESC;
