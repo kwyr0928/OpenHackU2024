@@ -14,7 +14,7 @@ export async function setSelectingTaskOption(optionId: string, taskId: string) {
       },
     });
 
-    return updateTask.id;
+    return updateTask;
   } catch (error) {
     console.error(error);
     return null;

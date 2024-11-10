@@ -9,7 +9,7 @@ export async function createTaskItem(item: itemStruct) {
       data: item,
     });
 
-    return createItem.id;
+    return createItem;
   } catch (error) {
     console.error(error);
     return null;
@@ -24,7 +24,7 @@ export async function createTaskSet(task: taskStruct) {
       data: task,
     });
 
-    return createTask.id;
+    return createTask;
   } catch (error) {
     console.error(error);
     return null;
@@ -40,7 +40,7 @@ export async function createOption(option: optionStruct) {
       data: option,
     });
 
-    return createOption.id;
+    return createOption;
   } catch (error) {
     console.error(error);
     return null;

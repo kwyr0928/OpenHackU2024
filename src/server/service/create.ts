@@ -1,6 +1,6 @@
 import {
-  type itemStruct,
   presetType,
+  type itemStruct,
   type optionStruct,
   type taskStruct,
 } from "../repositry/getdata";
@@ -59,17 +59,17 @@ export async function createNewTask(
     ];
 
     //itemを作る
-    const newItemId = await createTaskItem(item);
-    if (newItemId == null) {
+    const newItem = await createTaskItem(item);
+    if (newItem == null) {
       throw new Error("Failed to create task.");
     }
     //taskを作る
-    const taskData = {
+    const taskData: taskStruct = {
       // ...task,
-      itemId: newItemId,
+      itemId: newItem.id,
     };
-    const newTaskId = await createTaskSet(taskData);
-    if (newTaskId == null) {
+    const newTask = await createTaskSet(taskData);
+    if (newTask == null) {
       throw new Error("Failed to create task.");
     }
     let selectedOptionId = "";
@@ -77,22 +77,22 @@ export async function createNewTask(
     for (const op of options) {
       const data: optionStruct = {
         ...op,
-        taskId: newTaskId,
+        taskId: newTask.id,
       };
-      const optionId = await createOption(data);
-      if (optionId != null) {
-        newOptions.push(optionId);
-        selectedOptionId = optionId;
+      const newOption = await createOption(data);
+      if (newOption != null) {
+        newOptions.push(newOption.id);
+        selectedOptionId = newOption.id;
       } else {
         throw new Error("Failed to create option.");
       }
     }
     const setOptionTaskId = await setSelectingTaskOption(
       selectedOptionId,
-      newTaskId,
+      newTask.id,
     );
 
-    return newTaskId;
+    return newTask;
   } catch (error) {
     console.error("Error in createNewTask:", error);
     return null;
