@@ -92,7 +92,7 @@ export async function createNewTask(
       newTask.id,
     );
 
-    return newTask;
+    return setOptionTaskId;
   } catch (error) {
     console.error("Error in createNewTask:", error);
     return null;
