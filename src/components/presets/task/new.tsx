@@ -34,9 +34,7 @@ export default function NewTask() {
     <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
         {/* children を表示 */}
-        <Button className="mt-2 bg-yellow-200 text-black hover:bg-yellow-200">
-          新規作成＋
-        </Button>
+        <Button className="mt-2 bg-darkBlue text-white">新規作成＋</Button>
       </DialogTrigger>
       <DialogContent className="h-[50%] w-[90%] rounded-xl">
         <DialogHeader>

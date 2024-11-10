@@ -13,7 +13,7 @@ import { Label } from "~/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import EditTime from "./edit";
-import NewTime from "./new"
+import NewTime from "./new";
 
 import {
   Command,
@@ -31,7 +31,7 @@ export default function TabTime() {
   return (
     <div>
       {/* タスク */}
-      <Card className="h-[700px] ">
+      <Card className="h-[700px] border-darkBlue">
         <CardContent className="space-y-2">
           <Command className=" ">
             <CommandInput placeholder="検索" />
