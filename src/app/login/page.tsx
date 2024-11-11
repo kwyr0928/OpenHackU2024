@@ -1,10 +1,11 @@
 "use client";
 import { signIn } from "next-auth/react";
+import Image from "next/image";
 import { Button } from "~/components/ui/button";
 
 export default function Login() {
   return (
-    <div className="flex h-screen flex-col justify-center text-center font-mPlus bg-slate-50">
+    <div className="flex h-screen flex-col justify-center text-center font-mPlus bg-slate-50 max-w-md mx-auto">
 
       {/* 新規登録 */}
       <div className="items-center">
@@ -16,7 +17,11 @@ export default function Login() {
           className="w-80 h-20 bg-transparent hover:bg-blue-500 text-black text-2xl hover:text-white py-2 px-4 border-2 border-darkBlue hover:border-transparent rounded-3xl"
         >
           {/* Googleのロゴの取得先はこれで大丈夫？ */}
-          <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="google logo" />
+          <Image src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" // ロゴのパス
+            alt="google logo"
+            width={25}
+            height={25}
+          />
           Googleで登録
         </Button>
       </div>
@@ -33,7 +38,11 @@ export default function Login() {
           className="w-80 h-20 bg-transparent hover:bg-blue-500 text-black text-2xl hover:text-white py-2 px-4 border-2 border-darkBlue hover:border-transparent rounded-3xl"
         >
           {/* Googleのロゴの取得先はこれで大丈夫？ */}
-          <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="google logo" />
+          <Image src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" // ロゴのパス
+            alt="google logo"
+            width={25}
+            height={25}
+          />
           Googleでログイン
         </Button>
       </div>
