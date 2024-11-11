@@ -9,7 +9,9 @@ const data = {
   member: [
     {
       name: "sasaki",
-      goleTime: "11:10",
+      timepresets: [
+        { name: "1限電車", goleTime: "11:10" },
+      ],
       lastEditedTime: "2024/11/14 22:33",
       items: [
         {
@@ -93,11 +95,17 @@ const calculateWakeUpTime = (goalTime: string, totalTime: number) => {
   const [goalHour, goalMinute] = goalTime
     ? goalTime.split(":").map(Number)
     : [0, 0];
+  
   let goalInMinutes = 0;
   if (goalHour !== undefined && goalMinute !== undefined) {
     goalInMinutes = goalHour * 60 + goalMinute;
   }
-  const wakeUpTimeInMinutes = goalInMinutes - totalTime;
+
+  let wakeUpTimeInMinutes = goalInMinutes - totalTime;
+
+  if (wakeUpTimeInMinutes < 0) {
+    wakeUpTimeInMinutes += 1440; 
+  }
 
   const wakeUpHour = Math.floor(wakeUpTimeInMinutes / 60);
   const wakeUpMinute = wakeUpTimeInMinutes % 60;
@@ -105,16 +113,23 @@ const calculateWakeUpTime = (goalTime: string, totalTime: number) => {
   return `${wakeUpHour < 10 ? "0" : ""}${wakeUpHour}:${wakeUpMinute < 10 ? "0" : ""}${wakeUpMinute}`;
 };
 
+
 export default function Home() {
   const member = data.member[memberNumber];
-
+  
   if (!member) {
     return <div>Loading...</div>;
   }
 
-  const totalTime = calculateTotalTime(member.items);
-  const wakeUpTime = calculateWakeUpTime(member.goleTime, totalTime);
+  const goleTimePreset = member.timepresets.find(
+    (preset) => 'goleTime' in preset && 'name' in preset
+  ) as { goleTime: string; name: string } | undefined;
 
+  const totalTime = calculateTotalTime(member.items);
+  const wakeUpTime = goleTimePreset
+  ? calculateWakeUpTime(goleTimePreset.goleTime, totalTime)
+  : "N/A"; // goleTimeがない場合は "N/A"などのデフォルト値を設定
+  
   return (
     <div className="flex h-screen flex-col items-center justify-center bg-slate-50 text-center font-mPlus text-darkBlue max-w-md mx-auto">
       {/* 現在時刻の表示 */}
@@ -125,8 +140,8 @@ export default function Home() {
         <h5 className="pb-1 pt-1">最終更新時刻：{member?.lastEditedTime}</h5>
         <CardHeader className="pb-2 pt-0">
           <div className="bg-slate-0 mb-1 rounded-lg border border-pink-300 p-4 text-3xl shadow-sm">
-            <p className="mb-1 text-lg leading-none">達成時刻</p>
-            <p className="font-bold">{member?.goleTime}</p>
+            <p className="mb-1 text-lg leading-none">{goleTimePreset?.name || "-"}</p>
+            <p className="font-bold">{goleTimePreset?.goleTime || "N/A"}</p>
           </div>
         </CardHeader>
         <CardContent>
