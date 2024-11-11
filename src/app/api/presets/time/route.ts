@@ -37,7 +37,7 @@ export async function GET(req: Request) {
 
     return NextResponse.json({
       message: "get all timeSets successfully",
-      taskSets: res,
+      timeSets: res,
     });
   } catch (error) {
     console.error("Error in GET timeSets request:", error);
