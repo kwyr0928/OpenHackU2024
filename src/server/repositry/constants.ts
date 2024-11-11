@@ -77,8 +77,10 @@ export type wholeSetPostBody = {
 
 export type folderSetPostBody = {
   userId: string;
-  folderName: string;
-  itemIds: string[];
+  folderSet: {
+    name: string;
+    itemIds: string[];
+  }
 };
 
 export type timeSetPostBody = {
@@ -91,7 +93,7 @@ export type timeSetPostBody = {
 
 export type taskSetPostBody = {
   userId: string;
-  task: {
+  taskSet: {
     name: string;
     isStatic: boolean;
     select: number;

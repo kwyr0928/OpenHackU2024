@@ -6,10 +6,10 @@ import { createNewFolder } from "~/server/service/create";
 
 export async function POST(req: Request) {
   try {
-    const { userId, folderName, itemIds }: folderSetPostBody =
+    const { userId, folderSet }: folderSetPostBody =
       (await req.json()) as folderSetPostBody;
 
-    if (!userId || !folderName || itemIds.length === 0) {
+    if (!userId || !folderSet) {
       return NextResponse.json(
         { error: "Invalid input: userId and name and itemIds are required" },
         { status: 400 },
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     }
 
     // フォルダ作成
-    const folder = await createNewFolder(userId, folderName, itemIds);
+    const folder = await createNewFolder(userId, folderSet.name, folderSet.itemIds);
 
     return NextResponse.json({
       message: "folder created successfully",

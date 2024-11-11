@@ -4,9 +4,9 @@ import { createNewTask } from "~/server/service/create";
 
 export async function POST(req: Request) {
   try {
-    const { userId, task }: taskSetPostBody = (await req.json()) as taskSetPostBody;
+    const { userId, taskSet }: taskSetPostBody = (await req.json()) as taskSetPostBody;
 
-    if (!userId || !task) {
+    if (!userId || !taskSet) {
       return NextResponse.json(
         { error: "Invalid input: userId and task are required" },
         { status: 400 },
@@ -15,9 +15,9 @@ export async function POST(req: Request) {
 
     const options: optionStruct[] = [];
 
-    if (task.isStatic) {
+    if (taskSet.isStatic) {
       const opst: optionStruct = {
-        optionTime: task.options[0]!.time,
+        optionTime: taskSet.options[0]!.time,
         order: 0,
         isStatic: true,
         taskId: "",
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
       options.push(opst);
     } else {
       let order = 0;
-      for (const op of task.options) {
+      for (const op of taskSet.options) {
         const opst: optionStruct = {
           name: op.name,
           optionTime: op.time,
@@ -38,7 +38,7 @@ export async function POST(req: Request) {
       }
     }
 
-    const taskObj = await createNewTask(userId, task.name, options, task.select);
+    const taskObj = await createNewTask(userId, taskSet.name, options, taskSet.select);
 
     return NextResponse.json({
       message: "Task created successfully",

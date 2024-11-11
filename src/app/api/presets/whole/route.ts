@@ -38,7 +38,7 @@ export async function GET(req: Request) {
 
     return NextResponse.json({
       message: "get all wholes successfully",
-      taskSets: res,
+      wholeSets: res,
     });
   } catch (error) {
     console.error("Error in GET folder request:", error);

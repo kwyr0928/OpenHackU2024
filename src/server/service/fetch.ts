@@ -40,12 +40,10 @@ export async function fetchWhole(itemId: string) {
       if(type==null){
         throw new Error("Failed to get itemType.");
       } else if(type.itemType==presetType.task){
-        console.log("task!!!!!")
         const fetchedTask = await fetchTask(item.id, item.name);
         if (!fetchedTask) throw new Error("not found fetchTask");
         retItems.push(fetchedTask);
       } else if(type.itemType==presetType.folder){
-        console.log("folder!!!!!")
         const fetchedFolder = await fetchFolder(item.id, item.name);
         if (!fetchedFolder) throw new Error("not found fetchFolder");
         retItems.push(fetchedFolder);

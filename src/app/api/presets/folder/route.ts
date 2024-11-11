@@ -43,7 +43,7 @@ export async function GET(req: Request) {
 
     return NextResponse.json({
       message: "get all folders successfully",
-      taskSets: res,
+      folderSets: res,
     });
   } catch (error) {
     console.error("Error in GET folder request:", error);
