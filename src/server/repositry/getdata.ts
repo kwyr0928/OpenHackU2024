@@ -3,7 +3,7 @@ import {
   getUniqueMasterTimeset,
 } from "@prisma/client/sql";
 import { db } from "../db";
-import { type itemStruct, presetType } from "./constants";
+import { presetType } from "./constants";
 
 // userId to ユーザー名
 export async function getUserName(userId: string) {
@@ -185,7 +185,7 @@ export async function getOptionInfo(optionId: string) {
 export async function getKindItems(
   userId: string,
   type: number,
-): Promise<itemStruct[]> {
+) {
   const items = await db.$queryRawTyped(getUniqueMasterItem(userId, type));
   if (items == null) return null;
   return items;
