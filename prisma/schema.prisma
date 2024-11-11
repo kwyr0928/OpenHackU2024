@@ -65,7 +65,7 @@ model Master {
 
 model WholeSets {
   id         String   @id @default(cuid())
-  itemId     String
+  itemId     String   @unique
   timeSetId  String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

@@ -43,6 +43,25 @@ export async function getItemName(itemId: string) {
 // id to object
 //
 
+// wholeId to whole
+
+// wholeId
+export async function getWholeInfoByWholeId(wholeId: string) {
+  try {
+    const whole = await db.wholeSets.findUnique({
+      where: {
+        id: wholeId,
+      },
+    });
+
+    if (!whole) throw new Error("not found whole");
+    return whole;
+  } catch (error) {
+    console.error("Error in getWholeInfoByWholeId:", error);
+    return null;
+  }
+}
+
 // timeSetId to time
 export async function getTimeInfoBytimeId(timeSetId: string) {
   try {
@@ -115,6 +134,21 @@ export async function getItemInfoByItemId(itemId: string) {
 // id to other object
 //
 
+// wholeItemId to timeSet
+export async function getTimeInfoByWholeItemId(itemId: string) {
+  try {
+    // const task = await getTaskInfoBytaskId(taskId);
+    // if (!task) throw new Error("not found taskSet");
+    const item = await getItemInfoByItemId(itemId);
+    if (!item) throw new Error("not found itemSet");
+
+    return item;
+  } catch (error) {
+    console.error("Error in getItemInfoByTaskId:", error);
+    return null;
+  }
+}
+
 // taskId to item
 export async function getItemInfoByTaskId(taskId: string) {
   try {
@@ -126,6 +160,23 @@ export async function getItemInfoByTaskId(taskId: string) {
     return item;
   } catch (error) {
     console.error("Error in getItemInfoByTaskId:", error);
+    return null;
+  }
+}
+
+// itemId to whole
+export async function getWholeInfoByItemId(itemId: string) {
+  try {
+    const whole = await db.wholeSets.findUnique({
+      where: {
+        itemId: itemId,
+      },
+    });
+
+    if (!whole) throw new Error("not found foldwholeSet");
+    return whole;
+  } catch (error) {
+    console.error("Error in getWholeInfoByItemId:", error);
     return null;
   }
 }
@@ -142,7 +193,7 @@ export async function getFolderInfoByItemId(itemId: string) {
     if (!folder) throw new Error("not found folderSet");
     return folder;
   } catch (error) {
-    console.error("Error in getTaskInfo:", error);
+    console.error("Error in getFolderInfoByItemId:", error);
     return null;
   }
 }
@@ -193,6 +244,27 @@ export async function getTimeSets(userId: string) {
   const timeSets = await db.$queryRawTyped(getUniqueMasterTimeset(userId));
   if (timeSets == null) return null;
   return timeSets;
+}
+
+// wholeId to 中にあるitems一覧
+export async function getItemsInWhole(wholeItemId: string) {
+  try {
+    const res = await db.items.findMany({
+      where: {
+        parentId: wholeItemId,
+        itemType: presetType.task || presetType.folder,
+      },
+      orderBy: {
+        created_at: "asc",
+      },
+    });
+
+    if (res.length === 0) return null;
+    return res;
+  } catch (error) {
+    console.error("Error in getTasksInFolder:", error);
+    return null;
+  }
 }
 
 // folderId to 中にあるtask一覧
