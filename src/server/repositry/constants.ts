@@ -22,7 +22,7 @@ export type timeStruct = {
   id?: string;
   userId: string;
   name: string;
-  time: Date; //Dateなのか？
+  time: string;
   masterId?: string | null;
   created_at?: Date;
   updated_at?: Date;
@@ -60,7 +60,7 @@ export type optionStruct = {
 export type timeResponse = {
   time: {
     name: string;
-    time: Date;
+    time: string;
   };
 };
 

@@ -3,24 +3,24 @@ import { createNewTimeSet } from "~/server/service/create";
 
 type RequestBody = {
   userId: string;
-  time: {
+  timeSet: {
     name: string;
-    timeStr: string;
+    time: string;
   };
 };
 
 export async function POST(req: Request) {
   try {
-    const { userId, time }: RequestBody = (await req.json()) as RequestBody;
+    const { userId, timeSet }: RequestBody = (await req.json()) as RequestBody;
 
-    if (!userId || !time) {
+    if (!userId || !timeSet) {
       return NextResponse.json(
         { error: "Invalid input: userId and PresetName and time are required" },
         { status: 400 },
       );
     }
-    const name = time.name;
-    const timeStr = time.timeStr;
+    const name = timeSet.name;
+    const timeStr = timeSet.time;
     if (!name || !timeStr) {
       return NextResponse.json(
         { error: "Invalid input: name and timeString required" },

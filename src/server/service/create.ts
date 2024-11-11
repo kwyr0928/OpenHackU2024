@@ -185,14 +185,14 @@ export async function createNewTimeSet(
         "Invalid input: userId and folderName and taskIds are required",
       );
     }
-    const dateTime = parseTimeString(time);
-    if (dateTime == null)
+    const timeString = parseTimeString(time);
+    if (timeString == null)
       throw new Error("Invalid timeString: failed parseTimeString");
 
     const timeData: timeStruct = {
       userId: userId,
       name: name,
-      time: dateTime,
+      time: timeString,
     };
     //timeを作る
     const newTimeSet = await createTimeSet(timeData);
@@ -213,17 +213,18 @@ export async function createNewTimeSet(
 }
 
 // 時間フォーマット
-function parseTimeString(time: string) {
+function parseTimeString(time: string): string | null {
   const timeRegex = /^(\d{1,2}):(\d{2})$/;
   const match = timeRegex.exec(time);
   if (!match) return null;
+
   const hours = parseInt(match[1]!, 10);
   const minutes = parseInt(match[2]!, 10);
 
   // 時刻が有効範囲かどうか確認 (0 <= hours < 24, 0 <= minutes < 60)
   if (hours < 0 || hours >= 24 || minutes < 0 || minutes >= 60) return null;
 
-  const date = new Date();
-  date.setHours(hours, minutes, 0, 0);
-  return date;
+  // 常に "HH:mm" 形式に統一
+  const formattedTime = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+  return formattedTime;
 }

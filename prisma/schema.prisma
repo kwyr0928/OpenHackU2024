@@ -79,7 +79,7 @@ model TimeSets {
   id         String   @id @default(cuid())
   userId     String
   name       String
-  time       DateTime @db.Time()
+  time       String
   masterId   String?
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
