@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { timeResponse } from "~/server/repositry/constants";
+import { type timeResponse } from "~/server/repositry/constants";
 import { getTimeSets } from "~/server/repositry/getdata";
 import { fetchTime } from "~/server/service/fetch";
 
@@ -20,17 +20,26 @@ export async function GET(req: Request) {
         { status: 400 },
       );
     } else if (timeSets?.length === 0) {
-      return NextResponse.json({ error: "Not found timePresets" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Not found timePresets" },
+        { status: 404 },
+      );
     }
 
     const res: timeResponse[] = [];
     for (const timeSet of timeSets) {
       if (!timeSet) {
-        return NextResponse.json({ error: "Not found timeSet" }, { status: 400 });
+        return NextResponse.json(
+          { error: "Not found timeSet" },
+          { status: 400 },
+        );
       }
       const timeRes = await fetchTime(timeSet.id);
       if (!timeRes) {
-        return NextResponse.json({ error: "Not found timeSets" }, { status: 404 });
+        return NextResponse.json(
+          { error: "Not found timeSets" },
+          { status: 404 },
+        );
       }
       res.push(timeRes);
     }

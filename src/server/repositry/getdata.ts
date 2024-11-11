@@ -182,10 +182,7 @@ export async function getOptionInfo(optionId: string) {
 }
 
 // userId to 任意タイプのitem配列
-export async function getKindItems(
-  userId: string,
-  type: number,
-) {
+export async function getKindItems(userId: string, type: number) {
   const items = await db.$queryRawTyped(getUniqueMasterItem(userId, type));
   if (items == null) return null;
   return items;

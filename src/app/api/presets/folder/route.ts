@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { folderResponse, presetType } from "~/server/repositry/constants";
+import { type folderResponse, presetType } from "~/server/repositry/constants";
 import { getKindItems } from "~/server/repositry/getdata";
 import { fetchFolder } from "~/server/service/fetch";
 
@@ -26,11 +26,17 @@ export async function GET(req: Request) {
     const res: folderResponse[] = [];
     for (const item of items) {
       if (!item) {
-        return NextResponse.json({ error: "Not found folder" }, { status: 400 });
+        return NextResponse.json(
+          { error: "Not found folder" },
+          { status: 400 },
+        );
       }
-      const folderRes = await fetchFolder(item.id!, item.name);
+      const folderRes = await fetchFolder(item.id, item.name);
       if (!folderRes) {
-        return NextResponse.json({ error: "Not found folders" }, { status: 404 });
+        return NextResponse.json(
+          { error: "Not found folders" },
+          { status: 404 },
+        );
       }
       res.push(folderRes);
     }

@@ -1,5 +1,15 @@
-import { folderResponse, timeResponse, type optionResponse, type taskResponse } from "../repositry/constants";
-import { getOptionsInTask, getTaskInfoByItemId, getTaskItemsInFolder, getTimeInfoBytimeId } from "../repositry/getdata";
+import {
+  type folderResponse,
+  type timeResponse,
+  type optionResponse,
+  type taskResponse,
+} from "../repositry/constants";
+import {
+  getOptionsInTask,
+  getTaskInfoByItemId,
+  getTaskItemsInFolder,
+  getTimeInfoBytimeId,
+} from "../repositry/getdata";
 
 export async function fetchTime(timeSetId: string) {
   try {
@@ -28,10 +38,10 @@ export async function fetchFolder(itemId: string, name: string) {
     const taskItemsInFolder = await getTaskItemsInFolder(itemId);
     if (!taskItemsInFolder) throw new Error("not found taskItemsInFolder");
 
-    const retTasks: taskResponse[] = []
-    for(const taskItem of taskItemsInFolder) {
+    const retTasks: taskResponse[] = [];
+    for (const taskItem of taskItemsInFolder) {
       const taskRes = await fetchTask(taskItem.id, taskItem.name);
-      if(!taskRes)  throw new Error("not found taskResPonse");
+      if (!taskRes) throw new Error("not found taskResPonse");
       retTasks.push(taskRes);
     }
     const getFolder: folderResponse = {

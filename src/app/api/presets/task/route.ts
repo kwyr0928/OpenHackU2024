@@ -28,7 +28,7 @@ export async function GET(req: Request) {
       if (!item) {
         return NextResponse.json({ error: "Not found task" }, { status: 400 });
       }
-      const taskRes = await fetchTask(item.id!, item.name);
+      const taskRes = await fetchTask(item.id, item.name);
       if (!taskRes) {
         return NextResponse.json({ error: "Not found tasks" }, { status: 404 });
       }
