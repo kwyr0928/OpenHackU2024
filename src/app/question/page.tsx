@@ -11,8 +11,8 @@ import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 
 export default function Question() {
   const [step, setStep] = useState<number>(1); // ステップの状態を管理
-  const [selectedValue, setSelectedValue] = useState<string | null>(null); // 現在の選択値
-  const [inputValue, setInputValue] = useState<string | null>(""); // その他入力欄の値
+  const [selectedValue, setSelectedValue] = useState<string>(""); // 現在の選択値
+  const [inputValue, setInputValue] = useState<string>(""); // その他入力欄の値
   const [selectedItems, setSelectedItems] = useState<number[]>([]); // チェックされた選択肢を保存
 
   const initialQuestionChoices: string[] = [
@@ -110,15 +110,15 @@ export default function Question() {
     choice: { text: string; id: string }[];
   };
 
-  type questionTimeArray = {
-    running: questionTime;
-    breakfast: questionTime;
-    dressing: questionTime;
-  };
+  // type questionTimeArray = {
+  //   running: questionTime;
+  //   breakfast: questionTime;
+  //   dressing: questionTime;
+  // };
 
   const handleNextStep = () => {
     setStep(step + 1);
-    setSelectedValue(null); // 選択をリセット
+    setSelectedValue(""); // 選択をリセット
     setInputValue(""); // 入力欄をリセット
   };
 
@@ -145,15 +145,21 @@ export default function Question() {
       break;
 
     default:
-      questionContent = (
-        <QuestionComponent
-          questionData={questionContext.member[selectedItems[step - 3]!]} //  生成に用いるjsonを渡す
-          selectedValue={selectedValue} //  現在選択されている値を取得
-          setSelectedValue={setSelectedValue}
-          inputValue={inputValue} //  その他の入力を取得
-          setInputValue={setInputValue}
-        />
-      );
+      const selectedItem = selectedItems[step - 3];
+      const questionData = selectedItem !== undefined ? questionContext.member[selectedItem] : undefined;
+
+      if(questionData !== undefined){
+        questionContent = (
+          <QuestionComponent
+            questionData={questionData} //  生成に用いるjsonを渡す
+            selectedValue={selectedValue} //  現在選択されている値を取得
+            setSelectedValue={setSelectedValue}
+            inputValue={inputValue} //  その他の入力を取得
+            setInputValue={setInputValue}
+          />
+        );
+      }
+
       if (step < selectedItems.length + 2) {
         nextButtonContent = (
           <Button onClick={handleNextStep} disabled={!selectedValue} className="bg-darkBlue">
@@ -170,7 +176,7 @@ export default function Question() {
   }
 
   return (
-    <div className="flex-col items-center justify-center bg-slate-50 text-center font-mPlus">
+    <div className="flex-col items-center justify-center bg-slate-50 text-center font-mPlus max-w-md, mx-auto">
       <div className="pb-20 pt-20">
         <h1 className="m-2 text-5xl text-darkBlue">アンケート</h1>
         <h2 className="pt-2 text-xl text-darkBlue">
@@ -225,6 +231,12 @@ function GoalTimeQuestionComponent() {
   );
 }
 
+type initialQuestionProps = {
+  initialQuestionChoices: string[];
+  selectedItems: number[];
+  setSelectedItems: (selectedItems: number[]) => void;
+}
+
 /**
  * 設問コンポーネント：質問するタスクの種類を選択
  * @param initialQuestionChoices 同名のstring[]フィールド
@@ -236,7 +248,7 @@ function InitialQuestion({
   initialQuestionChoices,
   selectedItems,
   setSelectedItems,
-}: any) {
+}: initialQuestionProps) {
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-medium">
@@ -263,6 +275,25 @@ function InitialQuestion({
   );
 }
 
+type questionComponentProps = {
+  questionData: {
+    title: string;
+    choice: {
+      text: string;
+      id: string;
+    }[];
+  };
+  selectedValue: string;
+  setSelectedValue: (selectedValue: string) => void;
+  inputValue: string;
+  setInputValue: (inputValue: string) => void;
+}
+
+type choiceProps = {
+  text: string;
+  id: string;
+}
+
 /**
  * 設問コンポーネント：そのタスクにかかる時間を入力
  * @param questionData questipnContext.member[任意のindex]
@@ -278,7 +309,7 @@ function QuestionComponent({
   setSelectedValue,
   inputValue,
   setInputValue,
-}: any) {
+}: questionComponentProps) {
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-medium">{questionData.title}</h2>
@@ -289,7 +320,7 @@ function QuestionComponent({
         }}
         className=""
       >
-        {questionData.choice.map((choice: any) => (
+        {questionData.choice.map((choice: choiceProps) => (
           <div key={choice.id} className="flex items-center space-x-4">
             <RadioGroupItem value={choice.id} id={choice.id} />
             <Label htmlFor={choice.id}>{choice.text}</Label>
@@ -299,7 +330,7 @@ function QuestionComponent({
           <RadioGroupItem value="other" id="other" />
           <Input
             type="text"
-            placeholder="その他"
+            placeholder="その他(分単位で数字のみ記入)"
             value={inputValue}
             onChange={(e) => {
               setInputValue(e.target.value);
