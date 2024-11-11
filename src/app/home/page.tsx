@@ -1,9 +1,10 @@
-import Image from "next/image";
 import Link from "next/link";
 import DisplayTime from "~/components/displayTime/displayTime";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { ScrollArea } from "~/components/ui/scroll-area";
+import FolderIconSvg from "~/components/svgs/folderClose"
+import SettingIconSvg from "~/components/svgs/setting"
 
 const data = {
   member: [
@@ -95,7 +96,7 @@ const calculateWakeUpTime = (goalTime: string, totalTime: number) => {
   const [goalHour, goalMinute] = goalTime
     ? goalTime.split(":").map(Number)
     : [0, 0];
-  
+
   let goalInMinutes = 0;
   if (goalHour !== undefined && goalMinute !== undefined) {
     goalInMinutes = goalHour * 60 + goalMinute;
@@ -104,7 +105,7 @@ const calculateWakeUpTime = (goalTime: string, totalTime: number) => {
   let wakeUpTimeInMinutes = goalInMinutes - totalTime;
 
   if (wakeUpTimeInMinutes < 0) {
-    wakeUpTimeInMinutes += 1440; 
+    wakeUpTimeInMinutes += 1440;
   }
 
   const wakeUpHour = Math.floor(wakeUpTimeInMinutes / 60);
@@ -116,7 +117,7 @@ const calculateWakeUpTime = (goalTime: string, totalTime: number) => {
 
 export default function Home() {
   const member = data.member[memberNumber];
-  
+
   if (!member) {
     return <div>Loading...</div>;
   }
@@ -127,9 +128,9 @@ export default function Home() {
 
   const totalTime = calculateTotalTime(member.items);
   const wakeUpTime = goleTimePreset
-  ? calculateWakeUpTime(goleTimePreset.goleTime, totalTime)
-  : "N/A"; // goleTimeがない場合は "N/A"などのデフォルト値を設定
-  
+    ? calculateWakeUpTime(goleTimePreset.goleTime, totalTime)
+    : "N/A"; // goleTimeがない場合は "N/A"などのデフォルト値を設定
+
   return (
     <div className="flex h-screen flex-col items-center justify-center bg-slate-50 text-center font-mPlus text-darkBlue max-w-md mx-auto">
       {/* 現在時刻の表示 */}
@@ -219,26 +220,18 @@ export default function Home() {
         <div className="mt-4 flex-col">
           <Link href="/presets">
             <Button className="bg-darkBlue shadow-lg hover:bg-blue-950">
-              <Image
-                src="/image/folder.svg"
-                alt="folder"
-                width={30}
-                height={30}
-              />
+              <FolderIconSvg style={{ width: "30px", height: "30px" }} color={""} />
             </Button>
           </Link>
           <h1>プリセット</h1>
         </div>
 
+
+
         <div className="mt-4 flex-col">
           <Link href="/settings">
             <Button className="bg-darkBlue shadow-lg hover:bg-blue-950">
-              <Image
-                src="/image/setting.svg"
-                alt="setting"
-                width={30}
-                height={30}
-              />
+              <SettingIconSvg style={{ width: "30px", height: "30px" }} color={""} />
             </Button>
           </Link>
           <h1>設定</h1>
