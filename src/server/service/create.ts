@@ -43,7 +43,7 @@ export async function createNewWhole(
       userId: userId,
       name: name,
       itemType: presetType.whole,
-      order: 0,
+      order: 0, //固定
     };
 
     // itemを作る
@@ -79,6 +79,7 @@ export async function createNewWhole(
     
     // タスクorフォルダインスタンス化
     const instances: string[] = [];
+    let order = 0;
     for (const itemId of prehabItemIds) {
       // itemIdがタスクかフォルダか判別
       const type = await getItemInfoByItemId(itemId);
@@ -86,7 +87,7 @@ export async function createNewWhole(
         throw new Error("Failed to get itemType.");
       } else if(type.itemType==presetType.task){
         // タスクインスタンス化
-        const taskInstance = await instanciateTask(itemId);
+        const taskInstance = await instanciateTask(itemId, order);
         if(taskInstance==null){
           throw new Error("Failed to instanciateTask.");
         }
@@ -95,9 +96,10 @@ export async function createNewWhole(
           throw new Error("Failed to parent folder and task.");
         }
         instances.push(taskInstance.id);
+        order++;
       } else if(type.itemType==presetType.folder){
         // フォルダインスタンス化
-        const folderInstance = await instanciateFolder(itemId);
+        const folderInstance = await instanciateFolder(itemId, order);
         if(folderInstance==null){
           throw new Error("Failed to instanciateFolder.");
         }
@@ -106,6 +108,7 @@ export async function createNewWhole(
           throw new Error("Failed to parent folder and folder.");
         }
         instances.push(parentedFolder.id);
+        order++;
       } else {
         throw new Error("Don't set wholeSetItems in itemIds.");
       }
@@ -208,7 +211,7 @@ export async function createNewFolder(
   prehabTaskItemIds: string[],
 ) {
   try {
-    const ret = await createFolder(userId, folderName, prehabTaskItemIds);
+    const ret = await createFolder(userId, folderName, 0, prehabTaskItemIds);
     if (ret == null) {
       throw new Error("Failed on createFolder");
     }
@@ -222,6 +225,7 @@ export async function createNewFolder(
 export async function createFolder(
   userId: string,
   folderName: string,
+  order: number,
   prehabTaskItemIds: string[],
   prehabFolder?: itemStruct
 ) {
@@ -267,8 +271,9 @@ export async function createFolder(
     }
 
     // taskをインスタンス化してのparentにfolderを設定
+    let order = 0;
     for (const taskItemId of prehabTaskItemIds) {
-      const taskInstance = await instanciateTask(taskItemId);
+      const taskInstance = await instanciateTask(taskItemId, order);
       if (taskInstance == null) {
         throw new Error("Failed to instanciate task.");
       }
@@ -276,6 +281,7 @@ export async function createFolder(
       if (parentedTask == null) {
         throw new Error("Failed to parent folder and task.");
       }
+      order++;
     }
 
     return { folder: newFolder, item: masterSetItem };
@@ -293,7 +299,7 @@ export async function createNewTask(
   select: number,
 ) {
   try {
-    const ret = await createTask(userId, name, options, select);
+    const ret = await createTask(userId, name, options, 0, select);
     if (ret == null) {
       throw new Error("Failed on createTask");
     }
@@ -310,6 +316,7 @@ export async function createTask(
   name: string,
   options: optionStruct[],
   select: number,
+  order: number,
   prehab?: itemStruct,
 ) {
   try {

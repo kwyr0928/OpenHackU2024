@@ -137,8 +137,6 @@ export async function getItemInfoByItemId(itemId: string) {
 // wholeItemId to timeSet
 export async function getTimeInfoByWholeItemId(itemId: string) {
   try {
-    // const task = await getTaskInfoBytaskId(taskId);
-    // if (!task) throw new Error("not found taskSet");
     const item = await getItemInfoByItemId(itemId);
     if (!item) throw new Error("not found itemSet");
 

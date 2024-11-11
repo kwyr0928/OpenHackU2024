@@ -8,7 +8,7 @@ import {
 } from "../repositry/getdata";
 import { createFolder, createTask, createTime } from "./create";
 
-export async function instanciateFolder(prehabItemId: string) {
+export async function instanciateFolder(prehabItemId: string, order: number) {
   try {
     if (!prehabItemId) {
       throw new Error("Invalid input: prehabItemId is missing.");
@@ -30,6 +30,7 @@ export async function instanciateFolder(prehabItemId: string) {
     const folderInstanciate = await createFolder(
       item.userId,
       item.name,
+      order,
       taskItemIds,
       item, //フォルダ
     );
@@ -43,7 +44,7 @@ export async function instanciateFolder(prehabItemId: string) {
   }
 }
 
-export async function instanciateTask(itemId: string) {
+export async function instanciateTask(itemId: string, order: number) {
   try {
     if (!itemId) {
       throw new Error("Invalid input: itemId is missing.");
@@ -76,6 +77,7 @@ export async function instanciateTask(itemId: string) {
       item.userId,
       item.name,
       options,
+      order,
       selectedOption.order,
       item,
     );
