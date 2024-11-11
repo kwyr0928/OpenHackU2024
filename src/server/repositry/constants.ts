@@ -54,6 +54,16 @@ export type optionStruct = {
   updated_at?: Date;
 };
 
+//
+// GETのレスポンス
+//
+export type timeResponse = {
+  time: {
+    name: string;
+    time: Date;
+  };
+};
+
 export type folderResponse = {
   folder: {
     name: string;

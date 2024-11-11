@@ -1,5 +1,26 @@
-import { folderResponse, type optionResponse, type taskResponse } from "../repositry/constants";
-import { getOptionsInTask, getTaskInfoByItemId, getTaskItemsInFolder } from "../repositry/getdata";
+import { folderResponse, timeResponse, type optionResponse, type taskResponse } from "../repositry/constants";
+import { getOptionsInTask, getTaskInfoByItemId, getTaskItemsInFolder, getTimeInfoBytimeId } from "../repositry/getdata";
+
+export async function fetchTime(timeSetId: string) {
+  try {
+    if (!timeSetId) throw new Error("timeSetId is required");
+    const timeSet = await getTimeInfoBytimeId(timeSetId);
+    if (!timeSet) throw new Error("not found timeSet");
+
+    const retTimes: timeResponse = {
+      time: {
+        name: timeSet.name,
+        time: timeSet.time,
+      },
+    };
+
+    if (!retTimes) return null;
+    return retTimes;
+  } catch (error) {
+    console.error("Error in fetchFolder:", error);
+    return null;
+  }
+}
 
 export async function fetchFolder(itemId: string, name: string) {
   try {

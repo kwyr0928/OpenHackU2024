@@ -43,6 +43,23 @@ export async function getItemName(itemId: string) {
 // id to object
 //
 
+// timeSetId to time
+export async function getTimeInfoBytimeId(timeSetId: string) {
+  try {
+    const timeSet = await db.timeSets.findUnique({
+      where: {
+        id: timeSetId,
+      },
+    });
+
+    if (!timeSet) throw new Error("not found timeSet");
+    return timeSet;
+  } catch (error) {
+    console.error("Error in getTimeInfoBytimeId:", error);
+    return null;
+  }
+}
+
 // folderId to folder
 export async function getFolderInfoByfolderId(folderId: string) {
   try {
@@ -175,7 +192,7 @@ export async function getKindItems(
 }
 
 // userId to TimeSets一覧
-export async function getTimePresets(userId: string) {
+export async function getTimeSets(userId: string) {
   const timeSets = await db.$queryRawTyped(getUniqueMasterTimeset(userId));
   if (timeSets == null) return null;
   return timeSets;
