@@ -54,6 +54,14 @@ export type optionStruct = {
   updated_at?: Date;
 };
 
+export type folderResponse = {
+  folder: {
+    name: string;
+    itemId: string;
+    tasks: taskResponse[];
+  };
+};
+
 export type taskResponse = {
   task: {
     name: string;

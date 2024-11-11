@@ -18,9 +18,6 @@ export async function getUserName(userId: string) {
   if (user == null) return null;
   return user.name;
 }
-//
-// id to object
-//
 
 // itemId to itemName
 export async function getItemName(itemId: string) {
@@ -38,6 +35,27 @@ export async function getItemName(itemId: string) {
     return taskName.name;
   } catch (error) {
     console.error("Error in getItemName:", error);
+    return null;
+  }
+}
+
+//
+// id to object
+//
+
+// folderId to folder
+export async function getFolderInfoByfolderId(folderId: string) {
+  try {
+    const folder = await db.folderSets.findUnique({
+      where: {
+        id: folderId,
+      },
+    });
+
+    if (!folder) throw new Error("not found folder");
+    return folder;
+  } catch (error) {
+    console.error("Error in getFolderInfoByfolderId:", error);
     return null;
   }
 }
@@ -95,6 +113,23 @@ export async function getItemInfoByTaskId(taskId: string) {
   }
 }
 
+// itemId to folder
+export async function getFolderInfoByItemId(itemId: string) {
+  try {
+    const folder = await db.folderSets.findUnique({
+      where: {
+        itemId: itemId,
+      },
+    });
+
+    if (!folder) throw new Error("not found folderSet");
+    return folder;
+  } catch (error) {
+    console.error("Error in getTaskInfo:", error);
+    return null;
+  }
+}
+
 // itemId to task
 export async function getTaskInfoByItemId(itemId: string) {
   try {
@@ -147,12 +182,11 @@ export async function getTimePresets(userId: string) {
 }
 
 // folderId to 中にあるtask一覧
-export async function getTasksInFolder(userId: string, folderId: string) {
+export async function getTaskItemsInFolder(folderItemId: string) {
   try {
-    const taskIds = await db.items.findMany({
+    const taskItems = await db.items.findMany({
       where: {
-        userId: userId,
-        parentId: folderId,
+        parentId: folderItemId,
         itemType: presetType.task,
       },
       orderBy: {
@@ -160,8 +194,8 @@ export async function getTasksInFolder(userId: string, folderId: string) {
       },
     });
 
-    if (taskIds.length === 0) return null;
-    return taskIds;
+    if (taskItems.length === 0) return null;
+    return taskItems;
   } catch (error) {
     console.error("Error in getTasksInFolder:", error);
     return null;

@@ -40,7 +40,7 @@ export async function GET(req: Request) {
       taskSets: res,
     });
   } catch (error) {
-    console.error("Error in POST request:", error);
+    console.error("Error in GET task request:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },

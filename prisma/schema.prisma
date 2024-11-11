@@ -92,7 +92,7 @@ model TimeSets {
 
 model FolderSets {
   id         String   @id @default(cuid())
-  itemId     String
+  itemId     String   @unique
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 

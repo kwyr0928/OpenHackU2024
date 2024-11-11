@@ -1,10 +1,10 @@
 import {
   presetType,
-  type timeStruct,
   type folderStruct,
   type itemStruct,
   type optionStruct,
   type taskStruct,
+  type timeStruct,
 } from "../repositry/constants";
 import {
   createFolderSet,
@@ -217,8 +217,8 @@ function parseTimeString(time: string) {
   const timeRegex = /^(\d{1,2}):(\d{2})$/;
   const match = timeRegex.exec(time);
   if (!match) return null;
-  const hours = parseInt(match[1], 10);
-  const minutes = parseInt(match[2], 10);
+  const hours = parseInt(match[1]!, 10);
+  const minutes = parseInt(match[2]!, 10);
 
   // 時刻が有効範囲かどうか確認 (0 <= hours < 24, 0 <= minutes < 60)
   if (hours < 0 || hours >= 24 || minutes < 0 || minutes >= 60) return null;
