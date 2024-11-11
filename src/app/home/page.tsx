@@ -116,7 +116,7 @@ export default function Home() {
   const wakeUpTime = calculateWakeUpTime(member.goleTime, totalTime);
 
   return (
-    <div className="flex h-screen flex-col items-center justify-center bg-slate-50 text-center font-mPlus text-darkBlue max-w-md, mx-auto">
+    <div className="flex h-screen flex-col items-center justify-center bg-slate-50 text-center font-mPlus text-darkBlue max-w-md mx-auto">
       {/* 現在時刻の表示 */}
       <h1 className="mb-1">
         <DisplayTime />
