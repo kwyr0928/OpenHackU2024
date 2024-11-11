@@ -6,9 +6,9 @@ import { unstable_SuspenseList } from "react";
 
 export default function Page() {
   return (
-    <div className="flex flex-col items-center justify-between h-screen bg-slate-50 p-6 text-center">
+    <div className="flex flex-col items-center justify-between h-screen bg-slate-50 p-6 text-center max-w-md mx-auto font-mPlus">
       {/* アプリのロゴ */}
-      <div className="flex flex-col items-center mt-10 w-2/3">
+      <div className="flex flex-col items-center mt-10 w-5/6">
         <Image
           src="/image/rogoPrototype.png" // ロゴのパス
           alt="App Logo"
@@ -20,11 +20,9 @@ export default function Page() {
       </div>
 
       {/* 説明文 */}
-      <div className="text-darkBlue text-lg md:text-xl font-mPlus max-w-md mx-auto">
+      <div className="text-darkBlue text-lg md:text-xl">
         <p>
-          このアプリは電車の時間やオンライン会議の時間などの目標とする
-          時間と、朝のタスクを設定することで起きなくてはいけない時間を
-          簡単に把握することができるアプリです。
+          このアプリは <br /> 電車の時間やオンライン会議の時間などの目標とする時間と、朝のタスクを設定することで起きなくてはいけない時間を簡単に把握することができるアプリです。
         </p>
         <br />
         <p>
@@ -34,9 +32,9 @@ export default function Page() {
       </div>
 
       {/* はじめるボタン */}
-      <div className="mb-32">
+      <div className="mb-10">
         <Link href="/login">
-          <Button className="font-mPlus bg-darkBlue hover:bg-blue-950 w-full px-20 py-8 text-4xl shadow-lg rounded-2xl ">
+          <Button className="bg-darkBlue hover:bg-blue-950 w-full px-20 py-8 text-4xl shadow-lg rounded-2xl ">
             はじめる
           </Button>
         </Link>
