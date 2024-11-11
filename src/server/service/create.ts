@@ -359,7 +359,6 @@ export async function createTask(
         id: undefined,
         taskId: newTask.id,
       };
-      console.log("Option Data:", data); //大丈夫
       const newOption = await createOption(data);
       if (newOption != null) {
         newOptions.push(newOption.id);
