@@ -17,6 +17,14 @@ export type itemStruct = {
   masterId?: string | null;
   order: number;
 };
+// wholeSetsテーブル構造体
+export type wholeStruct = {
+  id?: string;
+  itemId: string;
+  timeSetId:  string;
+  created_at?: Date;
+  updated_at?: Date;
+};
 // timeSetsテーブル構造体
 export type timeStruct = {
   id?: string;
@@ -55,8 +63,54 @@ export type optionStruct = {
 };
 
 //
+// POSTのリクエストボディ
+//
+export type wholeSetPostBody = {
+  userId: string;
+  name: string;
+  wholeSet: {
+    timeId: string;
+    itemIds: string[];
+  };
+};
+
+export type folderSetPostBody = {
+  userId: string;
+  folderName: string;
+  itemIds: string[];
+};
+
+export type timeSetPostBody = {
+  userId: string;
+  timeSet: {
+    name: string;
+    time: string;
+  };
+};
+
+export type taskSetPostBody = {
+  userId: string;
+  task: {
+    name: string;
+    isStatic: boolean;
+    select: number;
+    options: {
+      name: string;
+      time: number;
+    }[];
+  };
+};
+
+//
 // GETのレスポンス
 //
+export type wholeResponse = {
+  time: {
+    name: string;
+    time: string;
+  };
+};
+
 export type timeResponse = {
   time: {
     name: string;

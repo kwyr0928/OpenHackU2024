@@ -1,9 +1,12 @@
 import { db } from "../db";
-import { type timeStruct, type itemStruct } from "./constants";
+import { type itemStruct, type timeStruct } from "./constants";
 
 type masterStruct = {
   name: string;
 };
+
+/////////////////
+
 // Itemにmaster生成
 export async function createMasterItem(item: itemStruct) {
   try {
@@ -40,7 +43,9 @@ export async function createMasterTimeSet(time: timeStruct) {
   }
 }
 
-// 既存masterセット
+////////////////////
+
+// itemに既存masterセット
 export async function setExistMasterItem(itemId: string, masterId: string) {
   try {
     if (itemId == null || masterId == null)
@@ -60,7 +65,7 @@ export async function setExistMasterItem(itemId: string, masterId: string) {
     return null;
   }
 }
-// 新規masterセット
+// itemに新規masterセット
 export async function setNewMasterItem(item: itemStruct) {
   try {
     if (item.id == null) throw new Error("Invalid item data");
@@ -77,6 +82,27 @@ export async function setNewMasterItem(item: itemStruct) {
     });
 
     return createItem;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+// timeSetに既存masterセット
+export async function setExistMasterTimeSet(timeId: string, masterId: string) {
+  try {
+    if (timeId == null || masterId == null)
+      throw new Error("Invalid time data");
+    const setItem = await db.timeSets.update({
+      where: {
+        id: timeId,
+      },
+      data: {
+        masterId: masterId,
+      },
+    });
+
+    return setItem;
   } catch (error) {
     console.error(error);
     return null;

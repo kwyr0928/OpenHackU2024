@@ -1,17 +1,10 @@
 import { NextResponse } from "next/server";
-import { createNewTimeSet } from "~/server/service/create";
-
-type RequestBody = {
-  userId: string;
-  timeSet: {
-    name: string;
-    time: string;
-  };
-};
+import { timeSetPostBody } from "~/server/repositry/constants";
+import { createNewTime } from "~/server/service/create";
 
 export async function POST(req: Request) {
   try {
-    const { userId, timeSet }: RequestBody = (await req.json()) as RequestBody;
+    const { userId, timeSet }: timeSetPostBody = (await req.json()) as timeSetPostBody;
 
     if (!userId || !timeSet) {
       return NextResponse.json(
@@ -27,7 +20,7 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
-    const res = await createNewTimeSet(userId, name, timeStr);
+    const res = await createNewTime(userId, name, timeStr);
 
     return NextResponse.json({
       message: "get all tasks successfully",

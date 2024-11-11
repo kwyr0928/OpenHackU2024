@@ -1,17 +1,14 @@
 import { NextResponse } from "next/server";
+import { folderSetPostBody } from "~/server/repositry/constants";
 import { createNewFolder } from "~/server/service/create";
 import { instanciateTask } from "~/server/service/instantiate";
 
-type RequestBody = {
-  userId: string;
-  folderName: string;
-  itemIds: string[];
-};
+
 
 export async function POST(req: Request) {
   try {
-    const { userId, folderName, itemIds }: RequestBody =
-      (await req.json()) as RequestBody;
+    const { userId, folderName, itemIds }: folderSetPostBody =
+      (await req.json()) as folderSetPostBody;
 
     if (!userId || !folderName || itemIds.length === 0) {
       return NextResponse.json(
@@ -30,11 +27,11 @@ export async function POST(req: Request) {
     }
 
     // フォルダ作成
-    const folder = await createNewFolder(userId, folderName, instances);
+    const folder = await createNewFolder(userId, folderName, itemIds);
 
     return NextResponse.json({
       message: "folder created successfully",
-      task: folder,
+      folder: folder,
     });
   } catch (error) {
     console.error("Error in POST request:", error);
