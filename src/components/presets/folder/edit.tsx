@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import Image from "next/image";
+import React, { useState } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -8,18 +9,15 @@ import {
   AccordionTrigger,
 } from "~/components/ui/accordion";
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "~/components/ui/dialog";
-import Image from "next/image";
-import { ScrollArea } from "~/components/ui/scroll-area";
-import NewTask from "../task/new";
+import { Input } from "~/components/ui/input";
 import EditTask from "../task/edit";
+import NewTask from "../task/new";
 
 interface EditFolderProps {
   children: string;
@@ -51,34 +49,37 @@ export default function EditFolder({ children }: EditFolderProps) {
   return (
     <Accordion type="single" collapsible className="w-full">
       <AccordionItem value="item-1">
-        <AccordionTrigger className="mt-2 flex w-full items-center justify-center rounded-md bg-purple-200 p-2 text-black">
+        <AccordionTrigger className="flex w-full items-center justify-center rounded-t-md bg-violet-200 p-2 text-xl text-gray-700 hover:bg-violet-300">
           {name}
         </AccordionTrigger>
-        <AccordionContent className="items-center rounded-xl bg-gray-200 text-xl">
+        <AccordionContent className="items-center rounded-b-md bg-gray-200 text-xl">
           <div className="mx-auto flex w-[80%] items-center justify-center">
-            <ScrollArea className="h-[200px]">
-              <EditTask>駅まで徒歩（引数にid）</EditTask>
-              <EditTask>駅まで徒歩（引数にid）</EditTask>
-              <EditTask>駅まで徒歩（引数にid）</EditTask>
-              <EditTask>駅まで徒歩（引数にid）</EditTask>
-              <EditTask>駅まで徒歩（引数にid）</EditTask>
-              <div className="flex justify-around">
-                <NewTask></NewTask>
-                {/* 名前変更ボタン */}
+            <div className="mt-5">
+              <div className="mt-3">
+                <EditTask>駅まで徒歩</EditTask>
+              </div>
+              <div className="mt-3">
+                <EditTask>ごはん</EditTask>
+              </div>
+              <div className="mt-3">
+                <EditTask>着替え</EditTask>
+              </div>
+              <div className="mt-3">
+                <EditTask>メイク</EditTask>
+              </div>
+              <div className="mt-3">
+                <EditTask>ヘアメイク</EditTask>
+              </div>
+              <div className="mt-3 flex items-center justify-between">
+                <NewTask />
                 <Button
-                  className="mt-2 rounded-full bg-gray-500 p-2"
-                  onClick={() => setIsDialogOpen(true)} // ダイアログを開く
+                  className="rounded-full bg-gray-500 ml-2 p-2"
+                  onClick={() => setIsDialogOpen(true)}
                 >
-                  <Image
-                    src="/image/edit.svg"
-                    alt=""
-                    width={20}
-                    height={20}
-                    className=""
-                  />
+                  <Image src="/image/edit.svg" alt="" width={20} height={20} className="" />
                 </Button>
               </div>
-            </ScrollArea>
+            </div>
           </div>
 
           {/* 名前変更ダイアログ */}
@@ -96,15 +97,15 @@ export default function EditFolder({ children }: EditFolderProps) {
               />
 
               {/* 削除ボタン（名前変更ダイアログ内） */}
-              <div className="mt-auto flex justify-around">
+              <div className="flex justify-around mt-4">
                 <Button
-                  className="bg-red-600 text-white"
+                  className="bg-red-600 bg-red-700 text-white"
                   onClick={() => setIsDeleteDialogOpen(true)} // 削除確認ダイアログを開く
                 >
                   削除
                 </Button>
                 <Button
-                  className=""
+                  className="bg-darkBlue hover:bg-blue-900"
                   onClick={handleSave}
                   disabled={!newName} // newNameが空の場合はボタンを無効化
                 >
@@ -123,16 +124,16 @@ export default function EditFolder({ children }: EditFolderProps) {
               <DialogHeader>
                 <DialogTitle>確認</DialogTitle>
               </DialogHeader>
-              <p>この項目を削除しますか？ この操作は元に戻せません。</p>
+              <p className="text-center mt-4 text-gray-700">この項目を削除しますか？</p>
               <div className="mt-4 flex justify-end">
                 <Button
-                  className="mr-4"
+                  className="mr-4 bg-gray-600"
                   onClick={() => setIsDeleteDialogOpen(false)} // ダイアログを閉じる
                 >
                   キャンセル
                 </Button>
                 <Button
-                  className="bg-red-600 text-white"
+                  className="bg-red-600 hover:bg-red-700 text-white"
                   onClick={handleDelete} // 削除処理を実行
                 >
                   削除

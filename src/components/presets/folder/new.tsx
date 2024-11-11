@@ -38,7 +38,9 @@ export default function NewFolder() {
     <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
         {/* children を表示 */}
-        <Button className="mt-2 bg-darkBlue text-white">新規作成＋</Button>
+        <Button className="my-5 bg-darkBlue hover:bg-blue-900 px-6 py-6 text-2xl text-slate-100">
+          新規作成 +
+        </Button>
       </DialogTrigger>
       <DialogContent className="h-[50%] w-[90%] rounded-xl">
         <DialogHeader>
