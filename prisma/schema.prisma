@@ -50,6 +50,7 @@ model Items {
   FolderSet FolderSets[]
   TaskSet   TaskSets[]
   Items     Items[]      @relation(name: "itemParents")
+  @@index([userId])
 }
 
 model Master {
@@ -71,6 +72,7 @@ model WholeSets {
 
   item    Items    @relation(fields: [itemId], references: [id], onDelete: Cascade)
   timeSet TimeSets @relation(fields: [timeSetId], references: [id], onDelete: Cascade)
+  @@index([itemId])
 }
 
 model TimeSets {
@@ -85,6 +87,7 @@ model TimeSets {
   user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   master   Master?     @relation(fields: [masterId], references: [id], onDelete: Cascade)
   WholeSet WholeSets[]
+  @@index([userId])
 }
 
 model FolderSets {
@@ -94,6 +97,7 @@ model FolderSets {
   updated_at DateTime @updatedAt
 
   item Items @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  @@index([itemId])
 }
 
 model TaskSets {
@@ -106,6 +110,7 @@ model TaskSets {
   item       Items         @relation(fields: [itemId], references: [id], onDelete: Cascade)
   taskOption TaskOptions?  @relation(name: "select", fields: [optionId], references: [id])
   TaskOption TaskOptions[]
+  @@index([itemId])
 }
 
 model TaskOptions {
@@ -120,6 +125,7 @@ model TaskOptions {
 
   task    TaskSets   @relation(fields: [taskId], references: [id], onDelete: Cascade)
   TaskSet TaskSets[] @relation(name: "select")
+  @@index([taskId])
 }
 
 // NextAuth関連
