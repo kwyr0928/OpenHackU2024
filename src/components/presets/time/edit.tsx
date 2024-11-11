@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import Image from "next/image";
+import React, { useState } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -8,15 +9,13 @@ import {
   AccordionTrigger,
 } from "~/components/ui/accordion";
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  DialogTitle
 } from "~/components/ui/dialog";
-import Image from "next/image";
+import { Input } from "~/components/ui/input";
 
 // childrenを受け取るために型定義を追加
 interface EditTimeProps {
@@ -49,24 +48,26 @@ export default function EditTime({ children }: EditTimeProps) {
   return (
     <Accordion type="single" collapsible className="w-full">
       <AccordionItem value="item-1">
-        <AccordionTrigger className="mt-2 flex w-full items-center justify-center rounded-md bg-red-200 p-2 text-black">
+      <AccordionTrigger className="flex w-full items-center justify-center rounded-t-md bg-rose-100 text-gray-700 p-2 hover:bg-rose-200 text-xl shadow-sm">
           {name}
         </AccordionTrigger>
-        <AccordionContent className="items-center justify-start space-x-4 rounded-xl bg-gray-200 text-xl">
-          <input
-            type="time"
-            value={time}
-            onChange={handleTimeChange}
-            className="mt-4 w-full max-w-[200px] rounded-md border p-1"
-          />
-
-          {/* 名前変更ボタン */}
-          <Button
-            className="mt-4 rounded-full bg-gray-500 p-2"
-            onClick={() => setIsDialogOpen(true)} // ダイアログを開く
-          >
-            <Image src="/image/edit.svg" alt="" width={20} height={20} />
-          </Button>
+        <AccordionContent className="items-center justify-start space-x-4 rounded-b-md bg-gray-200 text-xl">
+     <div className="flex justify-center pt-3">
+           <input
+             type="time"
+             value={time}
+             onChange={handleTimeChange}
+             className="w-full max-w-[200px] rounded-md border p-1"
+           />
+      
+           {/* 名前変更ボタン */}
+           <Button
+             className="rounded-full bg-gray-500 ml-3 p-2 my-auto"
+             onClick={() => setIsDialogOpen(true)} // ダイアログを開く
+           >
+             <Image src="/image/edit.svg" alt="" width={20} height={20} />
+           </Button>
+     </div>
 
           {/* 名前変更ダイアログ */}
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -78,20 +79,20 @@ export default function EditTime({ children }: EditTimeProps) {
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 autoFocus
-                className="mt-4"
+                className="my-4"
                 placeholder="新しい名前を入力"
               />
 
               {/* 削除ボタン（名前変更ダイアログ内） */}
               <div className="mt-auto flex justify-around">
                 <Button
-                  className="bg-red-600 text-white"
+                  className="bg-red-600 hover:bg-red-700 text-white"
                   onClick={() => setIsDeleteDialogOpen(true)} // 削除確認ダイアログを開く
                 >
                   削除
                 </Button>
                 <Button
-                  className=""
+                  className="bg-darkBlue hover:bg-blue-900"
                   onClick={handleSave}
                   disabled={!newName} // newNameが空の場合はボタンを無効化
                 >
@@ -110,16 +111,16 @@ export default function EditTime({ children }: EditTimeProps) {
               <DialogHeader>
                 <DialogTitle>確認</DialogTitle>
               </DialogHeader>
-              <p>この項目を削除しますか？ この操作は元に戻せません。</p>
+              <p className="mt-4 text-center text-gray-700">この項目を削除しますか？</p>
               <div className="mt-4 flex justify-end">
                 <Button
-                  className="mr-4"
+                  className="mr-4 bg-gray-600"
                   onClick={() => setIsDeleteDialogOpen(false)} // ダイアログを閉じる
                 >
                   キャンセル
                 </Button>
                 <Button
-                  className="bg-red-600 text-white"
+                  className="bg-red-600 hover:bg-red-700 text-white"
                   onClick={handleDelete} // 削除処理を実行
                 >
                   削除
