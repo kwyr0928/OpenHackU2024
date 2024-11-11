@@ -159,7 +159,7 @@ export async function getTaskInfoByItemId(itemId: string) {
     if (!task) throw new Error("not found taskSet");
     return task;
   } catch (error) {
-    console.error("Error in getTaskInfo:", error);
+    console.error("Error in getTaskInfoByItemId:", error);
     return null;
   }
 }

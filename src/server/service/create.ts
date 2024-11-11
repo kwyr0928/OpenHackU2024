@@ -84,20 +84,28 @@ export async function createNewWhole(
       const type = await getItemInfoByItemId(itemId);
       if(type==null){
         throw new Error("Failed to get itemType.");
-      }else if(type.itemType=presetType.task){
+      } else if(type.itemType==presetType.task){
         // タスクインスタンス化
         const taskInstance = await instanciateTask(itemId);
         if(taskInstance==null){
           throw new Error("Failed to instanciateTask.");
         }
+        const parentedTask = await setTaskParent(taskInstance.id, masterSetItem.id);
+        if (parentedTask == null) {
+          throw new Error("Failed to parent folder and task.");
+        }
         instances.push(taskInstance.id);
-      } else if(type.itemType=presetType.folder){
+      } else if(type.itemType==presetType.folder){
         // フォルダインスタンス化
         const folderInstance = await instanciateFolder(itemId);
         if(folderInstance==null){
           throw new Error("Failed to instanciateFolder.");
         }
-        instances.push(folderInstance.id);
+        const parentedFolder = await setTaskParent(folderInstance.id, masterSetItem.id);
+        if (parentedFolder == null) {
+          throw new Error("Failed to parent folder and folder.");
+        }
+        instances.push(parentedFolder.id);
       } else {
         throw new Error("Don't set wholeSetItems in itemIds.");
       }

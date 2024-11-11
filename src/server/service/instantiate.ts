@@ -8,17 +8,17 @@ import {
 } from "../repositry/getdata";
 import { createFolder, createTask, createTime } from "./create";
 
-export async function instanciateFolder(itemId: string) {
+export async function instanciateFolder(prehabItemId: string) {
   try {
-    if (!itemId) {
-      throw new Error("Invalid input: itemId is missing.");
+    if (!prehabItemId) {
+      throw new Error("Invalid input: prehabItemId is missing.");
     }
     // itemStruct取得
-    const item = await getItemInfoByItemId(itemId);
+    const item = await getItemInfoByItemId(prehabItemId);
     if (item == null) {
       throw new Error("Not found item");
     }
-    const taskItems = await getTaskItemsInFolder(itemId);
+    const taskItems = await getTaskItemsInFolder(prehabItemId);
     if (taskItems == null) {
       throw new Error("Failed getTaskItemsInFolder");
     }
@@ -51,7 +51,7 @@ export async function instanciateTask(itemId: string) {
     // taskId取得
     const task = await getTaskInfoByItemId(itemId);
     if (task == null) {
-      throw new Error("Not found task");
+      throw new Error("Not found getTaskInfoByItemId");
     } else if (task.optionId == null) {
       throw new Error("Not found task optionId");
     }

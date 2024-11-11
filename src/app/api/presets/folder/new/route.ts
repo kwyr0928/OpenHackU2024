@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { folderSetPostBody } from "~/server/repositry/constants";
 import { createNewFolder } from "~/server/service/create";
-import { instanciateTask } from "~/server/service/instantiate";
 
 
 
@@ -15,15 +14,6 @@ export async function POST(req: Request) {
         { error: "Invalid input: userId and name and itemIds are required" },
         { status: 400 },
       );
-    }
-
-    const instances: string[] = [];
-    for (const itemId of itemIds) {
-      const taskInstance = await instanciateTask(itemId);
-      if (taskInstance == null) {
-        throw new Error("Failed to instanciate task.");
-      }
-      instances.push(taskInstance.id);
     }
 
     // フォルダ作成
