@@ -1,6 +1,6 @@
 "use client";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -26,7 +26,13 @@ export default function EditTask({ children }: EditTaskProps) {
 
   const [number, setNumber] = useState<number>(0);
 
-  const [minutes, setMinutes] = useState(0); // 分
+  const [options1, setOptions1] = useState("デフォルト"); // プルダウン
+  const [options2, setOptions2] = useState("");
+  const [options3, setOptions3] = useState("");
+  const [minutes1, setMinutes1] = useState(0); // 分
+  const [minutes2, setMinutes2] = useState(0); // 分
+  const [minutes3, setMinutes3] = useState(0); // 分
+  const [minutes, setMinutes] = useState(0);
 
   const handleSave = () => {
     // データベースに保存
@@ -69,11 +75,11 @@ export default function EditTask({ children }: EditTaskProps) {
     >
       <DialogTrigger asChild>
         {/* children を表示 */}
-        <Button className="mt-2 w-full bg-yellow-200 text-black hover:bg-yellow-200">
+        <Button className="w-full bg-lime-100 text-gray-700 hover:bg-lime-200 py-6 text-xl">
           {name}
         </Button>
       </DialogTrigger>
-      <DialogContent className="rounded-xl">
+      <DialogContent className="w-[90%] rounded-xl">
         <DialogHeader>
           <DialogTitle>
             {isEditing ? (
@@ -85,39 +91,69 @@ export default function EditTask({ children }: EditTaskProps) {
                 onBlur={handleSave}
                 onKeyDown={handleKeyDown} // Enter キーを押したときに編集を終了
                 autoFocus
-                className="mt-2 text-center text-black"
+                className="mt-2 text-center text-gray-700"
               />
             ) : (
               <Button
                 variant="ghost"
-                className="mt-2 w-full bg-yellow-200 text-left text-black"
+                className="mt-4 w-full bg-lime-100 text-left text-gray-700"
                 onClick={() => setIsEditing(true)}
               >
-                {newName || ""}
+                {newName || "新しい名前を入力"}
               </Button>
             )}
           </DialogTitle>
           <DialogDescription></DialogDescription>
         </DialogHeader>
-        <Tabs defaultValue="pulldown" className="mt">
+        <Tabs defaultValue="pulldown" className="">
           <TabsList className="mb-4 grid w-full grid-cols-2">
             <TabsTrigger value="pulldown">プルダウン</TabsTrigger>
             <TabsTrigger value="static">固定値</TabsTrigger>
           </TabsList>
           <TabsContent value="pulldown" className="h-[150px]">
             <ScrollArea>
-              <div className="flex items-center justify-center">
+              <div className="flex items-center justify-center mb-3">
                 <Input
                   type="text"
-                  value={minutes}
-                  onChange={(e) => setMinutes(Number(e.target.value))}
-                  className="w-24 text-center"
+                  value={options1}
+                  onChange={(e) => setOptions1(e.target.value)}
+                  className="w-36 text-center mr-7"
+                />
+                <Input
+                  type="number"
+                  value={minutes1}
+                  onChange={(e) => setMinutes1(Number(e.target.value))}
+                  className="w-16 text-center"
+                />
+                <p>min</p>
+              </div>
+              <div className="flex items-center justify-center mb-3">
+                <Input
+                  type="text"
+                  value={options2}
+                  onChange={(e) => setOptions2(e.target.value)}
+                  className="w-36 text-center mr-7"
+                />
+                <Input
+                  type="number"
+                  value={minutes2}
+                  onChange={(e) => setMinutes2(Number(e.target.value))}
+                  className="w-16 text-center"
+                />
+                <p>min</p>
+              </div>
+              <div className="flex items-center justify-center mb-3">
+                <Input
+                  type="text"
+                  value={options3}
+                  onChange={(e) => setOptions3(e.target.value)}
+                  className="w-36 text-center mr-7"
                 />
                 <Input
                   type="number"
                   value={minutes}
                   onChange={(e) => setMinutes(Number(e.target.value))}
-                  className="w-24 text-center"
+                  className="w-16 text-center"
                 />
                 <p>min</p>
               </div>
@@ -137,12 +173,16 @@ export default function EditTask({ children }: EditTaskProps) {
         </Tabs>
         <div className="mt-auto flex justify-around">
           <Button
-            className="w-[30%]"
+            className="bg-red-600"
             onClick={() => setIsDeleteDialogOpen(true)}
           >
             削除
           </Button>
-          <Button className="w-[30%]" onClick={handleSave}>
+          <Button
+            className="bg-darkBlue hover:bg-blue-900"
+            onClick={handleSave}
+            disabled={!newName} // newNameが空の場合はボタンを無効化
+          >
             変更
           </Button>
         </div>
@@ -152,13 +192,13 @@ export default function EditTask({ children }: EditTaskProps) {
         <DialogContent className="w-[90%] rounded-xl">
           <DialogHeader>
             <DialogTitle>確認</DialogTitle>
-            <DialogDescription>
-              このタスクを削除しますか？この操作は元に戻せません。
+            <DialogDescription className="pt-5">
+              このタスクを削除しますか？
             </DialogDescription>
           </DialogHeader>
           <div className="mt-4 flex justify-end">
             <Button
-              className="mr-4"
+              className="mr-4 bg-gray-600"
               onClick={() => setIsDeleteDialogOpen(false)}
             >
               キャンセル

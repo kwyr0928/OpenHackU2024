@@ -1,22 +1,29 @@
 "use client";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
+  DialogTrigger
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 export default function NewTask() {
   const [name, setName] = useState<string>(); // 表示される名前
-  const [tempName, setTempName] = useState<string>(); // 入力用の一時的な名前
+  const [tempName, setTempName] = useState<string>(""); // 入力用の一時的な名前
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false); // 削除確認ダイアログの状態
   const [isDialogOpen, setDialogOpen] = useState(false); // ダイアログの状態
+  const [options1, setOptions1] = useState("デフォルト"); // プルダウン
+  const [options2, setOptions2] = useState("");
+  const [options3, setOptions3] = useState("");
+  const [minutes1, setMinutes1] = useState(0); // 分
+  const [minutes2, setMinutes2] = useState(0); // 分
+  const [minutes3, setMinutes3] = useState(0); // 分
+  const [minutes, setMinutes] = useState(0);
 
   const handleSave = () => {
     // データベースに保存
@@ -24,19 +31,19 @@ export default function NewTask() {
     setDialogOpen(false);
   };
 
-  const handleDelete = async () => {
-    //データベースから削除
+  const handleCancel = async () => {
     setDialogOpen(false);
-    setIsDeleteDialogOpen(false);
   };
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
         {/* children を表示 */}
-        <Button className="mt-2 bg-darkBlue text-white">新規作成＋</Button>
+        <Button className="my-5 bg-darkBlue px-6 py-6 text-2xl text-slate-100 hover:bg-blue-900">
+          新規作成 +
+        </Button>
       </DialogTrigger>
-      <DialogContent className="h-[50%] w-[90%] rounded-xl">
+      <DialogContent className="w-[90%] rounded-xl">
         <DialogHeader>
           <DialogTitle>
             <Input
@@ -44,54 +51,93 @@ export default function NewTask() {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setTempName(e.target.value)
               }
-              className="mt-2 text-black"
+              className="mt-4 text-center text-gray-700"
             />
           </DialogTitle>
-          <DialogDescription></DialogDescription>
         </DialogHeader>
-        <Tabs defaultValue="pulldown" className="">
+        <Tabs defaultValue="pulldown" className="mt-2">
           <TabsList className="mb-4 grid w-full grid-cols-2">
             <TabsTrigger value="pulldown">プルダウン</TabsTrigger>
             <TabsTrigger value="static">固定値</TabsTrigger>
           </TabsList>
-          <TabsContent value="pulldown"></TabsContent>
-          <TabsContent value="static"></TabsContent>
+          <TabsContent value="pulldown" className="h-[150px]">
+            <ScrollArea>
+              <div className="flex items-center justify-center mb-3">
+                <Input
+                  type="text"
+                  value={options1}
+                  onChange={(e) => setOptions1(e.target.value)}
+                  className="w-36 text-center mr-7"
+                />
+                <Input
+                  type="number"
+                  value={minutes1}
+                  onChange={(e) => setMinutes1(Number(e.target.value))}
+                  className="w-16 text-center"
+                />
+                <p>min</p>
+              </div>
+              <div className="flex items-center justify-center mb-3">
+                <Input
+                  type="text"
+                  value={options2}
+                  onChange={(e) => setOptions2(e.target.value)}
+                  className="w-36 text-center mr-7"
+                />
+                <Input
+                  type="number"
+                  value={minutes2}
+                  onChange={(e) => setMinutes2(Number(e.target.value))}
+                  className="w-16 text-center"
+                />
+                <p>min</p>
+              </div>
+              <div className="flex items-center justify-center mb-3">
+                <Input
+                  type="text"
+                  value={options3}
+                  onChange={(e) => setOptions3(e.target.value)}
+                  className="w-36 text-center mr-7"
+                />
+                <Input
+                  type="number"
+                  value={minutes3}
+                  onChange={(e) => setMinutes3(Number(e.target.value))}
+                  className="w-16 text-center"
+                />
+                <p>min</p>
+              </div>
+            </ScrollArea>
+          </TabsContent>
+          <TabsContent value="static" className="h-[150px]">
+            <div className="flex h-40 items-center justify-center">
+              <Input
+                type="number"
+                value={minutes}
+                onChange={(e) => setMinutes(Number(e.target.value))}
+                className="w-24 text-center"
+              />
+              <p>min</p>
+            </div>
+          </TabsContent>
         </Tabs>
-        <div className="mt-4 flex justify-between">
+        <div className="mt-auto flex justify-around">
           <Button
-            className="w-[30%]"
-            onClick={() => setIsDeleteDialogOpen(true)}
+            onClick={handleCancel}
+            className="bg-gray-600"
+            
           >
-            削除
+            キャンセル
           </Button>
-          <Button className="w-[30%]" onClick={handleSave}>
-            変更
+          <Button
+            className="bg-darkBlue hover:bg-blue-900"
+            onClick={handleSave}
+            disabled={!tempName} // newNameが空の場合はボタンを無効化
+          >
+            作成
           </Button>
         </div>
       </DialogContent>
-
-      {/* 削除確認ダイアログ */}
-      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>確認</DialogTitle>
-            <DialogDescription>
-              このタスクを削除しますか？この操作は元に戻せません。
-            </DialogDescription>
-          </DialogHeader>
-          <div className="mt-4 flex justify-end">
-            <Button
-              className="mr-4"
-              onClick={() => setIsDeleteDialogOpen(false)}
-            >
-              キャンセル
-            </Button>
-            <Button className="bg-red-600 text-white" onClick={handleDelete}>
-              削除
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </Dialog>
   );
 }
