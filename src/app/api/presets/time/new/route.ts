@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
-import { timeSetPostBody } from "~/server/repositry/constants";
+import { type timeSetPostBody } from "~/server/repositry/constants";
 import { createNewTime } from "~/server/service/create";
 
 export async function POST(req: Request) {
   try {
-    const { userId, timeSet }: timeSetPostBody = (await req.json()) as timeSetPostBody;
+    const { userId, timeSet }: timeSetPostBody =
+      (await req.json()) as timeSetPostBody;
 
     if (!userId || !timeSet) {
       return NextResponse.json(

@@ -14,7 +14,12 @@ export async function POST(req: Request) {
       );
     }
 
-    const res = await createNewWhole(userId, name, wholeSet.timeId, wholeSet.itemIds);
+    const res = await createNewWhole(
+      userId,
+      name,
+      wholeSet.timeId,
+      wholeSet.itemIds,
+    );
     return NextResponse.json({
       message: "whole created successfully",
       wholeSet: res,

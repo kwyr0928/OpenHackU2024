@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
-import { presetType, wholeAllResponse } from "~/server/repositry/constants";
+import {
+  presetType,
+  type wholeAllResponse,
+} from "~/server/repositry/constants";
 import { getKindItems } from "~/server/repositry/getdata";
 
 export async function GET(req: Request) {

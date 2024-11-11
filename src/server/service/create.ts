@@ -14,7 +14,7 @@ import {
   insertFolderSet,
   insertTaskSet,
   insertTimeSet,
-  insertWholeSet
+  insertWholeSet,
 } from "../repositry/insertdata";
 import {
   setExistMasterItem,
@@ -23,14 +23,18 @@ import {
   setNewMasterTimeSet,
 } from "../repositry/manageMaster";
 import { setSelectingTaskOption, setTaskParent } from "../repositry/updatedata";
-import { instanciateFolder, instanciateTask, instanciateTime } from "./instantiate";
+import {
+  instanciateFolder,
+  instanciateTask,
+  instanciateTime,
+} from "./instantiate";
 
 // 新規全体プリセットを作成
 export async function createNewWhole(
   userId: string,
   name: string,
   prehabtimeId: string,
-  prehabItemIds: string[]
+  prehabItemIds: string[],
 ) {
   try {
     if (!userId || !name || !prehabtimeId || prehabItemIds.length === 0) {
@@ -67,43 +71,49 @@ export async function createNewWhole(
     }
     // 時間プリセットインスタンス化
     const timeInstance = await instanciateTime(prehabtimeId);
-    if(timeInstance==null){
+    if (timeInstance == null) {
       throw new Error("Failed to instanciateTime.");
     }
     // wholeを作る
     const whole: wholeStruct = {
       itemId: masterSetItem.id,
       timeSetId: timeInstance.id,
-    }
+    };
     const newWhole = await insertWholeSet(whole);
-    
+
     // タスクorフォルダインスタンス化
     const instances: string[] = [];
     let order = 0;
     for (const itemId of prehabItemIds) {
       // itemIdがタスクかフォルダか判別
       const type = await getItemInfoByItemId(itemId);
-      if(type==null){
+      if (type == null) {
         throw new Error("Failed to get itemType.");
-      } else if(type.itemType==presetType.task){
+      } else if (type.itemType == presetType.task) {
         // タスクインスタンス化
         const taskInstance = await instanciateTask(itemId, order);
-        if(taskInstance==null){
+        if (taskInstance == null) {
           throw new Error("Failed to instanciateTask.");
         }
-        const parentedTask = await setTaskParent(taskInstance.id, masterSetItem.id);
+        const parentedTask = await setTaskParent(
+          taskInstance.id,
+          masterSetItem.id,
+        );
         if (parentedTask == null) {
           throw new Error("Failed to parent folder and task.");
         }
         instances.push(taskInstance.id);
         order++;
-      } else if(type.itemType==presetType.folder){
+      } else if (type.itemType == presetType.folder) {
         // フォルダインスタンス化
         const folderInstance = await instanciateFolder(itemId, order);
-        if(folderInstance==null){
+        if (folderInstance == null) {
           throw new Error("Failed to instanciateFolder.");
         }
-        const parentedFolder = await setTaskParent(folderInstance.id, masterSetItem.id);
+        const parentedFolder = await setTaskParent(
+          folderInstance.id,
+          masterSetItem.id,
+        );
         if (parentedFolder == null) {
           throw new Error("Failed to parent folder and folder.");
         }
@@ -175,7 +185,10 @@ export async function createTime(
       masterSetTimeSet = await setNewMasterTimeSet(newTimeSet);
     } else if (prehab.masterId != null) {
       //既存masterをセット
-      masterSetTimeSet = await setExistMasterTimeSet(newTimeSet.id, prehab.masterId);
+      masterSetTimeSet = await setExistMasterTimeSet(
+        newTimeSet.id,
+        prehab.masterId,
+      );
     }
     if (masterSetTimeSet == null) {
       throw new Error("Failed to set master.");
@@ -227,7 +240,7 @@ export async function createFolder(
   folderName: string,
   order: number,
   prehabTaskItemIds: string[],
-  prehabFolder?: itemStruct
+  prehabFolder?: itemStruct,
 ) {
   try {
     if (!userId || !folderName || prehabTaskItemIds.length === 0) {
@@ -255,7 +268,10 @@ export async function createFolder(
       masterSetItem = await setNewMasterItem(newItem);
     } else if (prehabFolder.masterId != null) {
       //既存masterをセット
-      masterSetItem = await setExistMasterItem(newItem.id, prehabFolder.masterId);
+      masterSetItem = await setExistMasterItem(
+        newItem.id,
+        prehabFolder.masterId,
+      );
     }
     if (masterSetItem == null) {
       throw new Error("Failed to set master.");
@@ -277,7 +293,10 @@ export async function createFolder(
       if (taskInstance == null) {
         throw new Error("Failed to instanciate task.");
       }
-      const parentedTask = await setTaskParent(taskInstance.id, masterSetItem.id);
+      const parentedTask = await setTaskParent(
+        taskInstance.id,
+        masterSetItem.id,
+      );
       if (parentedTask == null) {
         throw new Error("Failed to parent folder and task.");
       }

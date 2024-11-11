@@ -1,4 +1,3 @@
-
 // プリセットタイプ
 export const presetType = {
   whole: 0,
@@ -22,7 +21,7 @@ export type itemStruct = {
 export type wholeStruct = {
   id?: string;
   itemId: string;
-  timeSetId:  string;
+  timeSetId: string;
   created_at?: Date;
   updated_at?: Date;
 };
@@ -80,7 +79,7 @@ export type folderSetPostBody = {
   folderSet: {
     name: string;
     itemIds: string[];
-  }
+  };
 };
 
 export type timeSetPostBody = {
@@ -108,7 +107,8 @@ export type taskSetPostBody = {
 // GETのレスポンス
 //
 export type contentResponse = folderResponse | taskResponse;
-export type wholeResponse = { //審議
+export type wholeResponse = {
+  //審議
   whole: {
     name: string;
     timeSet: timeResponse;

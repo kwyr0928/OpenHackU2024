@@ -6,7 +6,6 @@ export async function POST(req: NextRequest) {
 
     // const { userId, limit, q1, m1, q2, m2, q3, m3 } = await req.json();
 
-    
     return NextResponse.json({
       message: "first wholeSet created successfully",
     });

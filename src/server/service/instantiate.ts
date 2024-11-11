@@ -4,7 +4,7 @@ import {
   getOptionsInTask,
   getTaskInfoByItemId,
   getTaskItemsInFolder,
-  getTimeInfoBytimeId
+  getTimeInfoBytimeId,
 } from "../repositry/getdata";
 import { createFolder, createTask, createTime } from "./create";
 
@@ -23,7 +23,7 @@ export async function instanciateFolder(prehabItemId: string, order: number) {
       throw new Error("Failed getTaskItemsInFolder");
     }
     const taskItemIds: string[] = [];
-    for(const taskItem of taskItems) {
+    for (const taskItem of taskItems) {
       taskItemIds.push(taskItem.id);
     }
 
@@ -103,11 +103,7 @@ export async function instanciateTime(timeId: string) {
       throw new Error("Not found time");
     }
 
-    const timeInstanciate = await createTime(
-      time.userId,
-      time.name,
-      time.time
-    );
+    const timeInstanciate = await createTime(time.userId, time.name, time.time);
     if (timeInstanciate == null) {
       throw new Error("Failed on createTime");
     }

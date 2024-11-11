@@ -252,11 +252,9 @@ export async function getItemsInWhole(wholeItemId: string) {
         OR: [
           {
             parentId: wholeItemId,
-            itemType: presetType.task
+            itemType: presetType.task,
           },
-          { parentId: wholeItemId,
-            itemType: presetType.folder
-          },
+          { parentId: wholeItemId, itemType: presetType.folder },
         ],
       },
       orderBy: {

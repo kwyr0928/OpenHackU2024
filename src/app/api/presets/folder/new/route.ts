@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
-import { folderSetPostBody } from "~/server/repositry/constants";
+import { type folderSetPostBody } from "~/server/repositry/constants";
 import { createNewFolder } from "~/server/service/create";
-
-
 
 export async function POST(req: Request) {
   try {
@@ -17,7 +15,11 @@ export async function POST(req: Request) {
     }
 
     // フォルダ作成
-    const folder = await createNewFolder(userId, folderSet.name, folderSet.itemIds);
+    const folder = await createNewFolder(
+      userId,
+      folderSet.name,
+      folderSet.itemIds,
+    );
 
     return NextResponse.json({
       message: "folder created successfully",

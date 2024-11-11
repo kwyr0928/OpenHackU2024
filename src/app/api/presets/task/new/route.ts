@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
-import { taskSetPostBody, type optionStruct } from "~/server/repositry/constants";
+import type {
+  optionStruct,
+  taskSetPostBody,
+} from "~/server/repositry/constants";
 import { createNewTask } from "~/server/service/create";
 
 export async function POST(req: Request) {
   try {
-    const { userId, taskSet }: taskSetPostBody = (await req.json()) as taskSetPostBody;
+    const { userId, taskSet }: taskSetPostBody =
+      (await req.json()) as taskSetPostBody;
 
     if (!userId || !taskSet) {
       return NextResponse.json(
@@ -38,7 +42,12 @@ export async function POST(req: Request) {
       }
     }
 
-    const taskObj = await createNewTask(userId, taskSet.name, options, taskSet.select);
+    const taskObj = await createNewTask(
+      userId,
+      taskSet.name,
+      options,
+      taskSet.select,
+    );
 
     return NextResponse.json({
       message: "Task created successfully",

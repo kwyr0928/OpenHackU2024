@@ -1,7 +1,7 @@
 import {
-  contentResponse,
+  type contentResponse,
   presetType,
-  wholeResponse,
+  type wholeResponse,
   type folderResponse,
   type optionResponse,
   type taskResponse,
@@ -37,13 +37,13 @@ export async function fetchWhole(itemId: string) {
     for (const item of itemsInWhole) {
       // itemIdがタスクかフォルダか判別
       const type = await getItemInfoByItemId(item.id);
-      if(type==null){
+      if (type == null) {
         throw new Error("Failed to get itemType.");
-      } else if(type.itemType==presetType.task){
+      } else if (type.itemType == presetType.task) {
         const fetchedTask = await fetchTask(item.id, item.name);
         if (!fetchedTask) throw new Error("not found fetchTask");
         retItems.push(fetchedTask);
-      } else if(type.itemType==presetType.folder){
+      } else if (type.itemType == presetType.folder) {
         const fetchedFolder = await fetchFolder(item.id, item.name);
         if (!fetchedFolder) throw new Error("not found fetchFolder");
         retItems.push(fetchedFolder);
@@ -55,7 +55,7 @@ export async function fetchWhole(itemId: string) {
       whole: {
         name: name,
         timeSet: time,
-        itemSet: retItems
+        itemSet: retItems,
       },
     };
 

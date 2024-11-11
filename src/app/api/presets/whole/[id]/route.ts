@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { fetchWhole } from "~/server/service/fetch";
 
-
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(
+  req: Request,
+  { params }: { params: { id: string } },
+) {
   try {
     const itemId = params.id; //itemId?wholeId?
     const { searchParams } = new URL(req.url);
@@ -15,12 +17,9 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     }
 
     const wholeRes = await fetchWhole(itemId);
-      if (!wholeRes) {
-        return NextResponse.json(
-          { error: "Not found folders" },
-          { status: 404 },
-        );
-      }
+    if (!wholeRes) {
+      return NextResponse.json({ error: "Not found folders" }, { status: 404 });
+    }
 
     return NextResponse.json({
       message: "get all wholeSet successfully",
@@ -34,7 +33,6 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     );
   }
 }
-
 
 export async function PUT() {
   return NextResponse.json({
