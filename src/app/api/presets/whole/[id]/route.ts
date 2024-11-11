@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
+import { fetchWhole } from "~/server/service/fetch";
 
-import { presetType, wholeResponse } from "~/server/repositry/constants";
-import { getKindItems } from "~/server/repositry/getdata";
-import { fetchAllWhole } from "~/server/service/fetch";
 
 export async function GET(req: Request, { params }: { params: { id: string } }) {
   try {
@@ -15,40 +13,21 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
         { status: 400 },
       );
     }
-    const items = await getKindItems(userId, presetType.whole);
-    if (!items) {
-      return NextResponse.json(
-        { error: "Invalid input: userId is required" },
-        { status: 400 },
-      );
-    } else if (items?.length === 0) {
-      return NextResponse.json({ error: "Not found wholes" }, { status: 404 });
-    }
 
-    const res: wholeResponse[] = [];
-    for (const item of items) {
-      if (!item) {
-        return NextResponse.json(
-          { error: "Not found folder" },
-          { status: 400 },
-        );
-      }
-      const wholeRes = await fetchAllWhole(item.id, item.name);
+    const wholeRes = await fetchWhole(itemId);
       if (!wholeRes) {
         return NextResponse.json(
           { error: "Not found folders" },
           { status: 404 },
         );
       }
-      res.push(wholeRes);
-    }
 
     return NextResponse.json({
-      message: "get all folders successfully",
-      taskSets: res,
+      message: "get all wholeSet successfully",
+      wholeSet: wholeRes,
     });
   } catch (error) {
-    console.error("Error in GET folder request:", error);
+    console.error("Error in GET wholeSet request:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },

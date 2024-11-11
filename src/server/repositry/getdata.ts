@@ -251,8 +251,15 @@ export async function getItemsInWhole(wholeItemId: string) {
   try {
     const res = await db.items.findMany({
       where: {
-        parentId: wholeItemId,
-        itemType: presetType.task || presetType.folder,
+        OR: [
+          {
+            parentId: wholeItemId,
+            itemType: presetType.task
+          },
+          { parentId: wholeItemId,
+            itemType: presetType.folder
+          },
+        ],
       },
       orderBy: {
         created_at: "asc",

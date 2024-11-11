@@ -1,15 +1,73 @@
 import {
+  contentResponse,
+  presetType,
+  wholeResponse,
   type folderResponse,
-  type timeResponse,
   type optionResponse,
   type taskResponse,
+  type timeResponse,
 } from "../repositry/constants";
 import {
+  getItemInfoByItemId,
+  getItemName,
+  getItemsInWhole,
   getOptionsInTask,
   getTaskInfoByItemId,
   getTaskItemsInFolder,
   getTimeInfoBytimeId,
+  getWholeInfoByItemId,
 } from "../repositry/getdata";
+
+export async function fetchWhole(itemId: string) {
+  try {
+    if (!itemId) throw new Error("itemId is required");
+    // name取得
+    const name = await getItemName(itemId);
+    if (!name) throw new Error("not found itemName");
+    // timeSet
+    const whole = await getWholeInfoByItemId(itemId);
+    if (!whole) throw new Error("not found contentsInWhole");
+    const time = await fetchTime(whole.timeSetId);
+    if (!time) throw new Error("not found timeSet");
+    // 中身のtask or folder
+    const itemsInWhole = await getItemsInWhole(itemId);
+    if (!itemsInWhole) throw new Error("not found contentsInWhole");
+
+    const retItems: contentResponse[] = [];
+    for (const item of itemsInWhole) {
+      // itemIdがタスクかフォルダか判別
+      const type = await getItemInfoByItemId(item.id);
+      if(type==null){
+        throw new Error("Failed to get itemType.");
+      } else if(type.itemType==presetType.task){
+        console.log("task!!!!!")
+        const fetchedTask = await fetchTask(item.id, item.name);
+        if (!fetchedTask) throw new Error("not found fetchTask");
+        retItems.push(fetchedTask);
+      } else if(type.itemType==presetType.folder){
+        console.log("folder!!!!!")
+        const fetchedFolder = await fetchFolder(item.id, item.name);
+        if (!fetchedFolder) throw new Error("not found fetchFolder");
+        retItems.push(fetchedFolder);
+      } else {
+        throw new Error("Don't set wholeSetItems in itemsInWhole.");
+      }
+    }
+    const getWhole: wholeResponse = {
+      whole: {
+        name: name,
+        timeSet: time,
+        itemSet: retItems
+      },
+    };
+
+    if (!getWhole) return null;
+    return getWhole;
+  } catch (error) {
+    console.error("Error in fetchFolder:", error);
+    return null;
+  }
+}
 
 export async function fetchTime(timeSetId: string) {
   try {

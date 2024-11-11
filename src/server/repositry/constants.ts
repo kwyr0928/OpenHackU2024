@@ -1,4 +1,3 @@
-import { Items } from "@prisma/client";
 
 // プリセットタイプ
 export const presetType = {
@@ -106,11 +105,12 @@ export type taskSetPostBody = {
 //
 // GETのレスポンス
 //
+export type contentResponse = folderResponse | taskResponse;
 export type wholeResponse = { //審議
   whole: {
     name: string;
     timeSet: timeResponse;
-    itemSet: Items[];
+    itemSet: contentResponse[];
   };
 };
 
