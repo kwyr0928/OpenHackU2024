@@ -5,10 +5,6 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { ScrollArea } from "~/components/ui/scroll-area";
 
-const tags = Array.from({ length: 50 }).map(
-  (_, i, a) => `v1.2.0-beta.${a.length - i}`,
-);
-
 const data = {
   member: [
     {
@@ -18,9 +14,9 @@ const data = {
       items: [
         {
           tasks: [
-            { taskName: "駅まで歩く", timeRequired: 5 },
-            { taskName: "自転車移動", timeRequired: 15 },
-            { taskName: "英単語暗記", timeRequired: 5 },
+            { name: "駅まで歩く", timeRequired: 5 },
+            { name: "自転車移動", timeRequired: 15 },
+            { name: "英単語暗記", timeRequired: 5 },
           ],
         },
         {
@@ -45,9 +41,9 @@ const data = {
         },
         {
           tasks: [
-            { taskName: "シャワー", timeRequired: 20 },
-            { taskName: "朝ごはん", timeRequired: 20 },
-            { taskName: "洗顔", timeRequired: 10 },
+            { name: "シャワー", timeRequired: 20 },
+            { name: "朝ごはん", timeRequired: 20 },
+            { name: "洗顔", timeRequired: 10 },
           ],
         },
       ],
@@ -55,22 +51,35 @@ const data = {
   ],
 };
 
+type Task = {
+  name: string;
+  timeRequired: number;
+};
+type Folder = {
+  name: string;
+  tasks: Task[];
+};
+type Item = {
+  tasks?: Task[];
+  folders?: Folder[];
+};
+
 //個人を識別するための仮の番号、データベースが完成したらidになるのかな？
 const memberNumber = 0;
 
 // タスクの合計時間を求める関数
-const calculateTotalTime = (items: any[]) => {
-  return items.reduce((totalTime: number, item: any) => {
+const calculateTotalTime = (items: Item[]) => {
+  return items.reduce((totalTime: number, item: Item) => {
     if (item.tasks) {
       totalTime += item.tasks.reduce(
-        (sum: number, task: any) => sum + task.timeRequired,
+        (sum: number, task: Task) => sum + task.timeRequired,
         0,
       );
     }
     if (item.folders) {
-      item.folders.forEach((folder: any) => {
+      item.folders.forEach((folder: Folder) => {
         totalTime += folder.tasks.reduce(
-          (sum: number, task: any) => sum + task.timeRequired,
+          (sum: number, task: Task) => sum + task.timeRequired,
           0,
         );
       });
@@ -107,84 +116,83 @@ export default function Home() {
   const wakeUpTime = calculateWakeUpTime(member.goleTime, totalTime);
 
   return (
-    <div className="flex h-screen flex-col items-center justify-center bg-slate-50 text-center">
+    <div className="flex h-screen flex-col items-center justify-center bg-slate-50 text-center font-mPlus text-darkBlue max-w-md, mx-auto">
       {/* 現在時刻の表示 */}
       <h1 className="mb-1">
         <DisplayTime />
       </h1>
       <Card className="mt-4 w-3/4 max-w-md border-darkBlue">
-   <h5 className="pt-1 pb-1 font-mPlus">
-          最終更新時刻：{member?.lastEditedTime}
-        </h5>
+        <h5 className="pb-1 pt-1">最終更新時刻：{member?.lastEditedTime}</h5>
         <CardHeader className="pb-2 pt-0">
-          <div className="text-3xl text-gray-900 mb-1 border border-pink-300 rounded-lg p-4 shadow-sm text-slate-800 bg-slate-0 font-mPlus font-Medium">
-            <p className="mb-1 text-lg leading-none">
-              達成時刻
-            </p>
-            <p className="font-bold">
-              {member?.goleTime}
-            </p>
+          <div className="bg-slate-0 mb-1 rounded-lg border border-pink-300 p-4 text-3xl shadow-sm">
+            <p className="mb-1 text-lg leading-none">達成時刻</p>
+            <p className="font-bold">{member?.goleTime}</p>
           </div>
         </CardHeader>
         <CardContent>
-            <ScrollArea className="p-0 h-64 w-full rounded-md border font-mPlus">
-              {/* タスクとフォルダを表示 */}
-              <div className="space-y-3">
-                {member.items.map((item, index) => (
-                  <div key={index} className="space-y-4">
-                    {/* items内のタスク */}
-                    {item.tasks && (
-                        <div className="space-y-2">
-                          {item.tasks.map((task, taskIndex) => (
-                            <div
-                              key={taskIndex}
-                              className="m-2 flex justify-between items-center bg-yellow-200 p-3 rounded-md shadow-sm"
-                            >
-                              <p className="text-lg font-medium text-gray-800">{task.taskName}</p>
-                              <p className="text-sm text-gray-600">{task.timeRequired}分</p>
-                            </div>
-                          ))}
+          <ScrollArea className="h-64 w-full rounded-md border p-0">
+            {/* タスクとフォルダを表示 */}
+            <div className="space-y-3">
+              {member.items.map((item, index) => (
+                <div key={index} className="space-y-4">
+                  {/* items内のタスク */}
+                  {item.tasks && (
+                    <div className="space-y-2">
+                      {item.tasks.map((task, taskIndex) => (
+                        <div
+                          key={taskIndex}
+                          className="m-2 flex items-center justify-between rounded-md bg-lime-100 p-3 shadow-sm"
+                        >
+                          <p className="text-lg font-medium">{task.name}</p>
+                          <p className="text-sm">{task.timeRequired}分</p>
                         </div>
-                    )}
+                      ))}
+                    </div>
+                  )}
 
-                    {/* フォルダ内タスク */}
-                    {item.folders && (
-                        <div className="space-y-2">
-                          {item.folders.map((folder, folderIndex) => (
-                            <div key={folderIndex} className="m-2 border rounded-lg bg-purple-300 p-4 ">
-                              <h4 className="text-lg font-bold text-gray-800 mb-2">{folder.name}</h4>
-                              <div className="space-y-2">
-                                {folder.tasks.map((task, taskIndex) => (
-                                  <div
-                                    key={taskIndex}
-                                    className="flex justify-between items-center bg-yellow-200 p-3 rounded-md shadow-sm"
-                                  >
-                                    <p className="text-lg font-medium text-gray-800">{task.name}</p>
-                                    <p className="text-sm text-gray-600">{task.timeRequired}分</p>
-                                  </div>
-                                ))}
+                  {/* フォルダ内タスク */}
+                  {item.folders && (
+                    <div className="space-y-2">
+                      {item.folders.map((folder, folderIndex) => (
+                        <div
+                          key={folderIndex}
+                          className="m-2 rounded-lg border bg-violet-200 p-4"
+                        >
+                          <h4 className="mb-2 text-lg font-bold">
+                            {folder.name}
+                          </h4>
+                          <div className="space-y-2">
+                            {folder.tasks.map((task, taskIndex) => (
+                              <div
+                                key={taskIndex}
+                                className="flex items-center justify-between rounded-md bg-lime-100 p-3 shadow-sm"
+                              >
+                                <p className="text-lg font-medium">
+                                  {task.name}
+                                </p>
+                                <p className="text-sm">{task.timeRequired}分</p>
                               </div>
-                            </div>
-                          ))}
+                            ))}
+                          </div>
                         </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
-          <div className="text-3xl mt-4 mb-1 border rounded-lg p-4 shadow-sm  text-blue-950"
-            style={{ borderColor: "#ACC763" }}>
-            <p className="mb-1 text-lg leading-none">
-              起床時刻
-            </p>
-            <p className="font-bold">
-              {wakeUpTime}
-            </p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+          <div
+            className="mb-1 mt-4 rounded-lg border p-4 text-3xl shadow-sm"
+            style={{ borderColor: "#ACC763" }}
+          >
+            <p className="mb-1 text-lg leading-none">起床時刻</p>
+            <p className="font-bold">{wakeUpTime}</p>
           </div>
           <Link href="/schedule/new">
             <Button
               size="sm"
-              className="mt-3 bg-darkBlue px-8 py-5 font-mPlus text-lg text-slate-100 shadow-lg hover:bg-blue-900"
+              className="mt-3 bg-darkBlue px-8 py-5 text-lg shadow-lg hover:bg-blue-900"
             >
               変更
             </Button>
@@ -192,33 +200,33 @@ export default function Home() {
         </CardContent>
       </Card>
 
-      <div className="mt-2 flex space-x-12 font-mPlus">
+      <div className="mt-2 flex space-x-12">
         <div className="mt-4 flex-col">
           <Link href="/presets">
-            <Button className="bg-darkBlue hover:bg-blue-950 shadow-lg">
+            <Button className="bg-darkBlue shadow-lg hover:bg-blue-950">
               <Image
                 src="/image/folder.svg"
-                alt="newAllPreset"
+                alt="folder"
                 width={30}
                 height={30}
               />
             </Button>
           </Link>
-          <h1 className="text-darkBlue">プリセット</h1>
+          <h1>プリセット</h1>
         </div>
 
         <div className="mt-4 flex-col">
           <Link href="/settings">
-            <Button className="bg-darkBlue hover:bg-blue-950 shadow-lg">
+            <Button className="bg-darkBlue shadow-lg hover:bg-blue-950">
               <Image
                 src="/image/setting.svg"
-                alt="newAllPreset"
+                alt="setting"
                 width={30}
                 height={30}
               />
             </Button>
           </Link>
-          <h1 className="text-darkBlue">設定</h1>
+          <h1>設定</h1>
         </div>
       </div>
     </div>
