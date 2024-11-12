@@ -1,15 +1,18 @@
-import Image from "next/image";
 import Link from "next/link";
 import DisplayTime from "~/components/displayTime/displayTime";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { ScrollArea } from "~/components/ui/scroll-area";
+import FolderIconSvg from "~/components/svgs/folderClose"
+import SettingIconSvg from "~/components/svgs/setting"
 
 const data = {
   member: [
     {
       name: "sasaki",
-      goleTime: "11:10",
+      timepresets: [
+        { name: "1限電車", goleTime: "11:10" },
+      ],
       lastEditedTime: "2024/11/14 22:33",
       items: [
         {
@@ -93,17 +96,24 @@ const calculateWakeUpTime = (goalTime: string, totalTime: number) => {
   const [goalHour, goalMinute] = goalTime
     ? goalTime.split(":").map(Number)
     : [0, 0];
+
   let goalInMinutes = 0;
   if (goalHour !== undefined && goalMinute !== undefined) {
     goalInMinutes = goalHour * 60 + goalMinute;
   }
-  const wakeUpTimeInMinutes = goalInMinutes - totalTime;
+
+  let wakeUpTimeInMinutes = goalInMinutes - totalTime;
+
+  if (wakeUpTimeInMinutes < 0) {
+    wakeUpTimeInMinutes += 1440;
+  }
 
   const wakeUpHour = Math.floor(wakeUpTimeInMinutes / 60);
   const wakeUpMinute = wakeUpTimeInMinutes % 60;
 
   return `${wakeUpHour < 10 ? "0" : ""}${wakeUpHour}:${wakeUpMinute < 10 ? "0" : ""}${wakeUpMinute}`;
 };
+
 
 export default function Home() {
   const member = data.member[memberNumber];
@@ -112,11 +122,17 @@ export default function Home() {
     return <div>Loading...</div>;
   }
 
+  const goleTimePreset = member.timepresets.find(
+    (preset) => 'goleTime' in preset && 'name' in preset
+  ) as { goleTime: string; name: string } | undefined;
+
   const totalTime = calculateTotalTime(member.items);
-  const wakeUpTime = calculateWakeUpTime(member.goleTime, totalTime);
+  const wakeUpTime = goleTimePreset
+    ? calculateWakeUpTime(goleTimePreset.goleTime, totalTime)
+    : "N/A"; // goleTimeがない場合は "N/A"などのデフォルト値を設定
 
   return (
-    <div className="flex h-screen flex-col items-center justify-center bg-slate-50 text-center font-mPlus text-darkBlue max-w-md, mx-auto">
+    <div className="flex h-screen flex-col items-center justify-center bg-slate-50 text-center font-mPlus text-darkBlue max-w-md mx-auto">
       {/* 現在時刻の表示 */}
       <h1 className="mb-1">
         <DisplayTime />
@@ -125,8 +141,8 @@ export default function Home() {
         <h5 className="pb-1 pt-1">最終更新時刻：{member?.lastEditedTime}</h5>
         <CardHeader className="pb-2 pt-0">
           <div className="bg-slate-0 mb-1 rounded-lg border border-pink-300 p-4 text-3xl shadow-sm">
-            <p className="mb-1 text-lg leading-none">達成時刻</p>
-            <p className="font-bold">{member?.goleTime}</p>
+            <p className="mb-1 text-lg leading-none">{goleTimePreset?.name || "-"}</p>
+            <p className="font-bold">{goleTimePreset?.goleTime || "N/A"}</p>
           </div>
         </CardHeader>
         <CardContent>
@@ -204,26 +220,18 @@ export default function Home() {
         <div className="mt-4 flex-col">
           <Link href="/presets">
             <Button className="bg-darkBlue shadow-lg hover:bg-blue-950">
-              <Image
-                src="/image/folder.svg"
-                alt="folder"
-                width={30}
-                height={30}
-              />
+              <FolderIconSvg style={{ width: "30px", height: "30px" }} color={""} />
             </Button>
           </Link>
           <h1>プリセット</h1>
         </div>
 
+
+
         <div className="mt-4 flex-col">
           <Link href="/settings">
             <Button className="bg-darkBlue shadow-lg hover:bg-blue-950">
-              <Image
-                src="/image/setting.svg"
-                alt="setting"
-                width={30}
-                height={30}
-              />
+              <SettingIconSvg style={{ width: "30px", height: "30px" }} color={""} />
             </Button>
           </Link>
           <h1>設定</h1>

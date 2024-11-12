@@ -1,8 +1,15 @@
 import { db } from "../db";
-import { type itemStruct, type optionStruct, type taskStruct } from "./getdata";
+import type {
+  folderStruct,
+  itemStruct,
+  optionStruct,
+  taskStruct,
+  timeStruct,
+  wholeStruct,
+} from "./constants";
 
 // presetをItemとして追加
-export async function createTaskItem(item: itemStruct) {
+export async function createNewItem(item: itemStruct) {
   try {
     if (item == null) throw new Error("Invalid option data");
     const createItem = await db.items.create({
@@ -16,8 +23,53 @@ export async function createTaskItem(item: itemStruct) {
   }
 }
 
+// wholeを作成
+export async function insertWholeSet(whole: wholeStruct) {
+  try {
+    if (whole == null) throw new Error("Invalid folder data");
+    const createWhole = await db.wholeSets.create({
+      data: whole,
+    });
+
+    return createWhole;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+// timeSetを作成
+export async function insertTimeSet(timeSet: timeStruct) {
+  try {
+    if (timeSet == null) throw new Error("Invalid timeSet data");
+    const createTimeSet = await db.timeSets.create({
+      data: timeSet,
+    });
+
+    return createTimeSet;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+// folderを作成
+export async function insertFolderSet(folder: folderStruct) {
+  try {
+    if (folder == null) throw new Error("Invalid folder data");
+    const createFolder = await db.folderSets.create({
+      data: folder,
+    });
+
+    return createFolder;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
 // taskを作成
-export async function createTaskSet(task: taskStruct) {
+export async function insertTaskSet(task: taskStruct) {
   try {
     if (task == null) throw new Error("Invalid option data");
     const createTask = await db.taskSets.create({

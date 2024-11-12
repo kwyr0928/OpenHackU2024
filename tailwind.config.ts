@@ -57,7 +57,15 @@ export default {
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
   			},
-			darkBlue: '#0068B7'
+			darkBlue: '#0068B7',
+			color: {
+				all: '#31D6CB',
+				time: '#FF9AC6',
+				folder: '#A5EC44',
+				task: '#FFA660'
+			}
+
+
   		},
   		keyframes: {
   			'accordion-down': {
