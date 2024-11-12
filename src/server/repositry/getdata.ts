@@ -19,6 +19,9 @@ export async function getUserName(userId: string) {
   return user.name;
 }
 
+// isSetting な wholeItem
+
+
 // itemId to itemName
 export async function getItemName(itemId: string) {
   try {
@@ -43,21 +46,21 @@ export async function getItemName(itemId: string) {
 // id to object
 //
 
-// wholeId to whole
-
-// wholeId
-export async function getWholeInfoByWholeId(wholeId: string) {
+// wholeItem
+export async function getSettingWhole(userId: string) {
   try {
-    const whole = await db.wholeSets.findUnique({
+    const setting = await db.items.findFirst({
       where: {
-        id: wholeId,
+        userId: userId,
+        isSetting: true,
+        itemType: presetType.whole
       },
     });
 
-    if (!whole) throw new Error("not found whole");
-    return whole;
+    if (!setting) throw new Error("not found settingWholeSet");
+    return setting;
   } catch (error) {
-    console.error("Error in getWholeInfoByWholeId:", error);
+    console.error("Error in getSettingWhole:", error);
     return null;
   }
 }

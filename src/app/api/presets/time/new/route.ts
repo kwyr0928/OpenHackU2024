@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     const res = await createNewTime(userId, name, timeStr);
 
     return NextResponse.json({
-      message: "get all tasks successfully",
+      message: "timeSet created successfully",
       timeSet: res,
     });
   } catch (error) {

@@ -77,8 +77,8 @@ export async function instanciateTask(itemId: string, order: number) {
       item.userId,
       item.name,
       options,
-      order,
       selectedOption.order,
+      order,
       item,
     );
     if (taskInstanciate == null) {

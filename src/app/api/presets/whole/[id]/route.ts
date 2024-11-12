@@ -18,7 +18,7 @@ export async function GET(
 
     const wholeRes = await fetchWhole(itemId);
     if (!wholeRes) {
-      return NextResponse.json({ error: "Not found folders" }, { status: 404 });
+      return NextResponse.json({ error: "Not found whole" }, { status: 404 });
     }
 
     return NextResponse.json({

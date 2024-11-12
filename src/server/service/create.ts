@@ -243,7 +243,7 @@ export async function createFolder(
   prehabFolder?: itemStruct,
 ) {
   try {
-    if (!userId || !folderName || prehabTaskItemIds.length === 0) {
+    if (!userId || !folderName || order < 0 || prehabTaskItemIds.length === 0) {
       throw new Error(
         "Invalid input: userId and folderName and taskIds are required",
       );
@@ -253,7 +253,7 @@ export async function createFolder(
       userId: userId,
       name: folderName,
       itemType: presetType.folder,
-      order: 0,
+      order: order,
     };
 
     //itemを作る
@@ -287,9 +287,9 @@ export async function createFolder(
     }
 
     // taskをインスタンス化してのparentにfolderを設定
-    let order = 0;
+    let taskOrder = 0;
     for (const taskItemId of prehabTaskItemIds) {
-      const taskInstance = await instanciateTask(taskItemId, order);
+      const taskInstance = await instanciateTask(taskItemId, taskOrder);
       if (taskInstance == null) {
         throw new Error("Failed to instanciate task.");
       }
@@ -300,7 +300,7 @@ export async function createFolder(
       if (parentedTask == null) {
         throw new Error("Failed to parent folder and task.");
       }
-      order++;
+      taskOrder++;
     }
 
     return { folder: newFolder, item: masterSetItem };
@@ -347,7 +347,7 @@ export async function createTask(
       name: name,
       userId: userId,
       itemType: presetType.task,
-      order: 0,
+      order: order,
     };
 
     //itemを作る

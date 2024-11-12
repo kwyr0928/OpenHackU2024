@@ -11,7 +11,7 @@ export type itemStruct = {
   created_at?: Date;
   updated_at?: Date;
   userId: string;
-  isSetting?: boolean;
+  isSetting?: boolean; //明日の予定に設定中
   itemType: number;
   parentId?: string | null;
   masterId?: string | null;
