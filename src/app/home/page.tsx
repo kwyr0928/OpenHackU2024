@@ -5,6 +5,35 @@ import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import FolderIconSvg from "~/components/svgs/folderClose"
 import SettingIconSvg from "~/components/svgs/setting"
+import Tasks from "~/components/display/displayTask"
+
+type TaskSets = {
+  task: {
+    name: string,
+    itemId: string,
+    isStatic: boolean,
+    options: {
+      name: string,
+      time: number;
+    }[];
+  }[];
+};
+
+async function fetchTaskSets() {
+  try {
+    const response = await fetch('/api/schedule');
+    if (!response.ok) {
+      throw new Error(`Error: ${response.statusText}`);
+    }
+    const data = await response.json();  // JSON データを `data` に格納
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch data:", error);
+    throw error;
+  }
+}
+
+
 
 const data = {
   member: [
@@ -53,6 +82,7 @@ const data = {
     },
   ],
 };
+
 
 type Task = {
   name: string;
@@ -134,6 +164,7 @@ export default function Home() {
   return (
     <div className="flex h-screen flex-col items-center justify-center bg-slate-50 text-center font-mPlus text-darkBlue max-w-md mx-auto">
       {/* 現在時刻の表示 */}
+      <Tasks/>
       <h1 className="mb-1">
         <DisplayTime />
       </h1>
@@ -147,7 +178,6 @@ export default function Home() {
         </CardHeader>
         <CardContent>
           <ScrollArea className="h-64 w-full rounded-md border p-0">
-            {/* タスクとフォルダを表示 */}
             <div className="space-y-3">
               {member.items.map((item, index) => (
                 <div key={index} className="space-y-4">
