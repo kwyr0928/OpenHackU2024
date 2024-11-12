@@ -65,8 +65,25 @@ export async function getSettingWhole(userId: string) {
   }
 }
 
+// timeId to wholeItem
+export async function hasWholeTimeId(timeId: string) {
+  try {
+    const wholeItem = await db.wholeSets.findFirst({
+      where: {
+        timeSetId: timeId,
+      },
+    });
+
+    if (!wholeItem) throw new Error("not found hasWholeByTimeId");
+    return wholeItem;
+  } catch (error) {
+    console.error("Error in hasWholeByTimeId:", error);
+    return null;
+  }
+}
+
 // timeSetId to time
-export async function getTimeInfoBytimeId(timeSetId: string) {
+export async function getTimeInfoByTimeId(timeSetId: string) {
   try {
     const timeSet = await db.timeSets.findUnique({
       where: {
@@ -77,7 +94,7 @@ export async function getTimeInfoBytimeId(timeSetId: string) {
     if (!timeSet) throw new Error("not found timeSet");
     return timeSet;
   } catch (error) {
-    console.error("Error in getTimeInfoBytimeId:", error);
+    console.error("Error in getTimeInfoByTimeId:", error);
     return null;
   }
 }
@@ -290,6 +307,26 @@ export async function getTaskItemsInFolder(folderItemId: string) {
     return taskItems;
   } catch (error) {
     console.error("Error in getTasksInFolder:", error);
+    return null;
+  }
+}
+
+// itemIdを親に持つ item一覧 順序ソート済
+export async function getItemsInParentSortOrder(parentItemId: string) {
+  try {
+    const items = await db.items.findMany({
+      where: {
+        parentId: parentItemId
+      },
+      orderBy: {
+        order: "asc",
+      },
+    });
+
+    if (items.length === 0) return null;
+    return items;
+  } catch (error) {
+    console.error("Error in getItemsInParentSortOrder:", error);
     return null;
   }
 }
