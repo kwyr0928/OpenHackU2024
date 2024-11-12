@@ -102,7 +102,7 @@ export async function instanciateTime(timeId: string) {
       throw new Error("Not found time");
     }
 
-    const timeInstanciate = await createTime(time.userId, time.name, time.time);
+    const timeInstanciate = await createTime(time.userId, time.name, time.time, time);
     if (timeInstanciate == null) {
       throw new Error("Failed on createTime");
     }
