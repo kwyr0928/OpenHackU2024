@@ -67,8 +67,8 @@ export type optionStruct = {
 //
 export type wholeSetPostBody = {
   userId: string;
-  name: string;
   wholeSet: {
+    name: string;
     timeId: string;
     itemIds: string[];
   };
