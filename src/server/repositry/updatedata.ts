@@ -41,3 +41,32 @@ export async function setTaskParent(myItemId: string, parentItemId: string) {
     return null;
   }
 }
+
+export async function setNextSchedule(wholeSetId: string) {
+  try {
+    if (wholeSetId == null) throw new Error("Invalid args data");
+
+    //すでにセットされている予定のisSettingをfalseに
+    await db.items.updateMany({
+      where: {
+        isSetting: true,
+      },
+      data: {
+        isSetting: false,
+      },
+    });
+
+    //指定idのデータのisSettingをtrueに
+    await db.items.update({
+      where: {
+        id: wholeSetId,
+      },
+      data: {
+        isSetting: true,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
