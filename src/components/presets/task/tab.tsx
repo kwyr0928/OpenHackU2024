@@ -1,3 +1,8 @@
+"use client";
+
+import axios from "axios";
+import { useSession } from "next-auth/react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "~/components/ui/card";
 import {
   Command,
@@ -12,6 +17,26 @@ import EditTask from "./edit";
 import NewTask from "./new";
 
 export default function TabTask() {
+  const [taskResponse, setTaskResponse] = useState(null);
+  const { data: session, status } = useSession();
+
+  const handleTaskGet = async () => {
+    if (!session?.user?.id) {
+      return;
+    }
+    try {
+      const res = await axios.get(
+        `/api/presets/task?userId=${session.user.id}`,
+      );
+      setTaskResponse(res.data);
+      console.log(res.data);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    handleTaskGet();
+  }, [session]);
+
   return (
     <div>
       {/* タスク */}
@@ -25,32 +50,16 @@ export default function TabTask() {
               <CommandList className="">
                 <CommandEmpty>見つかりません</CommandEmpty>
                 <CommandGroup className="">
-                <hr className=" w-full border-gray-500" />
+                  <hr className="w-full border-gray-500" />
 
-                  <CommandItem>
-                    <EditTask>駅まで徒歩</EditTask>
-                  </CommandItem>
-                  <hr className="mt-2 w-full border-gray-500" />
-
-                  <CommandItem>
-                    <EditTask>ごはん</EditTask>
-                  </CommandItem>
-                  <hr className="mt-2 w-full border-gray-500" />
-
-                  <CommandItem>
-                    <EditTask>着替え</EditTask>
-                  </CommandItem>
-                  <hr className="mt-2 w-full border-gray-500" />
-
-                  <CommandItem>
-                    <EditTask>メイク</EditTask>
-                  </CommandItem>
-                  <hr className="mt-2 w-full border-gray-500" />
-
-                  <CommandItem>
-                    <EditTask>ヘアメイク</EditTask>
-                  </CommandItem>
-                  <hr className="mt-2 w-full border-gray-500" />
+                  {taskResponse?.taskSets.map((item) => (
+                    <>
+                      <CommandItem key={item.task.itemId}>
+                        <EditTask>{item.task.name}</EditTask>
+                      </CommandItem>
+                      <hr className="mt-2 w-full border-gray-500" />
+                    </>
+                  ))}
 
                 </CommandGroup>
                 <NewTask></NewTask>

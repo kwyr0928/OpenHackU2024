@@ -37,11 +37,6 @@ export default function TabFolder() {
                   </CommandItem>
                   <hr className="w-full border-gray-500" />
 
-                  <CommandItem>
-                    <EditFolder>17時バイト</EditFolder>
-                  </CommandItem>
-                  <hr className=" w-full border-gray-500" />
-
                 </CommandGroup>
                 <NewFolder></NewFolder>
               </CommandList>

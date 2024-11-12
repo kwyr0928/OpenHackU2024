@@ -71,32 +71,33 @@ export default function EditFolder({ children }: EditFolderProps) {
           </div>
           【{name}】
         </AccordionTrigger>
-        <AccordionContent className="">
-          <hr className="mb-1 w-full border-gray-500" />
+        <AccordionContent className="w-full">
+          <hr className="mt-2 mb-1 border-gray-500" />
+          <div className="mx-auto w-[90%]">
+            <EditTask>駅まで徒歩</EditTask>
+            <hr className="mb-1 mt-1 w-full border-gray-500" />
 
-          <EditTask>駅まで徒歩</EditTask>
-          <hr className="mb-1 mt-1 w-full border-gray-500" />
+            <EditTask>ごはん</EditTask>
+            <hr className="mb-1 mt-1 w-full border-gray-500" />
 
-          <EditTask>ごはん</EditTask>
-          <hr className="mb-1 mt-1 w-full border-gray-500" />
+            <EditTask>着替え</EditTask>
+            <hr className="mb-1 mt-1 w-full border-gray-500" />
 
-          <EditTask>着替え</EditTask>
-          <hr className="mb-1 mt-1 w-full border-gray-500" />
+            <EditTask>メイク</EditTask>
+            <hr className="mb-1 mt-1 w-full border-gray-500" />
 
-          <EditTask>メイク</EditTask>
-          <hr className="mb-1 mt-1 w-full border-gray-500" />
+            <EditTask>ヘアメイク</EditTask>
+            <hr className="mb-1 mt-1 w-full border-gray-500" />
 
-          <EditTask>ヘアメイク</EditTask>
-          <hr className="mb-1 mt-1 w-full border-gray-500" />
-
-          <div className="flex items-center justify-around">
-            <NewTask />
-            <Button
-              className="ml-2 rounded-full bg-gray-500 p-2"
-              onClick={() => setIsDialogOpen(true)}
-            >
-              <Image src="/image/edit.svg" alt="" width={20} height={20} />
-            </Button>
+            <div className="flex items-center justify-around">
+              <NewTask />
+              <Button
+                className="ml-2 rounded-full bg-gray-500 p-2"
+                onClick={() => setIsDialogOpen(true)}
+              >
+                <Image src="/image/edit.svg" alt="" width={20} height={20} />
+              </Button>
+            </div>
           </div>
 
           {/* 名前変更ダイアログ */}
