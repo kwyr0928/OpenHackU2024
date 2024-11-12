@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
-import { folderResponse } from "~/server/repositry/constants";
-import { getSettingWhole } from "~/server/repositry/getdata";
-import { fetchFolder, fetchWhole } from "~/server/service/fetch";
+import { fetchWhole } from "~/server/service/fetch";
 
-export async function GET(req: Request) {
+export async function GET(
+  req: Request,
+  { params }: { params: { id: string } },
+) {
   try {
+    const itemId = params.id; //itemId?wholeId?
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get("userId");
     if (!userId) {
@@ -13,15 +15,8 @@ export async function GET(req: Request) {
         { status: 400 },
       );
     }
-    const settingItem = await getSettingWhole(userId);
-    if (!settingItem) {
-      return NextResponse.json(
-        { error: "Not Found Setting WholeItem" },
-        { status: 404 },
-      );
-    }
 
-    const wholeRes = await fetchWhole(settingItem.id);
+    const wholeRes = await fetchWhole(itemId);
     if (!wholeRes) {
       return NextResponse.json({ error: "Not found whole" }, { status: 404 });
     }
@@ -38,4 +33,15 @@ export async function GET(req: Request) {
     );
   }
 }
+
+export async function PUT() {
+  return NextResponse.json({
+    message: "特定のプリセットを更新",
+  });
+}
+
+export async function DELETE() {
+  return NextResponse.json({
+    message: "特定のプリセットを削除",
+  });
 }

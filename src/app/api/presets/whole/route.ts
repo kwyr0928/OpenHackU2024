@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
-import { presetType, type taskResponse } from "~/server/repositry/constants";
+import {
+  presetType,
+  type wholeAllResponse,
+} from "~/server/repositry/constants";
 import { getKindItems } from "~/server/repositry/getdata";
-import { fetchTask } from "~/server/service/fetch";
 
 export async function GET(req: Request) {
   try {
@@ -13,34 +15,36 @@ export async function GET(req: Request) {
         { status: 400 },
       );
     }
-    const items = await getKindItems(userId, presetType.task);
+    const items = await getKindItems(userId, presetType.whole);
     if (!items) {
       return NextResponse.json(
         { error: "Invalid input: userId is required" },
         { status: 400 },
       );
     } else if (items?.length === 0) {
-      return NextResponse.json({ error: "Not found tasks" }, { status: 404 });
+      return NextResponse.json({ error: "Not found wholes" }, { status: 404 });
     }
 
-    const res: taskResponse[] = [];
+    const res: wholeAllResponse[] = [];
     for (const item of items) {
       if (!item) {
-        return NextResponse.json({ error: "Not found task" }, { status: 400 });
+        return NextResponse.json(
+          { error: "Not found folder" },
+          { status: 400 },
+        );
       }
-      const taskRes = await fetchTask(item.id, item.name);
-      if (!taskRes) {
-        return NextResponse.json({ error: "Not found tasks" }, { status: 404 });
-      }
-      res.push(taskRes);
+      const wholeRes: wholeAllResponse = {
+        name: item.name,
+      };
+      res.push(wholeRes);
     }
 
     return NextResponse.json({
-      message: "get all tasks successfully",
-      taskSets: res,
+      message: "get all wholes successfully",
+      wholeSets: res,
     });
   } catch (error) {
-    console.error("Error in GET task request:", error);
+    console.error("Error in GET folder request:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },

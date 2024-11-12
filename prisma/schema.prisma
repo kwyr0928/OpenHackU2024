@@ -38,7 +38,7 @@ model Items {
   isSetting  Boolean  @default(false) // 設定中でtrue
   itemType   Int // 全体0, フォルダ1, タスク2
   parentId   String? //Itemsのidを持つ
-  masterId  String?
+  masterId   String?
   order      Int      @default(0) //順序
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -50,6 +50,7 @@ model Items {
   FolderSet FolderSets[]
   TaskSet   TaskSets[]
   Items     Items[]      @relation(name: "itemParents")
+  @@index([userId])
 }
 
 model Master {
@@ -64,41 +65,44 @@ model Master {
 
 model WholeSets {
   id         String   @id @default(cuid())
-  itemId     String
+  itemId     String   @unique
   timeSetId  String
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
   item    Items    @relation(fields: [itemId], references: [id], onDelete: Cascade)
   timeSet TimeSets @relation(fields: [timeSetId], references: [id], onDelete: Cascade)
+  @@index([itemId])
 }
 
 model TimeSets {
   id         String   @id @default(cuid())
   userId     String
-  name       String   @default("")
-  time       DateTime @db.Time()
-  master_id  String?
+  name       String
+  time       String
+  masterId   String?
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
   user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  master   Master?     @relation(fields: [master_id], references: [id], onDelete: Cascade)
+  master   Master?     @relation(fields: [masterId], references: [id], onDelete: Cascade)
   WholeSet WholeSets[]
+  @@index([userId])
 }
 
 model FolderSets {
   id         String   @id @default(cuid())
-  itemId     String
+  itemId     String   @unique
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
   item Items @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  @@index([itemId])
 }
 
 model TaskSets {
   id         String   @id @default(cuid())
-  itemId     String
+  itemId     String   @unique
   optionId   String? // フォルダ,全体プリセットに設定中のオプション
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -106,11 +110,12 @@ model TaskSets {
   item       Items         @relation(fields: [itemId], references: [id], onDelete: Cascade)
   taskOption TaskOptions?  @relation(name: "select", fields: [optionId], references: [id])
   TaskOption TaskOptions[]
+  @@index([itemId])
 }
 
 model TaskOptions {
   id         String   @id @default(cuid())
-  name       String?
+  name       String  @default("")
   optionTime Int // n分
   order      Int      @default(0)
   taskId     String //所属タスク
@@ -120,6 +125,7 @@ model TaskOptions {
 
   task    TaskSets   @relation(fields: [taskId], references: [id], onDelete: Cascade)
   TaskSet TaskSets[] @relation(name: "select")
+  @@index([taskId])
 }
 
 // NextAuth関連
