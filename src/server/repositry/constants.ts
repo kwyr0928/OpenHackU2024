@@ -108,9 +108,9 @@ export type taskSetPostBody = {
 //
 export type contentResponse = folderResponse | taskResponse;
 export type wholeResponse = {
-  //審議
   whole: {
     name: string;
+    itemId: string;
     timeSet: timeResponse;
     itemSet: contentResponse[];
   };
@@ -118,11 +118,13 @@ export type wholeResponse = {
 
 export type wholeAllResponse = {
   name: string;
+  itemId: string;
 };
 
 export type timeResponse = {
   time: {
     name: string;
+    timeId: string;
     time: string;
   };
 };
