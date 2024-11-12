@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { presetType } from "~/server/repositry/constants";
 import { deleteItem } from "~/server/repositry/deletedata";
+import { setItemParentReOrder } from "~/server/service/update";
 
 export async function PUT() {
   return NextResponse.json({
@@ -14,7 +15,14 @@ export async function DELETE(
 ) {
   try {
     const itemId = params.id;
-    const res = deleteItem(itemId, presetType.folder);
+    const deleted = await deleteItem(itemId, presetType.folder);
+    if (deleted == null) {
+      return NextResponse.json(
+        { error: "Invalid input: deleted" },
+        { status: 400 },
+      );
+    }
+    const res = await setItemParentReOrder(deleted.item.parentId!);
     if (res == null) {
       return NextResponse.json(
         { error: "Invalid input: userId is required" },

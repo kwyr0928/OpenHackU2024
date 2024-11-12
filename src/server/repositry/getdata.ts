@@ -311,6 +311,26 @@ export async function getTaskItemsInFolder(folderItemId: string) {
   }
 }
 
+// itemIdを親に持つ item一覧 順序ソート済
+export async function getItemsInParentSortOrder(parentItemId: string) {
+  try {
+    const items = await db.items.findMany({
+      where: {
+        parentId: parentItemId
+      },
+      orderBy: {
+        order: "asc",
+      },
+    });
+
+    if (items.length === 0) return null;
+    return items;
+  } catch (error) {
+    console.error("Error in getItemsInParentSortOrder:", error);
+    return null;
+  }
+}
+
 // taskId to タスクの持つオプション一覧
 export async function getOptionsInTask(taskId: string) {
   try {

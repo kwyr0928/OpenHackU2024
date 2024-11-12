@@ -1,7 +1,7 @@
 import { db } from "../db";
 import { getItemInfoByItemId, getTimeInfoByTimeId, hasWholeTimeId } from "./getdata";
 
-// itemをitemIdで削除
+// itemを削除
 export async function deleteItem(itemId: string, type: number) {
   try {
     // itemに親があるかどうか
@@ -16,7 +16,7 @@ export async function deleteItem(itemId: string, type: number) {
       // itemのみ削除
       res = await deleteAnItem(itemId, type);
     }
-    return res;
+    return { res: res, item: item };
   } catch (error) {
     console.error("Error deleting item:", error);
     return null;
@@ -39,7 +39,7 @@ export async function deleteAnItem(itemId: string, type: number) {
   }
 }
 
-// itemをitemIdで削除
+// time削除
 export async function deleteTime(timeId: string) {
   try {
     // timeに親があるかどうか
@@ -61,7 +61,7 @@ export async function deleteTime(timeId: string) {
   }
 }
 
-// itemをitemIdで削除
+// timeをtimeIdで削除
 export async function deleteAnTime(timeId: string) {
   try {
     const deleteItem = await db.timeSets.delete({

@@ -1,10 +1,10 @@
 import {
   getItemInfoByItemId,
+  getItemsInParentSortOrder,
   getOptionInfo,
   getOptionsInTask,
   getTaskInfoByItemId,
-  getTaskItemsInFolder,
-  getTimeInfoByTimeId,
+  getTimeInfoByTimeId
 } from "../repositry/getdata";
 import { createFolder, createTask, createTime } from "./create";
 
@@ -18,7 +18,7 @@ export async function instanciateFolder(prehabItemId: string, order: number) {
     if (item == null) {
       throw new Error("Not found item");
     }
-    const taskItems = await getTaskItemsInFolder(prehabItemId);
+    const taskItems = await getItemsInParentSortOrder(prehabItemId);
     if (taskItems == null) {
       throw new Error("Failed getTaskItemsInFolder");
     }

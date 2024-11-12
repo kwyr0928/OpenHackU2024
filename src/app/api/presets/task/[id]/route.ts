@@ -53,7 +53,7 @@ export async function DELETE(
 ) {
   try {
     const itemId = params.id;
-    const res = deleteItem(itemId, presetType.task);
+    const res = await deleteItem(itemId, presetType.task);
     if (res == null) {
       return NextResponse.json(
         { error: "Invalid input: userId is required" },
