@@ -48,11 +48,11 @@ export async function PUT() {
 }
 
 export async function DELETE(
+  req: Request,
   { params }: { params: { id: string } },
 ) {
   try {
     const itemId = params.id;
-    // master同じもの全部消して、フォルダーとかどうなる？
     const res = deleteItem(itemId, presetType.task);
     if (res == null) {
       return NextResponse.json(
