@@ -13,9 +13,10 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
+import TimeIcon from "~/components/svgs/timeIcon";
 
 // childrenを受け取るために型定義を追加
 interface EditTimeProps {
@@ -48,26 +49,32 @@ export default function EditTime({ children }: EditTimeProps) {
   return (
     <Accordion type="single" collapsible className="w-full">
       <AccordionItem value="item-1">
-      <AccordionTrigger className="flex w-full items-center justify-center rounded-t-md bg-rose-100 text-gray-700 p-2 hover:bg-rose-200 text-xl shadow-sm">
-          {name}
+        <AccordionTrigger className="w-full items-center justify-between p-1 text-xl text-black">
+          <div>
+            <TimeIcon
+              color='#FF9AC6'
+              style={{ width: "35px", height: "35px" }}
+            />
+          </div>
+          【{name}】
         </AccordionTrigger>
-        <AccordionContent className="items-center justify-start space-x-4 rounded-b-md bg-gray-200 text-xl">
-     <div className="flex justify-center pt-3">
-           <input
-             type="time"
-             value={time}
-             onChange={handleTimeChange}
-             className="w-full max-w-[200px] rounded-md border p-1"
-           />
-      
-           {/* 名前変更ボタン */}
-           <Button
-             className="rounded-full bg-gray-500 ml-3 p-2 my-auto"
-             onClick={() => setIsDialogOpen(true)} // ダイアログを開く
-           >
-             <Image src="/image/edit.svg" alt="" width={20} height={20} />
-           </Button>
-     </div>
+        <AccordionContent className="items-center justify-start space-x-4 rounded-b-md text-xl">
+          <div className="flex justify-center pt-3">
+            <input
+              type="time"
+              value={time}
+              onChange={handleTimeChange}
+              className="w-full max-w-[200px] rounded-md border p-1"
+            />
+
+            {/* 名前変更ボタン */}
+            <Button
+              className="my-auto ml-3 rounded-full bg-gray-500 p-2"
+              onClick={() => setIsDialogOpen(true)} // ダイアログを開く
+            >
+              <Image src="/image/edit.svg" alt="" width={20} height={20} />
+            </Button>
+          </div>
 
           {/* 名前変更ダイアログ */}
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -86,7 +93,7 @@ export default function EditTime({ children }: EditTimeProps) {
               {/* 削除ボタン（名前変更ダイアログ内） */}
               <div className="mt-auto flex justify-around">
                 <Button
-                  className="bg-red-600 hover:bg-red-700 text-white"
+                  className="bg-red-600 text-white hover:bg-red-700"
                   onClick={() => setIsDeleteDialogOpen(true)} // 削除確認ダイアログを開く
                 >
                   削除
@@ -111,7 +118,9 @@ export default function EditTime({ children }: EditTimeProps) {
               <DialogHeader>
                 <DialogTitle>確認</DialogTitle>
               </DialogHeader>
-              <p className="mt-4 text-center text-gray-700">この項目を削除しますか？</p>
+              <p className="mt-4 text-center text-gray-700">
+                この時間設定を削除しますか？
+              </p>
               <div className="mt-4 flex justify-end">
                 <Button
                   className="mr-4 bg-gray-600"
@@ -120,7 +129,7 @@ export default function EditTime({ children }: EditTimeProps) {
                   キャンセル
                 </Button>
                 <Button
-                  className="bg-red-600 hover:bg-red-700 text-white"
+                  className="bg-red-600 text-white hover:bg-red-700"
                   onClick={handleDelete} // 削除処理を実行
                 >
                   削除

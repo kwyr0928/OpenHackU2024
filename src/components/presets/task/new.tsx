@@ -11,6 +11,7 @@ import {
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import PlusCircle from "~/components/svgs/plusCircle";
 
 export default function NewTask() {
   const [name, setName] = useState<string>(); // 表示される名前
@@ -38,10 +39,12 @@ export default function NewTask() {
   return (
     <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
-        {/* children を表示 */}
-        <Button className="my-5 bg-darkBlue px-6 py-6 text-2xl text-slate-100 hover:bg-blue-900">
-          新規作成 +
-        </Button>
+      <div className="mt-4 flex items-center justify-center">
+          <PlusCircle
+            color='#FFA660'
+            style={{ width: "50px", height: "50px" }}
+          />
+        </div>
       </DialogTrigger>
       <DialogContent className="w-[90%] rounded-xl">
         <DialogHeader>

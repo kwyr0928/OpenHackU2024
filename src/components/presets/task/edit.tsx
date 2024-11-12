@@ -1,6 +1,7 @@
 "use client";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { useEffect, useState } from "react";
+import Description from "~/components/svgs/description";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -12,7 +13,6 @@ import {
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-
 interface EditTaskProps {
   children: string;
 }
@@ -73,11 +73,12 @@ export default function EditTask({ children }: EditTaskProps) {
         }
       }}
     >
-      <DialogTrigger asChild>
-        {/* children を表示 */}
-        <Button className="w-full bg-lime-100 text-gray-700 hover:bg-lime-200 py-6 text-xl">
-          {name}
-        </Button>
+      <DialogTrigger className="flex items-center justify-start w-full text-xl text-black">
+          <Description
+            color='#FFA660'
+            style={{ width: "35px", height: "35px" }}
+          />
+          【{name}】
       </DialogTrigger>
       <DialogContent className="w-[90%] rounded-xl">
         <DialogHeader>
@@ -96,7 +97,7 @@ export default function EditTask({ children }: EditTaskProps) {
             ) : (
               <Button
                 variant="ghost"
-                className="mt-4 w-full bg-lime-100 text-left text-gray-700"
+                className="mt-4 w-full bg-color-task text-left text-black"
                 onClick={() => setIsEditing(true)}
               >
                 {newName || "新しい名前を入力"}
@@ -112,12 +113,12 @@ export default function EditTask({ children }: EditTaskProps) {
           </TabsList>
           <TabsContent value="pulldown" className="h-[150px]">
             <ScrollArea>
-              <div className="flex items-center justify-center mb-3">
+              <div className="mb-3 flex items-center justify-center">
                 <Input
                   type="text"
                   value={options1}
                   onChange={(e) => setOptions1(e.target.value)}
-                  className="w-36 text-center mr-7"
+                  className="mr-7 w-36 text-center"
                 />
                 <Input
                   type="number"
@@ -127,12 +128,12 @@ export default function EditTask({ children }: EditTaskProps) {
                 />
                 <p>min</p>
               </div>
-              <div className="flex items-center justify-center mb-3">
+              <div className="mb-3 flex items-center justify-center">
                 <Input
                   type="text"
                   value={options2}
                   onChange={(e) => setOptions2(e.target.value)}
-                  className="w-36 text-center mr-7"
+                  className="mr-7 w-36 text-center"
                 />
                 <Input
                   type="number"
@@ -142,12 +143,12 @@ export default function EditTask({ children }: EditTaskProps) {
                 />
                 <p>min</p>
               </div>
-              <div className="flex items-center justify-center mb-3">
+              <div className="mb-3 flex items-center justify-center">
                 <Input
                   type="text"
                   value={options3}
                   onChange={(e) => setOptions3(e.target.value)}
-                  className="w-36 text-center mr-7"
+                  className="mr-7 w-36 text-center"
                 />
                 <Input
                   type="number"
