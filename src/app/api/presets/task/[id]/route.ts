@@ -62,10 +62,10 @@ export async function DELETE(
     }
 
     return NextResponse.json({
-      message: "delete folder successfully",
+      message: "delete task successfully",
     });
   } catch (error) {
-    console.error("Error in DELETE folder request:", error);
+    console.error("Error in DELETE task request:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },

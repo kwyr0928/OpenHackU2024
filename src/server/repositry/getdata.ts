@@ -65,8 +65,25 @@ export async function getSettingWhole(userId: string) {
   }
 }
 
+// timeId to wholeItem
+export async function hasWholeTimeId(timeId: string) {
+  try {
+    const wholeItem = await db.wholeSets.findFirst({
+      where: {
+        timeSetId: timeId,
+      },
+    });
+
+    if (!wholeItem) throw new Error("not found hasWholeByTimeId");
+    return wholeItem;
+  } catch (error) {
+    console.error("Error in hasWholeByTimeId:", error);
+    return null;
+  }
+}
+
 // timeSetId to time
-export async function getTimeInfoBytimeId(timeSetId: string) {
+export async function getTimeInfoByTimeId(timeSetId: string) {
   try {
     const timeSet = await db.timeSets.findUnique({
       where: {
@@ -77,7 +94,7 @@ export async function getTimeInfoBytimeId(timeSetId: string) {
     if (!timeSet) throw new Error("not found timeSet");
     return timeSet;
   } catch (error) {
-    console.error("Error in getTimeInfoBytimeId:", error);
+    console.error("Error in getTimeInfoByTimeId:", error);
     return null;
   }
 }

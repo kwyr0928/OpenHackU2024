@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { getItemInfoByItemId } from "./getdata";
+import { getItemInfoByItemId, getTimeInfoByTimeId, hasWholeTimeId } from "./getdata";
 
 // itemをitemIdで削除
 export async function deleteItem(itemId: string, type: number) {
@@ -30,6 +30,43 @@ export async function deleteAnItem(itemId: string, type: number) {
       where: {
         id: itemId,
         itemType: type,
+      },
+    });
+    return deleteItem;
+  } catch (error) {
+    console.error("Error deleting item:", error);
+    return null;
+  }
+}
+
+// itemをitemIdで削除
+export async function deleteTime(timeId: string) {
+  try {
+    // timeに親があるかどうか
+    const time = await getTimeInfoByTimeId(timeId);
+    if(time==null) throw new Error("not found timeInfo");
+    const whole = await hasWholeTimeId(timeId);
+    let res;
+    if(whole==null){
+      // Master削除
+      res = await deleteMaster(time.masterId!);
+    } else {
+      //timeのみ削除
+      res = await deleteAnTime(timeId);
+    }
+    return res;
+  } catch (error) {
+    console.error("Error deleting item:", error);
+    return null;
+  }
+}
+
+// itemをitemIdで削除
+export async function deleteAnTime(timeId: string) {
+  try {
+    const deleteItem = await db.timeSets.delete({
+      where: {
+        id: timeId,
       },
     });
     return deleteItem;

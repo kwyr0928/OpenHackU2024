@@ -4,7 +4,7 @@ import {
   getOptionsInTask,
   getTaskInfoByItemId,
   getTaskItemsInFolder,
-  getTimeInfoBytimeId,
+  getTimeInfoByTimeId,
 } from "../repositry/getdata";
 import { createFolder, createTask, createTime } from "./create";
 
@@ -97,8 +97,7 @@ export async function instanciateTime(timeId: string) {
       throw new Error("Invalid input: timeId is missing.");
     }
 
-    //
-    const time = await getTimeInfoBytimeId(timeId);
+    const time = await getTimeInfoByTimeId(timeId);
     if (time == null) {
       throw new Error("Not found time");
     }
