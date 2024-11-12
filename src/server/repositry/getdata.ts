@@ -1,7 +1,4 @@
-import {
-  getUniqueMasterItem,
-  getUniqueMasterTimeset,
-} from "@prisma/client/sql";
+import { getUniqueMasterTimeset } from "@prisma/client/sql";
 import { db } from "../db";
 import { presetType } from "./constants";
 
@@ -20,7 +17,6 @@ export async function getUserName(userId: string) {
 }
 
 // isSetting な wholeItem
-
 
 // itemId to itemName
 export async function getItemName(itemId: string) {
@@ -53,7 +49,7 @@ export async function getSettingWhole(userId: string) {
       where: {
         userId: userId,
         isSetting: true,
-        itemType: presetType.whole
+        itemType: presetType.whole,
       },
     });
 
@@ -252,9 +248,23 @@ export async function getOptionInfo(optionId: string) {
 
 // userId to 任意タイプのitem配列
 export async function getKindItems(userId: string, type: number) {
-  const items = await db.$queryRawTyped(getUniqueMasterItem(userId, type));
-  if (items == null) return null;
-  return items;
+  try {
+    const res = await db.items.findMany({
+      where: {
+        parentId: null,
+        itemType: type,
+      },
+      orderBy: {
+        created_at: "asc",
+      },
+    });
+
+    if (res.length === 0) return null;
+    return res;
+  } catch (error) {
+    console.error("Error in getTasksInFolder:", error);
+    return null;
+  }
 }
 
 // userId to TimeSets一覧
@@ -316,7 +326,7 @@ export async function getItemsInParentSortOrder(parentItemId: string) {
   try {
     const items = await db.items.findMany({
       where: {
-        parentId: parentItemId
+        parentId: parentItemId,
       },
       orderBy: {
         order: "asc",

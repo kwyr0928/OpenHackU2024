@@ -66,12 +66,12 @@ model Master {
 model WholeSets {
   id         String   @id @default(cuid())
   itemId     String   @unique
-  timeSetId  String
+  timeSetId  String?
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
   item    Items    @relation(fields: [itemId], references: [id], onDelete: Cascade)
-  timeSet TimeSets @relation(fields: [timeSetId], references: [id], onDelete: Cascade)
+  timeSet TimeSets? @relation(fields: [timeSetId], references: [id])
   @@index([itemId])
 }
 

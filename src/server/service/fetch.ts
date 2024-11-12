@@ -27,8 +27,12 @@ export async function fetchWhole(itemId: string) {
     // timeSet
     const whole = await getWholeInfoByItemId(itemId);
     if (!whole) throw new Error("not found contentsInWhole");
-    const time = await fetchTime(whole.timeSetId);
-    if (!time) throw new Error("not found timeSet");
+    let time;
+    if (!whole.timeSetId) {
+      time = null;
+    } else {
+      time = await fetchTime(whole.timeSetId);
+    }
     // 中身のtask or folder
     const itemsInWhole = await getItemsInWhole(itemId);
     if (!itemsInWhole) throw new Error("not found contentsInWhole");
