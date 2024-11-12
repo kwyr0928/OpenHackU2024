@@ -13,7 +13,7 @@ export async function setItemParentReOrder(myItemId: string) {
     // 小さい方から順にorderを設定し直す
     let count = 0;
     const ret = [];
-    for(const item of itemInParentItem){
+    for (const item of itemInParentItem) {
       const reOrderedITem = await setItemOrder(item.id, count);
       count++;
       ret.push(reOrderedITem);

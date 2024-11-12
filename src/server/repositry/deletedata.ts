@@ -1,5 +1,9 @@
 import { db } from "../db";
-import { getItemInfoByItemId, getTimeInfoByTimeId, hasWholeTimeId } from "./getdata";
+import {
+  getItemInfoByItemId,
+  getTimeInfoByTimeId,
+  hasWholeTimeId,
+} from "./getdata";
 
 // itemを削除
 export async function deleteItem(itemId: string, type: number) {
@@ -7,9 +11,9 @@ export async function deleteItem(itemId: string, type: number) {
     // itemに親があるかどうか
     const item = await getItemInfoByItemId(itemId);
     let res;
-    if(item==null){
+    if (item == null) {
       throw new Error("not found itemInfo");
-    } else if(item.parentId==null){
+    } else if (item.parentId == null) {
       // Master削除
       res = await deleteMaster(item.masterId!);
     } else {
@@ -44,10 +48,10 @@ export async function deleteTime(timeId: string) {
   try {
     // timeに親があるかどうか
     const time = await getTimeInfoByTimeId(timeId);
-    if(time==null) throw new Error("not found timeInfo");
+    if (time == null) throw new Error("not found timeInfo");
     const whole = await hasWholeTimeId(timeId);
     let res;
-    if(whole==null){
+    if (whole == null) {
       // Master削除
       res = await deleteMaster(time.masterId!);
     } else {

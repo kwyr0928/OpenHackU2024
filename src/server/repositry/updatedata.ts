@@ -45,8 +45,7 @@ export async function setTaskParent(myItemId: string, parentItemId: string) {
 // itemのorderを再設定
 export async function setItemOrder(myItemId: string, order: number) {
   try {
-    if (myItemId == null || order < 0)
-      throw new Error("Invalid args data");
+    if (myItemId == null || order < 0) throw new Error("Invalid args data");
     const updateItem = await db.items.update({
       where: {
         id: myItemId,

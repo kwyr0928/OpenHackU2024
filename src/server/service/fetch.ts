@@ -28,7 +28,7 @@ export async function fetchWhole(itemId: string) {
     const whole = await getWholeInfoByItemId(itemId);
     if (!whole) throw new Error("not found contentsInWhole");
     let time;
-    if(!whole.timeSetId) {
+    if (!whole.timeSetId) {
       time = null;
     } else {
       time = await fetchTime(whole.timeSetId);
