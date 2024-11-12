@@ -22,6 +22,7 @@ export async function DELETE(
         { status: 400 },
       );
     }
+    // フォルダの入ってた全体プリセットの再順序付け
     const res = await setItemParentReOrder(deleted.item.parentId!);
     if (res == null) {
       return NextResponse.json(

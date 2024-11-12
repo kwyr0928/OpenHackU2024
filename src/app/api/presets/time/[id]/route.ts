@@ -21,6 +21,10 @@ export async function DELETE(
       );
     }
 
+    // この時間プリセットが入っていた全体プリセットがあるなら、
+    // nullにする？
+    // @here
+
     return NextResponse.json({
       message: "delete timeSet successfully",
     });
