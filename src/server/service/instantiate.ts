@@ -1,10 +1,10 @@
 import {
   getItemInfoByItemId,
+  getItemsInParentSortOrder,
   getOptionInfo,
   getOptionsInTask,
   getTaskInfoByItemId,
-  getTaskItemsInFolder,
-  getTimeInfoBytimeId,
+  getTimeInfoByTimeId
 } from "../repositry/getdata";
 import { createFolder, createTask, createTime } from "./create";
 
@@ -18,7 +18,7 @@ export async function instanciateFolder(prehabItemId: string, order: number) {
     if (item == null) {
       throw new Error("Not found item");
     }
-    const taskItems = await getTaskItemsInFolder(prehabItemId);
+    const taskItems = await getItemsInParentSortOrder(prehabItemId);
     if (taskItems == null) {
       throw new Error("Failed getTaskItemsInFolder");
     }
@@ -97,13 +97,12 @@ export async function instanciateTime(timeId: string) {
       throw new Error("Invalid input: timeId is missing.");
     }
 
-    //
-    const time = await getTimeInfoBytimeId(timeId);
+    const time = await getTimeInfoByTimeId(timeId);
     if (time == null) {
       throw new Error("Not found time");
     }
 
-    const timeInstanciate = await createTime(time.userId, time.name, time.time);
+    const timeInstanciate = await createTime(time.userId, time.name, time.time, time);
     if (timeInstanciate == null) {
       throw new Error("Failed on createTime");
     }

@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import { folderResponse } from "~/server/repositry/constants";
 import { getSettingWhole } from "~/server/repositry/getdata";
-import { fetchFolder, fetchWhole } from "~/server/service/fetch";
+import { fetchWhole } from "~/server/service/fetch";
 
 export async function GET(req: Request) {
   try {
@@ -37,5 +36,4 @@ export async function GET(req: Request) {
       { status: 500 },
     );
   }
-}
 }
