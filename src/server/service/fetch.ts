@@ -14,7 +14,7 @@ import {
   getOptionsInTask,
   getTaskInfoByItemId,
   getTaskItemsInFolder,
-  getTimeInfoBytimeId,
+  getTimeInfoByTimeId,
   getWholeInfoByItemId,
 } from "../repositry/getdata";
 
@@ -71,7 +71,7 @@ export async function fetchWhole(itemId: string) {
 export async function fetchTime(timeSetId: string) {
   try {
     if (!timeSetId) throw new Error("timeSetId is required");
-    const timeSet = await getTimeInfoBytimeId(timeSetId);
+    const timeSet = await getTimeInfoByTimeId(timeSetId);
     if (!timeSet) throw new Error("not found timeSet");
 
     const retTimes: timeResponse = {
