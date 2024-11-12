@@ -3,62 +3,7 @@ import {
   getUniqueMasterTimeset,
 } from "@prisma/client/sql";
 import { db } from "../db";
-
-// プリセットタイプ
-export const presetType = {
-  whole: 0,
-  folder: 1,
-  task: 2,
-};
-// itemsテーブル用構造体
-export type itemStruct = {
-  id?: string;
-  name: string;
-  created_at?: Date;
-  updated_at?: Date;
-  userId: string;
-  isSetting?: boolean;
-  itemType: number;
-  parentId?: string | null;
-  master_id?: string;
-  order: number;
-};
-// timeSetsテーブル構造体
-export type timeStruct = {
-  id: string;
-  userId: string;
-  name: string;
-  time: Date; //Dateなのか？
-  master_id?: string;
-  created_at?: Date;
-  updated_at?: Date;
-};
-// folderSetsテーブル構造体
-export type folderStruct = {
-  id?: string;
-  itemId: string;
-  created_at?: Date;
-  updated_at?: Date;
-};
-// taskSetsテーブル構造体
-export type taskStruct = {
-  id?: string;
-  itemId: string;
-  optionId?: string;
-  created_at?: Date;
-  updated_at?: Date;
-};
-// optionSetsテーブル構造体
-export type optionStruct = {
-  id?: string;
-  name: string;
-  optionTime: number;
-  order: number;
-  isStatic: boolean;
-  taskId: string;
-  created_at?: Date;
-  updated_at?: Date;
-};
+import { presetType } from "./constants";
 
 // userId to ユーザー名
 export async function getUserName(userId: string) {
@@ -74,36 +19,275 @@ export async function getUserName(userId: string) {
   return user.name;
 }
 
-// userId to 任意タイプのSetsのid一覧
-export async function getKindPresets(userId: string, type: number) {
-  const itemIds = db.$queryRawTyped(getUniqueMasterItem(userId, type));
-  if (itemIds == null) return null;
-  return itemIds;
-}
+// isSetting な wholeItem
 
-// userId to TimeSetsのid一覧
-export async function getTimePresets(userId: string) {
-  const timeIds = db.$queryRawTyped(getUniqueMasterTimeset(userId));
-  if (timeIds == null) return null;
-  return timeIds;
-}
 
-// folderId to 中にあるtaskId一覧
-export async function getTasksInFolder(userId: string, folderId: string) {
+// itemId to itemName
+export async function getItemName(itemId: string) {
   try {
-    const taskIds = await db.items.findMany({
+    const taskName = await db.items.findUnique({
       select: {
-        id: true,
+        name: true,
       },
       where: {
-        userId: userId,
-        parentId: folderId,
-        itemType: presetType.task,
+        id: itemId,
       },
     });
 
-    if (taskIds.length === 0) return null;
-    return taskIds;
+    if (!taskName) throw new Error("not found item name");
+    return taskName.name;
+  } catch (error) {
+    console.error("Error in getItemName:", error);
+    return null;
+  }
+}
+
+//
+// id to object
+//
+
+// wholeItem
+export async function getSettingWhole(userId: string) {
+  try {
+    const setting = await db.items.findFirst({
+      where: {
+        userId: userId,
+        isSetting: true,
+        itemType: presetType.whole
+      },
+    });
+
+    if (!setting) throw new Error("not found settingWholeSet");
+    return setting;
+  } catch (error) {
+    console.error("Error in getSettingWhole:", error);
+    return null;
+  }
+}
+
+// timeSetId to time
+export async function getTimeInfoBytimeId(timeSetId: string) {
+  try {
+    const timeSet = await db.timeSets.findUnique({
+      where: {
+        id: timeSetId,
+      },
+    });
+
+    if (!timeSet) throw new Error("not found timeSet");
+    return timeSet;
+  } catch (error) {
+    console.error("Error in getTimeInfoBytimeId:", error);
+    return null;
+  }
+}
+
+// folderId to folder
+export async function getFolderInfoByfolderId(folderId: string) {
+  try {
+    const folder = await db.folderSets.findUnique({
+      where: {
+        id: folderId,
+      },
+    });
+
+    if (!folder) throw new Error("not found folder");
+    return folder;
+  } catch (error) {
+    console.error("Error in getFolderInfoByfolderId:", error);
+    return null;
+  }
+}
+
+// taskId to task
+export async function getTaskInfoBytaskId(taskId: string) {
+  try {
+    const task = await db.taskSets.findUnique({
+      where: {
+        id: taskId,
+      },
+    });
+
+    if (!task) throw new Error("not found task");
+    return task;
+  } catch (error) {
+    console.error("Error in getTaskInfoBytaskId:", error);
+    return null;
+  }
+}
+
+// itemId to item
+export async function getItemInfoByItemId(itemId: string) {
+  try {
+    const item = await db.items.findUnique({
+      where: {
+        id: itemId,
+      },
+    });
+
+    if (!item) throw new Error("not found item");
+    return item;
+  } catch (error) {
+    console.error("Error in getItemName:", error);
+    return null;
+  }
+}
+
+//
+// id to other object
+//
+
+// wholeItemId to timeSet
+export async function getTimeInfoByWholeItemId(itemId: string) {
+  try {
+    const item = await getItemInfoByItemId(itemId);
+    if (!item) throw new Error("not found itemSet");
+
+    return item;
+  } catch (error) {
+    console.error("Error in getItemInfoByTaskId:", error);
+    return null;
+  }
+}
+
+// taskId to item
+export async function getItemInfoByTaskId(taskId: string) {
+  try {
+    const task = await getTaskInfoBytaskId(taskId);
+    if (!task) throw new Error("not found taskSet");
+    const item = await getItemInfoByItemId(task?.itemId);
+    if (!item) throw new Error("not found itemSet");
+
+    return item;
+  } catch (error) {
+    console.error("Error in getItemInfoByTaskId:", error);
+    return null;
+  }
+}
+
+// itemId to whole
+export async function getWholeInfoByItemId(itemId: string) {
+  try {
+    const whole = await db.wholeSets.findUnique({
+      where: {
+        itemId: itemId,
+      },
+    });
+
+    if (!whole) throw new Error("not found foldwholeSet");
+    return whole;
+  } catch (error) {
+    console.error("Error in getWholeInfoByItemId:", error);
+    return null;
+  }
+}
+
+// itemId to folder
+export async function getFolderInfoByItemId(itemId: string) {
+  try {
+    const folder = await db.folderSets.findUnique({
+      where: {
+        itemId: itemId,
+      },
+    });
+
+    if (!folder) throw new Error("not found folderSet");
+    return folder;
+  } catch (error) {
+    console.error("Error in getFolderInfoByItemId:", error);
+    return null;
+  }
+}
+
+// itemId to task
+export async function getTaskInfoByItemId(itemId: string) {
+  try {
+    const task = await db.taskSets.findUnique({
+      where: {
+        itemId: itemId,
+      },
+    });
+
+    if (!task) throw new Error("not found taskSet");
+    return task;
+  } catch (error) {
+    console.error("Error in getTaskInfoByItemId:", error);
+    return null;
+  }
+}
+
+// optionId to optionInfo
+export async function getOptionInfo(optionId: string) {
+  try {
+    const option = await db.taskOptions.findUnique({
+      where: {
+        id: optionId,
+      },
+    });
+
+    if (!option) throw new Error("not found taskOption");
+    return option;
+  } catch (error) {
+    console.error("Error in getOptionInfo:", error);
+    return null;
+  }
+}
+
+// userId to 任意タイプのitem配列
+export async function getKindItems(userId: string, type: number) {
+  const items = await db.$queryRawTyped(getUniqueMasterItem(userId, type));
+  if (items == null) return null;
+  return items;
+}
+
+// userId to TimeSets一覧
+export async function getTimeSets(userId: string) {
+  const timeSets = await db.$queryRawTyped(getUniqueMasterTimeset(userId));
+  if (timeSets == null) return null;
+  return timeSets;
+}
+
+// wholeId to 中にあるitems一覧
+export async function getItemsInWhole(wholeItemId: string) {
+  try {
+    const res = await db.items.findMany({
+      where: {
+        OR: [
+          {
+            parentId: wholeItemId,
+            itemType: presetType.task,
+          },
+          { parentId: wholeItemId, itemType: presetType.folder },
+        ],
+      },
+      orderBy: {
+        created_at: "asc",
+      },
+    });
+
+    if (res.length === 0) return null;
+    return res;
+  } catch (error) {
+    console.error("Error in getTasksInFolder:", error);
+    return null;
+  }
+}
+
+// folderId to 中にあるtask一覧
+export async function getTaskItemsInFolder(folderItemId: string) {
+  try {
+    const taskItems = await db.items.findMany({
+      where: {
+        parentId: folderItemId,
+        itemType: presetType.task,
+      },
+      orderBy: {
+        created_at: "asc",
+      },
+    });
+
+    if (taskItems.length === 0) return null;
+    return taskItems;
   } catch (error) {
     console.error("Error in getTasksInFolder:", error);
     return null;
@@ -113,17 +297,14 @@ export async function getTasksInFolder(userId: string, folderId: string) {
 // taskId to タスクの持つオプション一覧
 export async function getOptionsInTask(taskId: string) {
   try {
-    const optionIds = await db.taskOptions.findMany({
-      select: {
-        id: true,
-      },
+    const options = await db.taskOptions.findMany({
       where: {
         taskId: taskId,
       },
     });
 
-    if (optionIds.length === 0) return null;
-    return optionIds;
+    if (options.length === 0) throw new Error("not found task options");
+    return options;
   } catch (error) {
     console.error("Error in getOptionsInTask:", error);
     return null;
