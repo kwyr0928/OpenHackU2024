@@ -47,23 +47,25 @@ export async function PUT() {
   });
 }
 
-export async function DELETE(req: Request) {
+export async function DELETE(
+  { params }: { params: { id: string } },
+) {
   try {
-    const { searchParams } = new URL(req.url);
-    const itemId = searchParams.get("itemId");
-    if (!itemId) {
+    const itemId = params.id;
+    // master同じもの全部消して、フォルダーとかどうなる？
+    const res = deleteItem(itemId, presetType.task);
+    if (res == null) {
       return NextResponse.json(
-        { error: "Invalid input: itemId is required" },
+        { error: "Invalid input: userId is required" },
         { status: 400 },
       );
     }
-    const deletedTask = await deleteItem(itemId, presetType.task);
+
     return NextResponse.json({
-      message: "delete tasks successfully",
-      task: deletedTask,
+      message: "delete folder successfully",
     });
   } catch (error) {
-    console.error("Error in POST request:", error);
+    console.error("Error in DELETE folder request:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },

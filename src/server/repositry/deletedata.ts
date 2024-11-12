@@ -16,7 +16,7 @@ export async function deleteItem(itemId: string, type: number) {
   }
 }
 
-// itemをitemIdで削除
+// masterId同じものを削除
 export async function deleteMaster(masterId: string) {
   try {
     const deleteMaster = await db.master.delete({
