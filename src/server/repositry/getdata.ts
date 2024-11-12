@@ -1,6 +1,5 @@
 import {
-  getUniqueMasterItem,
-  getUniqueMasterTimeset,
+  getUniqueMasterTimeset
 } from "@prisma/client/sql";
 import { db } from "../db";
 import { presetType } from "./constants";
@@ -252,9 +251,23 @@ export async function getOptionInfo(optionId: string) {
 
 // userId to 任意タイプのitem配列
 export async function getKindItems(userId: string, type: number) {
-  const items = await db.$queryRawTyped(getUniqueMasterItem(userId, type));
-  if (items == null) return null;
-  return items;
+  try {
+    const res = await db.items.findMany({
+      where: {
+        parentId: null,
+        itemType: type,
+      },
+      orderBy: {
+        created_at: "asc",
+      },
+    });
+
+    if (res.length === 0) return null;
+    return res;
+  } catch (error) {
+    console.error("Error in getTasksInFolder:", error);
+    return null;
+  }
 }
 
 // userId to TimeSets一覧
