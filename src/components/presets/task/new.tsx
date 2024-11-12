@@ -15,25 +15,6 @@ import { Input } from "~/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import PlusCircle from "~/components/svgs/plusCircle";
 
-const taskData = {
-  userId: "cm390e361000010avus2xru9v",
-  taskSet: {
-    name: "a",
-    isStatic: false,
-    select: 0,
-    options: [
-      {
-        name: "はや",
-        time: 5,
-      },
-      {
-        name: "おそ",
-        time: 10,
-      },
-    ],
-  },
-};
-
 export default function NewTask() {
   const [name, setName] = useState<string>(""); // 表示される名前
   const [isDialogOpen, setDialogOpen] = useState(false); // ダイアログの状態

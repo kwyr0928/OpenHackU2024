@@ -1,3 +1,8 @@
+"use client";
+
+import axios from "axios";
+import { useSession } from "next-auth/react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "~/components/ui/card";
 import {
   Command,
@@ -12,6 +17,26 @@ import EditFolder from "./edit";
 import NewFolder from "./new";
 
 export default function TabFolder() {
+  const [folderResponse, setFolderResponse] = useState(null);
+  const { data: session, status } = useSession();
+  
+  const handleFolderGet = async () => {
+    if (!session?.user?.id) {
+      return;
+    }
+    try {
+      const res = await axios.get(
+        `/api/presets/folder?userId=${session.user.id}`,
+      );
+      setFolderResponse(res.data);
+      console.log(res.data);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    handleFolderGet();
+  }, [session]);
+
   return (
     <div>
       {/* フォルダ */}
@@ -27,15 +52,14 @@ export default function TabFolder() {
                 <CommandGroup className="">
                 <hr className=" w-full border-gray-500" />
 
-                  <CommandItem>
-                    <EditFolder>おしゃれする</EditFolder>
-                  </CommandItem>
-                  <hr className=" w-full border-gray-500" />
-
-                  <CommandItem>
-                    <EditFolder>2限電車</EditFolder>
-                  </CommandItem>
-                  <hr className="w-full border-gray-500" />
+                {folderResponse?.folderSets?.map((item) => (
+                    <>
+                      <CommandItem key={item.folder.itemId}>
+                        <EditFolder>{item.folder.name}</EditFolder>
+                      </CommandItem>
+                      <hr className="mt-2 w-full border-gray-500" />
+                    </>
+                  ))}
 
                 </CommandGroup>
                 <NewFolder></NewFolder>

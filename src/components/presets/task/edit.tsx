@@ -15,6 +15,9 @@ import { Input } from "~/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 interface EditTaskProps {
   children: string;
+  id:string;
+  isStatic:boolean;
+  option:string;
 }
 
 export default function EditTask({ children }: EditTaskProps) {
@@ -44,6 +47,7 @@ export default function EditTask({ children }: EditTaskProps) {
     //データベースから削除
     setDialogOpen(false);
     setIsDeleteDialogOpen(false);
+
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -152,8 +156,8 @@ export default function EditTask({ children }: EditTaskProps) {
                 />
                 <Input
                   type="number"
-                  value={minutes}
-                  onChange={(e) => setMinutes(Number(e.target.value))}
+                  value={minutes3}
+                  onChange={(e) => setMinutes3(Number(e.target.value))}
                   className="w-16 text-center"
                 />
                 <p>min</p>

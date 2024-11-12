@@ -21,22 +21,30 @@ export default function TabTime() {
   const [timeResponse, setTimeResponse] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const handleTimeGet = async () => {
-    if (!session?.user?.id) {
-      setLoading(false);
-      return;
-    }
-    try {
-      const res = await axios.get(
-        `/api/presets/time?userId=${session.user.id}`,
-      );
-      setTimeResponse(res.data);
-      console.log(res.data);
-    } catch (error) {}
-  };
-
   useEffect(() => {
+    let isMounted = true; // マウント状態を追跡
+  
+    const handleTimeGet = async () => {
+      if (!session?.user?.id) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const res = await axios.get(
+          `/api/presets/time?userId=${session.user.id}`,
+        );
+        if (isMounted) {
+          setTimeResponse(res.data);
+          console.log(res.data);
+        }
+      } catch (error) {}
+    };
+  
     handleTimeGet();
+  
+    return () => {
+      isMounted = false; // クリーンアップ
+    };
   }, [session]);
 
   return (
@@ -57,12 +65,11 @@ export default function TabTime() {
                   {timeResponse?.timeSets?.map((item) => (
                     <>
                       <CommandItem key={item.time.timeId}>
-                        <EditTime>{item.time.name}</EditTime>
+                        <EditTime id={item.time.timeId} time={item.time.time}>{item.time.name}</EditTime>
                       </CommandItem>
                       <hr className="w-full border-gray-500" />
                     </>
                   ))}
-
                 </CommandGroup>
                 <NewTime></NewTime>
               </CommandList>

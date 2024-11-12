@@ -52,7 +52,7 @@ export default function TabTask() {
                 <CommandGroup className="">
                   <hr className="w-full border-gray-500" />
 
-                  {taskResponse?.taskSets.map((item) => (
+                  {taskResponse?.taskSets?.map((item) => (
                     <>
                       <CommandItem key={item.task.itemId}>
                         <EditTask>{item.task.name}</EditTask>

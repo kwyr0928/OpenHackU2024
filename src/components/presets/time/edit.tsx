@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -21,17 +21,19 @@ import TimeIcon from "~/components/svgs/timeIcon";
 // childrenを受け取るために型定義を追加
 interface EditTimeProps {
   children: string;
+  id: string;
+  time :string
 }
 
-export default function EditTime({ children }: EditTimeProps) {
-  const [time, setTime] = useState<string>("10:00"); // 初期値を設定
+export default function EditTime({ children ,id ,time}: EditTimeProps) {
+  const [tempTime, setTempTime] = useState<string>(time); // 初期値を設定
   const [isDialogOpen, setIsDialogOpen] = useState(false); // ダイアログの開閉状態
   const [name, setName] = useState<string>(children); // 表示される名前
   const [newName, setNewName] = useState<string>(children); // 新しい名前
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false); // 削除確認ダイアログの状態
 
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTime(e.target.value); // 入力された時刻を更新
+    setTempTime(e.target.value); // 入力された時刻を更新
   };
 
   const handleSave = () => {
@@ -45,6 +47,7 @@ export default function EditTime({ children }: EditTimeProps) {
     setIsDeleteDialogOpen(false);
     setIsDialogOpen(false);
   };
+
 
   return (
     <Accordion type="single" collapsible className="w-full">
@@ -62,7 +65,7 @@ export default function EditTime({ children }: EditTimeProps) {
           <div className="flex justify-center pt-3">
             <input
               type="time"
-              value={time}
+              value={tempTime}
               onChange={handleTimeChange}
               className="w-full max-w-[200px] rounded-md border p-1"
             />
