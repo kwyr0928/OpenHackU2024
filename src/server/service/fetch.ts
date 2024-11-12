@@ -1,11 +1,11 @@
 import {
   type contentResponse,
-  presetType,
-  type wholeResponse,
   type folderResponse,
   type optionResponse,
+  presetType,
   type taskResponse,
   type timeResponse,
+  type wholeResponse,
 } from "../repositry/constants";
 import {
   getItemInfoByItemId,
@@ -54,6 +54,7 @@ export async function fetchWhole(itemId: string) {
     const getWhole: wholeResponse = {
       whole: {
         name: name,
+        itemId: itemId,
         timeSet: time,
         itemSet: retItems,
       },
@@ -76,6 +77,7 @@ export async function fetchTime(timeSetId: string) {
     const retTimes: timeResponse = {
       time: {
         name: timeSet.name,
+        timeId: timeSet.id,
         time: timeSet.time,
       },
     };

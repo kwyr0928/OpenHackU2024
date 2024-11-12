@@ -35,6 +35,7 @@ export async function GET(req: Request) {
       }
       const wholeRes: wholeAllResponse = {
         name: item.name,
+        itemId: item.id
       };
       res.push(wholeRes);
     }
