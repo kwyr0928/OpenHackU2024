@@ -16,10 +16,12 @@ export default function Page() {
 
   const handleTaskGet = async () => {
     if (!session?.user?.id) {
-        return;
+      return;
     }
     try {
-      const res = await axios.get(`/api/presets/task?userId=${session.user.id}`);
+      const res = await axios.get(
+        `/api/presets/task?userId=${session.user.id}`,
+      );
       setTaskResponse(res.data);
       console.log(res.data);
     } catch (error) {}
@@ -27,10 +29,12 @@ export default function Page() {
 
   const handleFolderGet = async () => {
     if (!session?.user?.id) {
-        return;
+      return;
     }
     try {
-        const res = await axios.get(`/api/presets/folder?userId=${session.user.id}`);
+      const res = await axios.get(
+        `/api/presets/folder?userId=${session.user.id}`,
+      );
       setFolderResponse(res.data);
       console.log(res.data);
     } catch (error) {}
@@ -38,10 +42,12 @@ export default function Page() {
 
   const handleTimeGet = async () => {
     if (!session?.user?.id) {
-        return;
+      return;
     }
     try {
-        const res = await axios.get(`/api/presets/time?userId=${session.user.id}`);
+      const res = await axios.get(
+        `/api/presets/time?userId=${session.user.id}`,
+      );
       setTimeResponse(res.data);
       console.log(res.data);
     } catch (error) {}
@@ -49,10 +55,12 @@ export default function Page() {
 
   const handleWholeIdGet = async () => {
     if (!session?.user?.id) {
-        return;
+      return;
     }
     try {
-        const res = await axios.get(`/api/presets/whole?userId=${session.user.id}`);
+      const res = await axios.get(
+        `/api/presets/whole?userId=${session.user.id}`,
+      );
       setWholeIdResponse(res.data);
       console.log(res.data);
     } catch (error) {}
@@ -60,10 +68,12 @@ export default function Page() {
 
   const handleWholeGet = async () => {
     if (!session?.user?.id) {
-        return;
+      return;
     }
     try {
-        const res = await axios.get(`/api/presets/whole/cm3ecyl07004qyflr6dphtskd?userId=${session.user.id}`);
+      const res = await axios.get(
+        `/api/presets/whole/cm3ecyl07004qyflr6dphtskd?userId=${session.user.id}`,
+      );
       setWholeResponse(res.data);
       console.log(res.data);
     } catch (error) {}
@@ -85,13 +95,14 @@ export default function Page() {
       </div>
       <div>
         <Button onClick={handleWholeIdGet}>全体プリセットID取得</Button>
-        {wholeIdResponse && <p>取得データ: {JSON.stringify(wholeIdResponse)}</p>}
+        {wholeIdResponse && (
+          <p>取得データ: {JSON.stringify(wholeIdResponse)}</p>
+        )}
       </div>
       <div>
         <Button onClick={handleWholeGet}>全体プリセット取得</Button>
         {wholeResponse && <p>取得データ: {JSON.stringify(wholeResponse)}</p>}
       </div>
-      
     </div>
   );
 }

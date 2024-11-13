@@ -16,35 +16,48 @@ import {
   CommandList,
 } from "~/components/ui/command";
 
+type TimeApiResponse = {
+  // 時間プリセットの取得
+  message: string;
+  timeSets: TimeSet[];
+};
+
+
+type TimeSet = {
+  // 時間プリセット　中身
+  time: {
+    name: string;
+    timeId: string;
+    time: string;
+  };
+};
+
+
 export default function TabTime() {
   const { data: session, status } = useSession();
-  const [timeResponse, setTimeResponse] = useState(null);
+  const [timeResponse, setTimeResponse] = useState<TimeApiResponse>();
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const handleTimeGet = async () => {
     let isMounted = true; // マウント状態を追跡
-  
-    const handleTimeGet = async () => {
-      if (!session?.user?.id) {
-        setLoading(false);
-        return;
+    if (!session?.user?.id) {
+      setLoading(false);
+      return;
+    }
+    try {
+      const res = await axios.get<TimeApiResponse>(
+        `/api/presets/time?userId=${session.user.id}`,
+      );
+      if (isMounted) {
+        setTimeResponse(res.data);
+        console.log(res.data);
       }
-      try {
-        const res = await axios.get(
-          `/api/presets/time?userId=${session.user.id}`,
-        );
-        if (isMounted) {
-          setTimeResponse(res.data);
-          console.log(res.data);
-        }
-      } catch (error) {}
-    };
-  
-    handleTimeGet();
-  
-    return () => {
-      isMounted = false; // クリーンアップ
-    };
+    } catch (error) {}
+    isMounted = false; // クリーンアップ
+  };
+
+  useEffect(() => {
+   void handleTimeGet();
   }, [session]);
 
   return (
@@ -58,20 +71,25 @@ export default function TabTime() {
             </div>
             <ScrollArea className="h-[640px]">
               <CommandList className="">
+                <hr className="w-full border-gray-500" />
                 <CommandEmpty>見つかりません</CommandEmpty>
                 <CommandGroup>
-                  <hr className="w-full border-gray-500" />
-
                   {timeResponse?.timeSets?.map((item) => (
                     <>
                       <CommandItem key={item.time.timeId}>
-                        <EditTime id={item.time.timeId} time={item.time.time}>{item.time.name}</EditTime>
+                        <EditTime
+                          id={item.time.timeId}
+                          time={item.time.time}
+                          handleTimeGet={handleTimeGet}
+                        >
+                          {item.time.name}
+                        </EditTime>
                       </CommandItem>
                       <hr className="w-full border-gray-500" />
                     </>
                   ))}
                 </CommandGroup>
-                <NewTime></NewTime>
+                <NewTime handleTimeGet={handleTimeGet}></NewTime>
               </CommandList>
             </ScrollArea>
           </Command>
