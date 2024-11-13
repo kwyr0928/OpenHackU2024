@@ -34,10 +34,13 @@ export async function createNewWhole(
   userId: string,
   name: string,
   prehabtimeId: string,
-  prehabItemId: string[],
+  prehabItems: {
+    itemId: string;
+    select: number;
+  }[],
 ) {
   try {
-    if (!userId || !name || !prehabtimeId || prehabItemId.length === 0) {
+    if (!userId || !name || !prehabtimeId || prehabItems.length === 0) {
       throw new Error(
         "Invalid input: userId and name and prehabtimeId and prehabItemId are required",
       );
@@ -84,14 +87,14 @@ export async function createNewWhole(
     // タスクorフォルダインスタンス化
     const instances: string[] = [];
     let order = 0;
-    for (const itemId of prehabItemId) {
+    for (const item of prehabItems) {
       // itemIdがタスクかフォルダか判別
-      const type = await getItemInfoByItemId(itemId);
+      const type = await getItemInfoByItemId(item.itemId);
       if (type == null) {
         throw new Error("Failed to get itemType.");
       } else if (type.itemType == presetType.task) {
         // タスクインスタンス化
-        const taskInstance = await instanciateTask(itemId, order);
+        const taskInstance = await instanciateTask(item.itemId, order, item.select);
         if (taskInstance == null) {
           throw new Error("Failed to instanciateTask.");
         }
@@ -106,7 +109,7 @@ export async function createNewWhole(
         order++;
       } else if (type.itemType == presetType.folder) {
         // フォルダインスタンス化
-        const folderInstance = await instanciateFolder(itemId, order);
+        const folderInstance = await instanciateFolder(item.itemId, order);
         if (folderInstance == null) {
           throw new Error("Failed to instanciateFolder.");
         }

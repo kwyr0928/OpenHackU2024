@@ -23,6 +23,22 @@ export async function getSameMasterItem(masterId: string) {
   }
 }
 
+// masterの命名を更新
+export async function updateMaster(masterId: string, name: string) {
+  try {
+    if (masterId == null) throw new Error("require masterId");
+    const updateMaster = await db.master.update({
+      data: { name: name },
+      where: { id: masterId },
+    });
+    if (!updateMaster) throw new Error("not found updateMaster");
+    return updateMaster;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
 // Itemにmaster生成
 export async function createMasterItem(item: itemStruct) {
   try {

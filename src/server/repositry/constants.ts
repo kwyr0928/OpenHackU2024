@@ -70,7 +70,10 @@ export type wholeSetPostBody = {
   wholeSet: {
     name: string;
     timeId: string;
-    itemIds: string[];
+    items: {
+      itemId: string;
+      select: number;
+    }[];
   };
 };
 
