@@ -69,10 +69,6 @@ export async function PUT(  req: Request,
     for(const items of allItems){
       updatedTask = await updateTask(items.id, { userId, taskSet });
     }
-    
-    
-    // フォルダ(deleted.item.parentId)と同じmasterを持つフォルダもこれをもとに更新
-    // @here
 
   return NextResponse.json({
     message: "update task successfully",

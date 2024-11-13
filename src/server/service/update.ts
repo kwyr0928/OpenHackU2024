@@ -2,8 +2,8 @@
 
 import { optionStruct, taskSetPostBody } from "../repositry/constants";
 import { deleteOptionsInTask } from "../repositry/deletedata";
-import { getItemsInParentSortOrder, getTaskInfoByItemId } from "../repositry/getdata";
-import { setItemOrder, updateItem, updateTaskSet } from "../repositry/updatedata";
+import { getItemsInParentSortOrder, getMasterIdByTimeId, getTaskInfoByItemId } from "../repositry/getdata";
+import { setItemOrder, updateItem, updateTaskSet, updateTimeSet } from "../repositry/updatedata";
 import { createTaskOption } from "./create";
 
 // 今あるタスクでフォルダ内順序を再設定
@@ -69,6 +69,23 @@ export async function updateTask(itemId: string, { userId, taskSet }: taskSetPos
     // task更新しない？選択中のやつは変えると困るから
     const ret = await updateTaskSet(taskInfo.id, taskInfo.optionIndex as number);
     return ret;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+export async function updateTime(timeId: string, name:string, time:string) {
+  try {
+    // const timeInfo = await getTimeInfoByTimeId(timeId);
+    // if(!timeInfo) throw new Error("Failed to get timeInfo.");
+
+    const masterId = await getMasterIdByTimeId(timeId);
+    if(masterId == null) throw new Error("Failed getMasterIdByTimeId");
+    // timeSet更新
+    const updatedTime = await updateTimeSet(masterId, name, time);
+    if(updatedTime == null) throw new Error("Failed getMasterIdByTimeId");
+    return updatedTime;
   } catch (error) {
     console.error(error);
     return null;
