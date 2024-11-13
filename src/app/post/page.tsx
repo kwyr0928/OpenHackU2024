@@ -5,18 +5,18 @@ import { useState } from "react";
 import { Button } from "~/components/ui/button";
 
 const taskData = {
-  userId: "cm3e6uw3200001p4l3jfecqvq",
+  userId: "cm390e361000010avus2xru9v",
   taskSet: {
-    name: "カスタム",
+    name: "a",
     isStatic: false,
     select: 0,
     options: [
       {
-        name: "はやく",
+        name: "はや",
         time: 5,
       },
       {
-        name: "おそく",
+        name: "おそ",
         time: 10,
       },
     ],
@@ -24,22 +24,20 @@ const taskData = {
 };
 
 const folderData = {
-    userId: "cm3e6uw3200001p4l3jfecqvq",
+    userId: "cm390e361000010avus2xru9v",
     folderSet: {
         name: "毎日やること",
         itemIds: [
-            "cm3ecocht001ayflr6t47rrm1",
-            "cm3ecoh3n001jyflrjxcr0j58",
-            "cm3ecoly1001syflrdiwyi40h",
+            "cm3enk1aw00047w54u7a10yec",
         ]
     }
 };
 
 const timeData = {
-    userId: "cm3e6uw3200001p4l3jfecqvq",
+    userId: "cm390e361000010avus2xru9v",
     timeSet: {
-        name: "バイト17時",
-        time: "16:55"
+        name: "unnri",
+        time: "17:55"
     }
 };
 

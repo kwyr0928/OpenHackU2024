@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { ScrollArea } from "~/components/ui/scroll-area";
+import PlusCircle from "~/components/svgs/plusCircle";
+import BoxIcon from "~/components/svgs/boxIcon";
 
 import {
   Command,
@@ -16,33 +18,60 @@ export default function TabAll() {
   return (
     <div>
       {/* 全体 */}
-      <Card className="h-[700px] border-darkBlue">
-        <CardContent className="space-y-2">
-          <Command className=" ">
-            <CommandInput placeholder="検索" />
-            <ScrollArea className="h-[640px] w-full">
+      <Card className="h-[700px] border-color-all">
+        <CardContent className="space-y-2 p-0">
+          <Command className="mt-2">
+            <div className="px-4">
+              <CommandInput placeholder="検索" />
+            </div>
+            <ScrollArea className="h-[640px]">
               <CommandList className="">
                 <CommandEmpty>見つかりません</CommandEmpty>
-                <CommandGroup className="mt-2">
-                  <CommandItem>
-                    <Button className="w-full bg-cyan-50 py-6 text-xl text-gray-700 hover:bg-cyan-100">
-                      <Link href="presets/all/edit">おしゃれ1限</Link>
-                    </Button>
+                <CommandGroup className="">
+                  <hr className=" w-full border-gray-500" />
+
+                  <CommandItem className="mt-1 mb-1">
+                    <Link
+                      className="flex w-full items-center justify-between text-xl text-black"
+                      href="presets/all/edit"
+                    >
+                      <BoxIcon
+                        color="#31D6CB"
+                        style={{ width: "35px", height: "35px" }}
+                      />
+                      【おしゃれ1限】
+                      <div className="text-color-all">＞</div>
+                    </Link>
                   </CommandItem>
-                  <CommandItem>
-                    <Button className="w-full bg-cyan-50 py-6 text-xl text-gray-700 hover:bg-cyan-100">
-                      <Link href="presets/all/edit">おしゃれ2限</Link>
-                    </Button>
+                  <hr className=" w-full border-gray-500" />
+
+                  <CommandItem className="mb-1 mt-1">
+                    <Link
+                      className="flex w-full items-center justify-between text-xl text-black"
+                      href="presets/all/edit"
+                    >
+                      <BoxIcon
+                        color="#31D6CB"
+                        style={{ width: "35px", height: "35px" }}
+                      />
+                      【おしゃれ2限】
+                      <div className="text-color-all">＞</div>
+                    </Link>
                   </CommandItem>
-                  <CommandItem>
-                    <Button className="w-full bg-cyan-50 py-6 text-xl text-gray-700 hover:bg-cyan-100">
-                      <Link href="presets/all/edit">おしゃれ3限</Link>
-                    </Button>
-                  </CommandItem>
+                  <hr className=" w-full border-gray-500" />
+                  
                 </CommandGroup>
-                <Button className="my-5 bg-darkBlue px-6 py-6 text-2xl text-slate-100 hover:bg-blue-900">
-                  <Link href="presets/all/new">新規作成 +</Link>
-                </Button>
+                <div>
+                  <Link
+                    className="mt-4 flex items-center justify-center"
+                    href="presets/all/new"
+                  >
+                    <PlusCircle
+                      color="#31D6CB"
+                      style={{ width: "50px", height: "50px" }}
+                    />
+                  </Link>
+                </div>
               </CommandList>
             </ScrollArea>
           </Command>
