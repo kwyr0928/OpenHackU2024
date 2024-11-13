@@ -119,6 +119,7 @@ export type wholeResponse = {
 export type wholeAllResponse = {
   name: string;
   itemId: string;
+  updateTime: Date;
 };
 
 export type timeResponse = {
