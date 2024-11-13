@@ -1,7 +1,4 @@
-import {
-  getUniqueMasterItem,
-  getUniqueMasterTimeset,
-} from "@prisma/client/sql";
+import { getUniqueMasterTimeset } from "@prisma/client/sql";
 import { db } from "../db";
 import { presetType } from "./constants";
 import { strict } from "assert";
@@ -66,8 +63,25 @@ export async function getSettingWhole(userId: string) {
   }
 }
 
+// timeId to wholeItem
+export async function hasWholeTimeId(timeId: string) {
+  try {
+    const wholeItem = await db.wholeSets.findFirst({
+      where: {
+        timeSetId: timeId,
+      },
+    });
+
+    if (!wholeItem) throw new Error("not found hasWholeByTimeId");
+    return wholeItem;
+  } catch (error) {
+    console.error("Error in hasWholeByTimeId:", error);
+    return null;
+  }
+}
+
 // timeSetId to time
-export async function getTimeInfoBytimeId(timeSetId: string) {
+export async function getTimeInfoByTimeId(timeSetId: string) {
   try {
     const timeSet = await db.timeSets.findUnique({
       where: {
@@ -78,7 +92,7 @@ export async function getTimeInfoBytimeId(timeSetId: string) {
     if (!timeSet) throw new Error("not found timeSet");
     return timeSet;
   } catch (error) {
-    console.error("Error in getTimeInfoBytimeId:", error);
+    console.error("Error in getTimeInfoByTimeId:", error);
     return null;
   }
 }
@@ -236,9 +250,23 @@ export async function getOptionInfo(optionId: string) {
 
 // userId to 任意タイプのitem配列
 export async function getKindItems(userId: string, type: number) {
-  const items = await db.$queryRawTyped(getUniqueMasterItem(userId, type));
-  if (items == null) return null;
-  return items;
+  try {
+    const res = await db.items.findMany({
+      where: {
+        parentId: null,
+        itemType: type,
+      },
+      orderBy: {
+        created_at: "asc",
+      },
+    });
+
+    if (res.length === 0) return null;
+    return res;
+  } catch (error) {
+    console.error("Error in getTasksInFolder:", error);
+    return null;
+  }
 }
 
 // userId to TimeSets一覧
@@ -291,6 +319,26 @@ export async function getTaskItemsInFolder(folderItemId: string) {
     return taskItems;
   } catch (error) {
     console.error("Error in getTasksInFolder:", error);
+    return null;
+  }
+}
+
+// itemIdを親に持つ item一覧 順序ソート済
+export async function getItemsInParentSortOrder(parentItemId: string) {
+  try {
+    const items = await db.items.findMany({
+      where: {
+        parentId: parentItemId,
+      },
+      orderBy: {
+        order: "asc",
+      },
+    });
+
+    if (items.length === 0) return null;
+    return items;
+  } catch (error) {
+    console.error("Error in getItemsInParentSortOrder:", error);
     return null;
   }
 }

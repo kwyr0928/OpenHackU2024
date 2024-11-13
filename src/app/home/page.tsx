@@ -5,12 +5,43 @@ import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import FolderIconSvg from "~/components/svgs/folderClose"
 import SettingIconSvg from "~/components/svgs/setting"
+import { Separator } from "~/components/ui/separator"
+import DescriptionSvg from "~/components/svgs/description";
+
+type TaskSets = {
+  task: {
+    name: string,
+    itemId: string,
+    isStatic: boolean,
+    options: {
+      name: string,
+      time: number;
+    }[];
+  }[];
+};
+
+async function fetchTaskSets() {
+  try {
+    const response = await fetch('/api/schedule');
+    if (!response.ok) {
+      throw new Error(`Error: ${response.statusText}`);
+    }
+    const data = await response.json();  // JSON データを `data` に格納
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch data:", error);
+    throw error;
+  }
+}
+
+
 
 const data = {
   member: [
     {
       name: "sasaki",
-      timepresets: [
+      itemId: "itemId",
+      timeSet: [
         { name: "1限電車", goleTime: "11:10" },
       ],
       lastEditedTime: "2024/11/14 22:33",
@@ -50,9 +81,11 @@ const data = {
           ],
         },
       ],
-    },
-  ],
+    }
+  ]
 };
+
+
 
 type Task = {
   name: string;
@@ -122,7 +155,7 @@ export default function Home() {
     return <div>Loading...</div>;
   }
 
-  const goleTimePreset = member.timepresets.find(
+  const goleTimePreset = member.timeSet.find(
     (preset) => 'goleTime' in preset && 'name' in preset
   ) as { goleTime: string; name: string } | undefined;
 
@@ -147,20 +180,22 @@ export default function Home() {
         </CardHeader>
         <CardContent>
           <ScrollArea className="h-64 w-full rounded-md border p-0">
-            {/* タスクとフォルダを表示 */}
             <div className="space-y-3">
               {member.items.map((item, index) => (
                 <div key={index} className="space-y-4">
                   {/* items内のタスク */}
                   {item.tasks && (
-                    <div className="space-y-2">
+                    <div>
                       {item.tasks.map((task, taskIndex) => (
-                        <div
-                          key={taskIndex}
-                          className="m-2 flex items-center justify-between rounded-md bg-lime-100 p-3 shadow-sm"
-                        >
-                          <p className="text-lg font-medium">{task.name}</p>
-                          <p className="text-sm">{task.timeRequired}分</p>
+                        <div key={taskIndex}>
+                          <div className="flex items-center justify-between mt-2">
+                            <div className="flex items-center">
+                              <DescriptionSvg style={{ width: "30px", height: "30px" }} color={"#FFA660"} />
+                              <p className="ml-3 text-lg font-medium">{task.name}</p>
+                            </div>
+                            <p className="text-sm mr-3">{task.timeRequired}分</p>
+                          </div>
+                          <Separator className="my-2" />
                         </div>
                       ))}
                     </div>
@@ -172,21 +207,20 @@ export default function Home() {
                       {item.folders.map((folder, folderIndex) => (
                         <div
                           key={folderIndex}
-                          className="m-2 rounded-lg border bg-violet-200 p-4"
+                          className="rounded-lg border border-gray-300 bg-color-folder p-4"
                         >
-                          <h4 className="mb-2 text-lg font-bold">
-                            {folder.name}
-                          </h4>
+                          <h4 className="mb-2 text-lg font-bold">{folder.name}</h4>
                           <div className="space-y-2">
                             {folder.tasks.map((task, taskIndex) => (
-                              <div
-                                key={taskIndex}
-                                className="flex items-center justify-between rounded-md bg-lime-100 p-3 shadow-sm"
-                              >
-                                <p className="text-lg font-medium">
-                                  {task.name}
-                                </p>
-                                <p className="text-sm">{task.timeRequired}分</p>
+                              <div key={taskIndex}>
+                                <div className="flex items-center justify-between bg-white">
+                                  <div className="flex items-center">
+                                    <DescriptionSvg style={{ width: "30px", height: "30px" }} color={"#FFA660"} />
+                                    <p className="ml-3 text-lg font-medium">{task.name}</p>
+                                  </div>
+                                  <p className="text-sm mr-3">{task.timeRequired}分</p>
+                                </div>
+                                <Separator className="my-2 bg-white" />
                               </div>
                             ))}
                           </div>

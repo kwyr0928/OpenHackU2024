@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
+import { presetType } from "~/server/repositry/constants";
+import { deleteItem } from "~/server/repositry/deletedata";
 import { fetchWhole } from "~/server/service/fetch";
+import { setItemParentReOrder } from "~/server/service/update";
 
 export async function GET(
   req: Request,
@@ -40,8 +43,35 @@ export async function PUT() {
   });
 }
 
-export async function DELETE() {
-  return NextResponse.json({
-    message: "特定のプリセットを削除",
-  });
+export async function DELETE(
+  req: Request,
+  { params }: { params: { id: string } },
+) {
+  try {
+    const itemId = params.id;
+    const deleted = await deleteItem(itemId, presetType.whole);
+    if (deleted == null) {
+      return NextResponse.json(
+        { error: "Invalid input: itemId is required" },
+        { status: 400 },
+      );
+    }
+    const res = await setItemParentReOrder(deleted.item.parentId!);
+    if (res == null) {
+      return NextResponse.json(
+        { error: "Invalid input: userId is required" },
+        { status: 400 },
+      );
+    }
+
+    return NextResponse.json({
+      message: "delete wholeSet successfully",
+    });
+  } catch (error) {
+    console.error("Error in DELETE wholeSet request:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
+  }
 }

@@ -34,14 +34,20 @@ export async function GET(req: Request) {
           { status: 400 },
         );
       }
-      const timeRes = await fetchTime(timeSet.id);
-      if (!timeRes) {
-        return NextResponse.json(
-          { error: "Not found timeSets" },
-          { status: 404 },
-        );
+      if (!timeSet.id) {
+        console.error("Error: timeSet.id is missing. timeSet:", timeSet);
+        res.push(null);
+        continue;
+      } else {
+        const timeRes = await fetchTime(timeSet.id);
+        if (!timeRes) {
+          return NextResponse.json(
+            { error: "Not found timeSets" },
+            { status: 404 },
+          );
+        }
+        res.push(timeRes);
       }
-      res.push(timeRes);
     }
 
     return NextResponse.json({
