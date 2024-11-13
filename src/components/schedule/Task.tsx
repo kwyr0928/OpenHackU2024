@@ -9,11 +9,9 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 
-type Task = {
+type TaskProps = {
   index: number;
   name: string;
-  itemId: string;
-  isStatic: boolean;
   options: { name: string; time: number }[];
   task: Item;
   handleDelete: (task: Item) => void;
@@ -31,14 +29,12 @@ type Item = {
 export default function TaskPreset({
   index,
   name,
-  itemId,
-  isStatic,
   options,
   task,
   handleDelete,
   handleSortUp,
   handleSortDown
-}: Task) {
+}: TaskProps) {
   return (
     <p className="flex justify-between border bg-white py-3">
       <div className="flex">

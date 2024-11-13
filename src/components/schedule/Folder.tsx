@@ -2,6 +2,7 @@
 
 import { Check, ChevronsUpDown } from "lucide-react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
 import {
   Command,
@@ -26,23 +27,17 @@ import {
 } from "../ui/dropdown-menu";
 import TaskPreset from "./Task";
 
-type Folder = {
-  index:number;
-  folder: Item;
-  openFolder: boolean;
-  setOpenFolder: (openFolder: boolean) => void;
-  valueFolder: string;
-  setValueFolder: (valueFolder: string) => void;
-  selectedFolderPreset: FolderSet | undefined;
-  setSelectedFolderPreset: (selectedFolderPreset: FolderSet) => void;
+type FolderProps = {
+  index: number;
+  folder: FolderSet;
   folderPresets: FolderSet[];
-  setFolderPresets: (folderPresets: FolderSet[]) => void;
-  handleDelete: (task: Item) => void;
+  handleDelete: (task: FolderSet) => void;
   handleSortUp: (index: number) => void;
   handleSortDown: (index: number) => void;
 };
 
-type Item = {
+type FolderSet = {
+  folder: {
   name: string;
         itemId: string;
         tasks: {
@@ -54,51 +49,38 @@ type Item = {
                 time: number;
             }[];
         }[];
-};
-
-type FolderSet = {
-  folder: {
-    name: string;
-    itemId: string;
-    tasks: {
-      name: string;
-      itemId: string;
-      isStatic: boolean;
-      options: {
-        name: string;
-        time: number;
-      }[];
-    };
-  };
+      }
 };
 
 export default function FolderPreset({
   index,
   folder,
-  openFolder,
-  setOpenFolder,
-  valueFolder,
-  setValueFolder,
-  selectedFolderPreset,
-  setSelectedFolderPreset,
   folderPresets,
-  setFolderPresets,
   handleDelete,
   handleSortUp,
   handleSortDown
-}: Folder) {
-  const handleFolderPresetSelect = (presetId: string) => {
+}: FolderProps) {
+
+  const [selectedFolderPreset, setSelectedFolderPreset] = useState<FolderSet>(); // 選択中のフォルダプリセット
+  const [openFolder, setOpenFolder] = useState(false); // フォルダ　プルダウン
+  const [valueFolder, setValueFolder] = useState(""); // フォルダ　プルダウン
+
+  const handleFolderPresetSelect = (id: string) => { // 選択中のフォルダが変更されたら
     const selectedPreset = folderPresets.find(
-      (preset) => preset.folder.itemId === presetId,
+      (preset) => preset.folder.itemId === id,
     );
     if (selectedPreset) {
       setSelectedFolderPreset(selectedPreset);
-      setValueFolder(presetId);
+      setValueFolder(id);
       setOpenFolder(false);
     }
   };
 
-  
+  useEffect(() => {
+    setSelectedFolderPreset(folder);
+    setValueFolder(folder.folder.itemId);
+    setOpenFolder(false);
+  },[folder]);
 
   return (
     <p className="bg-lime-300 px-2 pb-3 pt-3">
@@ -185,13 +167,15 @@ export default function FolderPreset({
           </DropdownMenu>
         </div>
       </p>
-      {selectedFolderPreset.folder.tasks.map(({ task }, index) => (
+      {selectedFolderPreset?.folder.tasks.map((item, index) => (
         <TaskPreset
           key={index}
-          name={task.name}
-          itemId={task.itemId}
-          isStatic={task.isStatic}
-          options={task.options}
+          name={item.task.name}
+          options={item.task.options}
+          task={item}
+          handleDelete={handleDelete} // TODO
+          handleSortUp={handleSortUp}
+          handleSortDown={handleSortDown}
         />
       ))}
     </p>

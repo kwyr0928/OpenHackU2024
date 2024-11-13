@@ -42,70 +42,22 @@ import { ScrollArea } from "~/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { cn } from "~/lib/utils";
 
-type WholeApiResponse = {
+type WholeApiResponse = { // 全体プリセットの取得
   message: string;
   wholeSets: WholeSet[];
 };
 
-type WholeSet = {
+type WholeSet = { // 全体プリセット　中身
   name: string;
   itemId: string;
 };
 
-type TimeApiResponse = {
+type DetailWholeApiResponse = { // 全体プリセット[id]の取得
   message: string;
-  timeSets: TimeSet[];
+  wholeSet: DetailWhole;
 };
 
-type TimeSet = {
-  time: {
-    name: string;
-    timeId: string;
-    time: string;
-  };
-};
-
-type FolderApiResponse = {
-  message: string;
-  folderSets: FolderSet[];
-};
-
-type TaskApiResponse = {
-  message: string;
-  taskSets: TaskSet[];
-};
-
-type TaskSet = {
-  task: {
-    name: string;
-    itemId: string;
-    isStatic: boolean;
-    options: {
-      name: string;
-      time: number;
-    }[];
-  };
-};
-
-type FolderSet = {
-  folder: {
-    name: string;
-    itemId: string;
-    tasks: {
-      name: string;
-      itemId: string;
-      isStatic: boolean;
-      options: {
-        name: string;
-        time: number;
-      }[];
-    }[];
-  };
-};
-
-type DetailedWholeApiResponse = {
-  message: string; // 成功
-  wholeSet: {
+type DetailWhole = { // 全体プリセット[id]　中身
     whole: {
       name: string; // 全体プリセット　名前
       itemId: string; // 全体プリセット　ID
@@ -144,345 +96,364 @@ type DetailedWholeApiResponse = {
       }[];
     };
   };
+
+type TimeApiResponse = { // 時間プリセットの取得
+  message: string;
+  timeSets: TimeSet[];
+};
+
+type TimeSet = { // 時間プリセット　中身
+  time: {
+    name: string;
+    timeId: string;
+    time: string;
+  };
+};
+
+type FolderApiResponse = { // フォルダプリセットの取得
+  message: string;
+  folderSets: FolderSet[];
+};
+
+type FolderSet = { // フォルダプリセット　中身
+  folder: {
+    name: string;
+    itemId: string;
+    tasks: {
+      task: {
+      name: string;
+      itemId: string;
+      isStatic: boolean;
+      options: {
+        name: string;
+        time: number;
+      }[];
+    }}[];
+  };
+};
+
+type TaskApiResponse = { // タスクプリセットの取得
+  message: string;
+  taskSets: TaskSet[];
+};
+
+type TaskSet = { // タスクプリセット　中身
+  task: {
+    name: string;
+    itemId: string;
+    isStatic: boolean;
+    options: {
+      name: string;
+      time: number;
+    }[];
+  };
 };
 
 export default function Schedule() {
-  const [openTime, setOpenTime] = useState(false);
-  const [valueTime, setValueTime] = useState("");
-  const [openFolder, setOpenFolder] = useState(false);
-  const [valueFolder, setValueFolder] = useState("");
-  const [openAll, setOpenAll] = useState(false);
-  const [valueAll, setValueAll] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [taskData, setTaskData] = useState(null);
-  const [folderData, setFolderData] = useState(null);
+  const [openWhole, setOpenWhole] = useState(false); // 全体　プルダウン
+  const [valueWhole, setValueWhole] = useState(""); // 全体　プルダウン
+  const [openTime, setOpenTime] = useState(false); // 時間　プルダウン
+  const [valueTime, setValueTime] = useState(""); // 時間　プルダウン
+  const [isLoading, setIsLoading] = useState(true); // ローディング中かどうか
 
-  const { data: session, status } = useSession();
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false); // タスク追加　既存プリセット
+  const [isTaskModalOpen2, setIsTaskModalOpen2] = useState(false); // タスク追加　新規作成
+  const [isFolderModalOpen, setIsFolderModalOpen] = useState(false); // フォルダ追加　既存プリセット
+  const [isFolderModalOpen2, setIsFolderModalOpen2] = useState(false); // フォルダ追加　新規作成
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isModalOpen2, setIsModalOpen2] = useState(false);
-  const [isModalOpen3, setIsModalOpen3] = useState(false);
-  const [isModalOpen4, setIsModalOpen4] = useState(false);
-  const [tempName, setTempName] = useState<string>(""); // 入力用の一時的な名前
-  const [options1, setOptions1] = useState("デフォルト"); // プルダウン
-  const [options2, setOptions2] = useState("");
-  const [options3, setOptions3] = useState("");
-  const [minutes1, setMinutes1] = useState(0); // 分
-  const [minutes2, setMinutes2] = useState(0); // 分
-  const [minutes3, setMinutes3] = useState(0); // 分
-  const [minutes, setMinutes] = useState(0);
-  const [wholePresets, setWholePresets] = useState<WholeSet[]>([]);
-  const [selectedWholePreset, setSelectedWholePreset] = useState<WholeSet>();
-  const [isLoading, setIsLoading] = useState(true);
-  const [timePresets, setTimePresets] = useState<TimeSet[]>([]);
-  const [selectedTimePreset, setSelectedTimePreset] = useState<TimeSet>();
-  const [detailedWholePreset, setDetailedWholePreset] =
-    useState<DetailedWholeApiResponse>();
-  const [folderPresets, setFolderPresets] = useState<FolderSet[]>([]);
-  const [selectedFolderPreset, setSelectedFolderPreset] = useState<FolderSet>();
-  const [taskPresets, setTaskPresets] = useState<TaskSet[]>([]);
+  const { data: session, status } = useSession(); // セッション情報
 
-  const handleCancel = () => {
-    setIsModalOpen2(false);
-  };
+  const [tempName, setTempName] = useState<string>(""); // タスク追加　新規作成　タスク名
+  const [options1, setOptions1] = useState("デフォルト"); // タスク追加　新規作成　プルダウン　オプション名1
+  const [minutes1, setMinutes1] = useState(0); // タスク追加　新規作成　プルダウン　時間1
+  const [options2, setOptions2] = useState(""); // 同上2
+  const [minutes2, setMinutes2] = useState(0); // 同上2
+  const [options3, setOptions3] = useState(""); // 同上3
+  const [minutes3, setMinutes3] = useState(0); // 同上3
+  const [minutes, setMinutes] = useState(0); // タスク追加　新規作成　固定値　時間
 
-  const handleCreate = () => {
-    console.log("作成しました");
-    setIsModalOpen2(false);
-  };
+  const [wholePresets, setWholePresets] = useState<WholeSet[]>([]); // 全体プリセット一覧
+  const [timePresets, setTimePresets] = useState<TimeSet[]>([]); // 時間プリセット一覧 time:
+  const [folderPresets, setFolderPresets] = useState<FolderSet[]>([]); // フォルダプリセット一覧 folder:
+  const [taskPresets, setTaskPresets] = useState<TaskSet[]>([]); // タスクプリセット一覧 task;
 
-  const handleSortUp = (index) => {
-      setDetailedWholePreset((prev) => {
-        if (!prev) return undefined;
+  const [selectedWholePreset, setSelectedWholePreset] = useState<WholeSet>(); // 選択中の全体プリセット
+  const [detailWholePreset, setDetailWholePreset] = useState<DetailWhole>(); // 選択中の全体プリセット[id]
+  const [selectedTimePreset, setSelectedTimePreset] = useState<TimeSet>(); // 選択中の時間プリセット
+  
+
+  const handleSortUp = (index: number) => { // タスクフォルダ並び替え　↑
+    // スケジュール内のタスクフォルダを並び替える itemSets // TODO
+    // 全体プリセットで仮実装済
+      setDetailWholePreset((prev) => {
+        if (!prev) return undefined; // データが無ければreturn
     
-        const updatedItemSet = [...prev.wholeSet.whole.itemSet];
+        const updatedItemSet = [...prev.whole.itemSet]; // 現在の配列を取得　
     
         if (index > 0 && index < updatedItemSet.length) {
-          [updatedItemSet[index - 1], updatedItemSet[index]] = [updatedItemSet[index], updatedItemSet[index - 1]];
+          [updatedItemSet[index - 1], updatedItemSet[index]] = [updatedItemSet[index], updatedItemSet[index - 1]]; // 赤線解消できない // TODO
         }
-    
-        return {
+        return { // 新しい配列を登録
           ...prev,
-          wholeSet: {
-            ...prev.wholeSet,
             whole: {
-              ...prev.wholeSet.whole,
+              ...prev.whole,
               itemSet: updatedItemSet,
             },
-          },
-          message: prev.message || "",
         };
       });
     };
 
-    const handleSortDown = (index) => {
-      setDetailedWholePreset((prev) => {
-        if (!prev) return undefined;
+    const handleSortDown = (index: number) => { // タスクフォルダ並び替え　↓
+      // スケジュール内のタスクフォルダを並び替える itemSets // TODO
+      // 全体プリセットで仮実装済
+      setDetailWholePreset((prev) => {
+        if (!prev) return undefined; // データが無ければreturn
     
-        const updatedItemSet = [...prev.wholeSet.whole.itemSet];
+        const updatedItemSet = [...prev.whole.itemSet]; // 現在の配列を取得
 
-        if (index >= 0 && index < updatedItemSet.length) {
-          [updatedItemSet[index], updatedItemSet[index + 1]] = [updatedItemSet[index + 1], updatedItemSet[index]];
+        if (index >= 0 && index < updatedItemSet.length - 1) { // -1で合ってる？動作確認必須 // TODO
+          [updatedItemSet[index], updatedItemSet[index + 1]] = [updatedItemSet[index + 1], updatedItemSet[index]]; // 赤線解消できない // TODO
         }
-    
-        return {
+        return { // 新しい配列を登録
           ...prev,
-          wholeSet: {
-            ...prev.wholeSet,
             whole: {
-              ...prev.wholeSet.whole,
+              ...prev.whole,
               itemSet: updatedItemSet,
-            },
           },
-          message: prev.message || "",
         };
       });
     };
 
-  const handleDelete = (task) => {
-    console.log(task);
-    setDetailedWholePreset((prev) => {
-      if (!prev) return undefined;
+  const handleDelete = (target) => { // タスクフォルダ削除 // 型定義 // TODO
+      // スケジュール内のタスクフォルダを並び替える itemSets // TODO
+      // 全体プリセットで仮実装済
+    setDetailWholePreset((prev) => {
+      if (!prev) return undefined; // データが無ければreturn
   
-      return {
+      return { // 新しい配列を登録
         ...prev,
-        wholeSet: {
-          ...prev.wholeSet,
           whole: {
-            ...prev.wholeSet.whole,
-            itemSet: prev.wholeSet.whole.itemSet.filter(
-              (item) => item !== task
+            ...prev.whole,
+            itemSet: prev.whole.itemSet.filter( // 該当itemを除く
+              (item) => item !== target
             ),
-          },
         },
-        message: prev.message || "",
       };
     });
   };
 
-  const handleTaskPresetSelection = () => {
-    setIsModalOpen(true);
+  const handleTaskAdd = () => { // タスク追加　既存プリセット
+    setIsTaskModalOpen(true);
   };
 
-  const handleTaskPresetNew = () => {
-    setIsModalOpen2(true);
+  const handleTaskAdd2 = () => { // タスク追加　新規作成
+    setIsTaskModalOpen2(true);
   };
 
-  const handleFolderPresetSelection = () => {
-    setIsModalOpen3(true);
+  const handleFolderAdd = () => { // フォルダ追加　既存プリセット
+    setIsFolderModalOpen(true);
   };
 
-  const handleFolderPresetNew = () => {
-    setIsModalOpen4(true);
-  };
+  const handleFolderAdd2 = () => { // フォルダ追加　新規作成
+    setIsFolderModalOpen2(true);
+  }
 
-  const handleTaskSelect = (taskSet) => {
-    console.log(taskSet);
-    setDetailedWholePreset((prev) => {
-      if (!prev) return undefined;
-  
-      return {
-        ...prev,
-        wholeSet: {
-          ...prev.wholeSet,
-          whole: {
-            ...prev.wholeSet.whole,
-            itemSet: [...prev.wholeSet.whole.itemSet, taskSet],
-          },
-        },
-        message: prev.message || "",
-      };
-    });
+    const handleTaskSelect = (target) => { // タスク追加　既存プリセット　選択 // 型定義 // TODO
+
+      setDetailWholePreset((prev) => {
+        if (!prev) return undefined; // データが無ければreturn
     
-    setIsModalOpen(false);
-  };
-  
+        return { // 新しい配列を登録
+          ...prev,
+            whole: {
+              ...prev.whole,
+              itemSet: [...prev.whole.itemSet, target], // 赤線解消できない // TODO
+            },
+        };
+      });
+      setIsTaskModalOpen(false);
+    }
 
-  const handleFolderSelect = (folderSet) => {
-    console.log(folderSet);
-    setDetailedWholePreset((prev) => {
-      if (!prev) return undefined;
-  
-      return {
-        ...prev,
-        wholeSet: {
-          ...prev.wholeSet,
-          whole: {
-            ...prev.wholeSet.whole,
-            itemSet: [...prev.wholeSet.whole.itemSet, folderSet],
-          },
-        },
-        message: prev.message || "",
-      };
-    });
+      
+  const handleFolderSelect = (target) => { // フォルダ追加　既存プリセット　選択 // 型定義 // TODO
+
+     setDetailWholePreset((prev) => {
+        if (!prev) return undefined; // データが無ければreturn
     
-    setIsModalOpen(false);
-  };
+        return { // 新しい配列を登録
+          ...prev,
+            whole: {
+              ...prev.whole,
+              itemSet: [...prev.whole.itemSet, target], // 赤線解消できない // TODO
+            },
+        };
+      });
+      setIsFolderModalOpen(false);
+    };
+
+
+    const handleTaskAddCancel = () => { // タスク追加　既存プリセット　キャンセルボタン
+      setIsTaskModalOpen(false);
+      console.log("キャンセルしました");
+    };
+
+    const handleTaskAddCreate2 = () => { // タスク追加　新規作成　作成ボタン
+      setIsTaskModalOpen2(false);
+      // スケジュールにタスクを追加 // TODO
+      console.log("作成しました");
+    };
+  
+    const handleTaskAddCancel2 = () => { // タスク追加　新規作成　キャンセルボタン
+      setIsTaskModalOpen2(false);
+      console.log("キャンセルしました");
+    };
+
+
+    const handleFolderAddCancel = () => { // タスク追加　既存プリセット　キャンセルボタン
+      setIsFolderModalOpen(false);
+      console.log("キャンセルしました");
+    };
   
 
-  useEffect(() => {
-    const fetchPresets = async () => {
-      if (!session?.user?.id) {
-        setIsLoading(false);
-        return;
-      }
+    const handleFolderAddCreate2 = () => { // フォルダ追加　新規作成　作成ボタン
+      setIsFolderModalOpen2(false);
+      // スケジュールにタスクを追加 // TODO
+      console.log("作成しました");
+    };
+  
+    const handleFolderAddCancel2 = () => { // フォルダ追加　新規作成　キャンセルボタン
+      setIsFolderModalOpen2(false);
+      console.log("キャンセルしました");
+    };
 
-      try {
-        setIsLoading(true);
-        const [wholeResponse, timeResponse, folderResponse, taskResponse] =
-          await Promise.all([
-            axios.get<WholeApiResponse>(
-              `/api/presets/whole?userId=${session.user.id}`,
-            ),
-            axios.get<TimeApiResponse>(
-              `/api/presets/time?userId=${session.user.id}`,
-            ),
-            axios.get<FolderApiResponse>(
-              `/api/presets/folder?userId=${session.user.id}`,
-            ),
-            axios.get<TaskApiResponse>(
-              `/api/presets/task?userId=${session.user.id}`,
-            ),
-          ]);
-        setIsLoading(false);
-
-        if (wholeResponse.data?.wholeSets) {
-          setWholePresets(wholeResponse.data.wholeSets);
-          if (wholeResponse.data.wholeSets.length > 0) {
-            const firstPreset = wholeResponse.data.wholeSets[0];
-            if (firstPreset !== undefined) {
-              setSelectedWholePreset({
-                name: firstPreset.name,
-                itemId: firstPreset.itemId,
-              });
-              setValueAll(firstPreset.itemId);
-              const detailedWholeResponse = await axios.get(
-                `/api/presets/whole/${firstPreset.itemId}?userId=${session.user.id}`,
-              );
-              if (detailedWholeResponse.data) {
-                setDetailedWholePreset(detailedWholeResponse.data);
-                console.log(detailedWholeResponse.data);
+    useEffect(() => { // アクセス時に1回実行
+      const fetchPresets = async () => {
+        if (!session?.user?.id) {
+          setIsLoading(false); // セッションが無ければ何も表示しない
+          return;
+        }
+    
+        try {
+          const [wholeResponse, timeResponse, folderResponse, taskResponse] =
+            await Promise.all([
+              axios.get<WholeApiResponse>(
+                `/api/presets/whole?userId=${session.user.id}`, // 全体プリセット一覧 get
+              ),
+              axios.get<TimeApiResponse>(
+                `/api/presets/time?userId=${session.user.id}`, // 時間プリセット一覧 get
+              ),
+              axios.get<FolderApiResponse>(
+                `/api/presets/folder?userId=${session.user.id}`, // フォルダプリセット一覧 get
+              ),
+              axios.get<TaskApiResponse>(
+                `/api/presets/task?userId=${session.user.id}`, // タスクプリセット一覧 get
+              ),
+            ]);
+    
+          if (wholeResponse.data?.wholeSets) {
+            setWholePresets(wholeResponse.data.wholeSets); // 全体プリセット一覧　登録
+            if (wholeResponse.data.wholeSets.length > 0) {
+              const firstPreset = wholeResponse.data.wholeSets[0];
+              if (firstPreset !== undefined) {
+                setSelectedWholePreset({ // 選択中
+                  name: firstPreset.name,
+                  itemId: firstPreset.itemId,
+                });
+                setValueWhole(firstPreset.itemId); // 選択中
               }
             }
           }
-        }
-
-        if (timeResponse.data?.timeSets) {
-          setTimePresets(timeResponse.data.timeSets);
-        }
-
-        if (folderResponse.data?.folderSets) {
-          setFolderPresets(folderResponse.data.folderSets);
-          if (folderResponse.data.folderSets.length > 0) {
-            const firstFolderPreset = folderResponse.data.folderSets[0];
-            if (firstFolderPreset && firstFolderPreset.folder !== undefined) {
-              setSelectedFolderPreset(firstFolderPreset);
-              setValueFolder(firstFolderPreset.folder.itemId);
+    
+          if (timeResponse.data?.timeSets) {
+            setTimePresets(timeResponse.data.timeSets); // 時間プリセット[id]　登録
+            if (timeResponse.data.timeSets.length > 0) {
+              const firstTimePreset = timeResponse.data.timeSets[0];
+              if (firstTimePreset !== undefined) {
+                setSelectedTimePreset(firstTimePreset); // 選択中
+                setValueTime(firstTimePreset.time.timeId); // 選択中
+              }
             }
           }
+    
+          if (folderResponse.data?.folderSets) { 
+            setFolderPresets(folderResponse.data.folderSets);  // フォルダプリセット　登録
+            // if (folderResponse.data.folderSets.length > 0) {
+            //   const firstFolderPreset = folderResponse.data.folderSets[0];
+            //   if (firstFolderPreset?.folder !== undefined) {
+            //     setSelectedFolderPreset(firstFolderPreset); // 選択中   // いらないかも？要検討 // TODO
+            //     setValueFolder(firstFolderPreset.folder.itemId); // 選択中
+            //   }
+            // }
+          }
+    
+          if (taskResponse.data?.taskSets) {
+            setTaskPresets(taskResponse.data.taskSets);  // 時間プリセット　登録
+          }
+        } catch (err) {
+          console.error("Error fetching presets:", err);
+        } finally {
+          setIsLoading(false); // データの取得が完了したらローディング状態を解除
         }
+      };
+    
+      void fetchPresets();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
-        if (taskResponse.data?.taskSets) {
-          setTaskPresets(taskResponse.data.taskSets);
-        }
-      } catch (err) {
-        console.error("Error fetching presets:", err);
-      }
-    };
-
-    fetchPresets();
-  }, []);
-
-  useEffect(() => {
+  useEffect(() => { // 全体プリセットが変更されたら1回実行
     const fetchPresets = async () => {
       if (!session?.user?.id) {
-        setIsLoading(false);
+        setIsLoading(false); // セッションが無ければ何も表示しない
         return;
       }
       try {
-        const detailedWholeResponse = await axios.get(
-          `/api/presets/whole/${selectedWholePreset?.itemId}?userId=${session.user.id}`,
+        const detailWholeResponse = await axios.get<DetailWholeApiResponse>(
+          `/api/presets/whole/${selectedWholePreset?.itemId}?userId=${session.user.id}`, // 全体プリセット[id] get
         );
-        if (detailedWholeResponse.data) {
-          setDetailedWholePreset(detailedWholeResponse.data);
-          console.log(detailedWholeResponse.data);
+        if (detailWholeResponse.data?.wholeSet) {
+          setDetailWholePreset(detailWholeResponse.data.wholeSet); // 全体プリセット[id] 登録
         }
+        const firstTimePreset = detailWholeResponse.data.wholeSet.whole.timeSet; // 時間プリセット
+    if (firstTimePreset !== undefined) {
+      setSelectedTimePreset(firstTimePreset); ; // 選択中
+      setValueTime(firstTimePreset.time.timeId); ; // 選択中
+    }
       } catch (err) {
         console.error("Error fetching presets:", err);
       }
     };
-    fetchPresets();
+    void fetchPresets();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedWholePreset]);
 
-  useEffect(() => {
-    const firstTimePreset = detailedWholePreset?.wholeSet.whole.timeSet;
-    if (firstTimePreset !== undefined) {
-      setSelectedTimePreset({
-        time: {
-          name: firstTimePreset.time.name,
-          timeId: firstTimePreset.time.timeId,
-          time: firstTimePreset.time.time,
-        },
-      });
-      setValueTime(firstTimePreset.time.timeId);
-
-      const firstFolderPreset =
-        detailedWholePreset?.wholeSet.whole.itemSet.find(
-          (item) => item.folder !== undefined,
-        );
-      if (firstFolderPreset && firstFolderPreset.folder) {
-        setSelectedFolderPreset({
-          folder: firstFolderPreset.folder,
-        });
-        console.log(firstFolderPreset.folder);
-        setValueFolder(firstFolderPreset.folder.itemId);
-      }
-    }
-  }, [detailedWholePreset]);
-
-  const handleWholePresetSelect = (presetId) => {
+  const handleWholePresetSelect = (id: string) => { // 選択中の全体プリセットが変更されたら
     const selectedPreset = wholePresets.find(
-      (preset) => preset.itemId === presetId,
+      (preset) => preset.itemId === id,
     );
     if (selectedPreset) {
       setSelectedWholePreset({
         name: selectedPreset.name,
         itemId: selectedPreset.itemId,
       });
-      setValueAll(presetId);
-      setOpenAll(false);
+      setValueWhole(id);
+      setOpenWhole(false);
     }
   };
 
-  const handleTimePresetSelect = (presetId) => {
+  const handleTimePresetSelect = (id: string) => { // 選択中の時間プリセットが変更されたら
     const selectedPreset = timePresets.find(
-      (preset) => preset.time.timeId === presetId,
+      (preset) => preset.time.timeId === id,
     );
     if (selectedPreset) {
-      setSelectedTimePreset({
-        time: {
-          name: selectedPreset.time.name,
-          timeId: selectedPreset.time.timeId,
-          time: selectedPreset.time.time,
-        },
-      });
-      setValueTime(presetId);
+      setSelectedTimePreset(selectedPreset);
+      setValueTime(id);
       setOpenTime(false);
     }
   };
 
-  const handleFolderPresetSelect = (presetId) => {
-    const selectedPreset = folderPresets.find(
-      (preset) => preset.folder.itemId === presetId,
-    );
-    if (selectedPreset) {
-      setSelectedFolderPreset(selectedPreset);
-      setValueFolder(presetId);
-      setOpenFolder(false);
-    }
-  };
+  
 
-  if (loading) return <p>Loading...</p>;
+  if (isLoading) return <p>Loading...</p>;
 
   return (
     <div className="mx-auto h-svh max-w-md bg-slate-50 pt-5 text-center font-mPlus">
@@ -504,12 +475,12 @@ export default function Schedule() {
             height={27}
             className="fixed left-16 top-10 ml-2"
           />
-          <Popover open={openAll} onOpenChange={setOpenAll}>
+          <Popover open={openWhole} onOpenChange={setOpenWhole}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 role="combobox"
-                aria-expanded={openAll}
+                aria-expanded={openWhole}
                 className="w-[170px] py-5 text-lg"
               >
                 <div className="ml-5">
@@ -535,7 +506,7 @@ export default function Schedule() {
                         <Check
                           className={cn(
                             "mr-2 h-4 w-4",
-                            valueAll === preset.itemId
+                            valueWhole === preset.itemId
                               ? "opacity-100"
                               : "opacity-0",
                           )}
@@ -609,17 +580,15 @@ export default function Schedule() {
           </p>
         </p>
         <ScrollArea className="h-[380px]">
-        {detailedWholePreset ? (
-          detailedWholePreset.wholeSet?.whole?.itemSet?.map((item, index) => (
+        {detailWholePreset ? (
+          detailWholePreset.whole?.itemSet?.map((item, index) => (
             <div key={index}>
               {item.task && (
                 <TaskPreset
                   index={index}
                   name={item.task.name}
-                  itemId={item.task.itemId}
-                  isStatic={item.task.isStatic}
                   options={item.task.options}
-                  task={item}
+                  task={item} // 変更した　動作要確認 // TODO
                   handleDelete={handleDelete}
                   handleSortUp={handleSortUp}
                   handleSortDown={handleSortDown}
@@ -628,15 +597,8 @@ export default function Schedule() {
               {item.folder && (
                 <FolderPreset
                   index={index}
-                  folder={item}
-                  openFolder={openFolder}
-                  setOpenFolder={setOpenFolder}
-                  valueFolder={valueFolder}
-                  setValueFolder={setValueFolder}
-                  selectedFolderPreset={selectedFolderPreset}
-                  setSelectedFolderPreset={setSelectedFolderPreset}
+                  folder={item} // 変更した　動作要確認 // TODO
                   folderPresets={folderPresets}
-                  setFolderPresets={setFolderPresets}
                   handleDelete={handleDelete}
                   handleSortUp={handleSortUp}
                   handleSortDown={handleSortDown}
@@ -661,27 +623,27 @@ export default function Schedule() {
         <div>
           <DropdownMenuLabel>タスクの作成</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleTaskPresetSelection}>
+          <DropdownMenuItem onClick={handleTaskAdd}>
             既存プリセットから
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleTaskPresetNew}>
+          <DropdownMenuItem onClick={handleTaskAdd2}>
             新規作成
           </DropdownMenuItem>
         </div>
         <div>
           <DropdownMenuLabel>フォルダの作成</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleFolderPresetSelection}>
+          <DropdownMenuItem onClick={handleFolderAdd}>
             既存プリセットから
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleFolderPresetNew}>
+          <DropdownMenuItem onClick={handleFolderAdd2}>
             新規作成
           </DropdownMenuItem>
         </div>
       </DropdownMenuContent>
     </DropdownMenu>
         </div>
-        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <Dialog open={isTaskModalOpen} onOpenChange={setIsTaskModalOpen}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>追加するタスクを選んでください</DialogTitle>
@@ -690,11 +652,10 @@ export default function Schedule() {
               {taskPresets.map((taskSet, index) => (
                 <div key={index} onClick={() => handleTaskSelect(taskSet)}>
                 <TaskPreset
+                  index={index}
                   name={taskSet.task.name}
-                  itemId={taskSet.task.itemId}
-                  isStatic={taskSet.task.isStatic}
                   options={taskSet.task.options}
-                  task={taskSet}
+                  task={taskSet} // 変更した 要確認 // TODO
                   handleDelete={handleDelete}
                   handleSortUp={handleSortUp}
                   handleSortDown={handleSortDown}
@@ -704,7 +665,8 @@ export default function Schedule() {
             </div>
           </DialogContent>
         </Dialog>
-        <Dialog open={isModalOpen2} onOpenChange={setIsModalOpen2}>
+
+        <Dialog open={isTaskModalOpen2} onOpenChange={setIsTaskModalOpen2}>
           <DialogContent className="w-[90%] rounded-xl">
             <DialogHeader>
               <DialogTitle>
@@ -784,20 +746,21 @@ export default function Schedule() {
               </TabsContent>
             </Tabs>
             <div className="mt-auto flex justify-around">
-              <Button onClick={handleCancel} className="bg-gray-600">
+              <Button onClick={handleTaskAddCancel2} className="bg-gray-600">
                 キャンセル
               </Button>
               <Button
                 className="bg-darkBlue hover:bg-blue-900"
-                onClick={handleCreate}
-                disabled={!tempName} // newNameが空の場合はボタンを無効化
+                onClick={handleTaskAdd2}
+                disabled={!tempName} // tempNameが空の場合はボタンを無効化
               >
                 作成
               </Button>
             </div>
           </DialogContent>
         </Dialog>
-        <Dialog open={isModalOpen3} onOpenChange={setIsModalOpen3}>
+
+        <Dialog open={isFolderModalOpen} onOpenChange={setIsFolderModalOpen}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>追加するフォルダを選んでください</DialogTitle>
@@ -807,15 +770,8 @@ export default function Schedule() {
                 <div key={index} onClick={() => handleFolderSelect(folderSet)}>
                   <FolderPreset
                   index={index}
-                  folder={folderSet}
-                  openFolder={openFolder}
-                  setOpenFolder={setOpenFolder}
-                  valueFolder={valueFolder}
-                  setValueFolder={setValueFolder}
-                  selectedFolderPreset={selectedFolderPreset}
-                  setSelectedFolderPreset={setSelectedFolderPreset}
+                  folder={folderSet}// 変更した 要確認 // TODO
                   folderPresets={folderPresets}
-                  setFolderPresets={setFolderPresets}
                   handleDelete={handleDelete}
                   handleSortUp={handleSortUp}
                   handleSortDown={handleSortDown}
