@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "~/components/ui/card";
 import {
   Command,
@@ -16,8 +16,25 @@ import { ScrollArea } from "~/components/ui/scroll-area";
 import EditTask from "./edit";
 import NewTask from "./new";
 
+type TaskApiResponse = { // タスクプリセットの取得
+  message: string;
+  taskSets: TaskSet[];
+};
+
+type TaskSet = { // タスクプリセット　中身
+  task: {
+    name: string;
+    itemId: string;
+    isStatic: boolean;
+    options: {
+      name: string;
+      time: number;
+    }[];
+  };
+};
+
 export default function TabTask() {
-  const [taskResponse, setTaskResponse] = useState(null);
+  const [taskResponse, setTaskResponse] = useState<TaskApiResponse>();
   const { data: session, status } = useSession();
 
   const handleTaskGet = async () => {
@@ -25,7 +42,7 @@ export default function TabTask() {
       return;
     }
     try {
-      const res = await axios.get(
+      const res = await axios.get<TaskApiResponse>(
         `/api/presets/task?userId=${session.user.id}`,
       );
       setTaskResponse(res.data);
@@ -52,10 +69,10 @@ export default function TabTask() {
                 <CommandGroup className="">
                   <hr className="w-full border-gray-500" />
 
-                  {taskResponse?.taskSets?.map((item) => (
+                  {taskResponse?.taskSets.map((item) => (
                     <>
                       <CommandItem key={item.task.itemId}>
-                        <EditTask>{item.task.name}</EditTask>
+                        <EditTask id={item.task.itemId}>{item.task.name}</EditTask>
                       </CommandItem>
                       <hr className="mt-2 w-full border-gray-500" />
                     </>

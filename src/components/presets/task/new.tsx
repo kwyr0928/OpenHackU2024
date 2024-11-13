@@ -1,8 +1,10 @@
 "use client";
 
-import axios from "axios";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
+import axios from "axios";
+import { useSession } from "next-auth/react";
 import { useState } from "react";
+import PlusCircle from "~/components/svgs/plusCircle";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -13,7 +15,6 @@ import {
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import PlusCircle from "~/components/svgs/plusCircle";
 
 export default function NewTask() {
   const [name, setName] = useState<string>(""); // 表示される名前
@@ -26,6 +27,9 @@ export default function NewTask() {
   const [minutes3, setMinutes3] = useState(0); // 分
   const [minutes, setMinutes] = useState(0);
   const [taskResponse, setTaskResponse] = useState(null);
+  const [activeTab, setActiveTab] = useState("pulldown");
+
+  const { data: session, status } = useSession(); // セッション情報
 
   const handleCancel = () => {
     setDialogOpen(false);
@@ -40,8 +44,8 @@ export default function NewTask() {
   };
 
   const handlePullDownTaskCreate = async () => {
-    const taskData = {
-      userId: "cm390e361000010avus2xru9v",
+    const taskData1 = {
+      userId: session?.user.id,
       taskSet: {
         name: name,
         isStatic: false,
@@ -62,11 +66,29 @@ export default function NewTask() {
         ],
       },
     };
+    const taskData2 = {
+      userId: session?.user.id,
+      taskSet: {
+        name: name,
+        isStatic: true,
+        select: 0,
+        options: [
+          {
+           time: minutes
+          },
+        ],
+      },
+    };
+   
+    
+  
 
     try {
-      const res = await axios.post("/api/presets/task/new", taskData);
-      setTaskResponse(res.data);
-      console.log(res.data);
+      if(activeTab === "pulldown"){
+      const res = await axios.post("/api/presets/task/new", taskData1);
+      }else{
+        const res = await axios.post("/api/presets/task/new", taskData2);
+      }
     } catch (error) {}
     handleCancel();
     setDialogOpen(false);
@@ -95,7 +117,9 @@ export default function NewTask() {
             />
           </DialogTitle>
         </DialogHeader>
-        <Tabs defaultValue="pulldown" className="mt-2" >
+        <Tabs defaultValue="pulldown" 
+        onValueChange={(value) => setActiveTab(value)}
+          className="mt-2" >
           <TabsList className="mb-4 grid w-full grid-cols-2">
             <TabsTrigger value="pulldown">プルダウン</TabsTrigger>
             <TabsTrigger value="static">固定値</TabsTrigger>

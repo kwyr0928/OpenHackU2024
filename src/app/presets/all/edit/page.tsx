@@ -5,6 +5,7 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from "react";
 import FolderPreset from "~/components/schedule/Folder";
 import TaskPreset from "~/components/schedule/Task";
@@ -181,6 +182,8 @@ export default function Schedule() {
   const [detailWholePreset, setDetailWholePreset] = useState<DetailWhole>(); // 選択中の全体プリセット[id]
   const [selectedTimePreset, setSelectedTimePreset] = useState<TimeSet>(); // 選択中の時間プリセット
   
+  const searchParams = useSearchParams()
+  const itemId = searchParams.get('itemId')
 
   const handleSortUp = (index: number) => { // タスクフォルダ並び替え　↑
     // スケジュール内のタスクフォルダを並び替える itemSets // TODO
@@ -326,89 +329,47 @@ export default function Schedule() {
       console.log("キャンセルしました");
     };
 
-    useEffect(() => { // アクセス時に1回実行
-      const fetchPresets = async () => {
-        if (!session?.user?.id) {
-          setIsLoading(false); // セッションが無ければ何も表示しない
-          return;
-        }
-    
-        try {
-          const [wholeResponse, timeResponse, folderResponse, taskResponse] =
-            await Promise.all([
-              axios.get<WholeApiResponse>(
-                `/api/presets/whole?userId=${session.user.id}`, // 全体プリセット一覧 get
-              ),
-              axios.get<TimeApiResponse>(
-                `/api/presets/time?userId=${session.user.id}`, // 時間プリセット一覧 get
-              ),
-              axios.get<FolderApiResponse>(
-                `/api/presets/folder?userId=${session.user.id}`, // フォルダプリセット一覧 get
-              ),
-              axios.get<TaskApiResponse>(
-                `/api/presets/task?userId=${session.user.id}`, // タスクプリセット一覧 get
-              ),
-            ]);
-    
-          if (wholeResponse.data?.wholeSets) {
-            setWholePresets(wholeResponse.data.wholeSets); // 全体プリセット一覧　登録
-            if (wholeResponse.data.wholeSets.length > 0) {
-              const firstPreset = wholeResponse.data.wholeSets[0];
-              if (firstPreset !== undefined) {
-                setSelectedWholePreset({ // 選択中
-                  name: firstPreset.name,
-                  itemId: firstPreset.itemId,
-                });
-                setValueWhole(firstPreset.itemId); // 選択中
-              }
-            }
-          }
-    
-          if (timeResponse.data?.timeSets) {
-            setTimePresets(timeResponse.data.timeSets); // 時間プリセット[id]　登録
-            if (timeResponse.data.timeSets.length > 0) {
-              const firstTimePreset = timeResponse.data.timeSets[0];
-              if (firstTimePreset !== undefined) {
-                setSelectedTimePreset(firstTimePreset); // 選択中
-                setValueTime(firstTimePreset.time.timeId); // 選択中
-              }
-            }
-          }
-    
-          if (folderResponse.data?.folderSets) { 
-            setFolderPresets(folderResponse.data.folderSets);  // フォルダプリセット　登録
-            // if (folderResponse.data.folderSets.length > 0) {
-            //   const firstFolderPreset = folderResponse.data.folderSets[0];
-            //   if (firstFolderPreset?.folder !== undefined) {
-            //     setSelectedFolderPreset(firstFolderPreset); // 選択中   // いらないかも？要検討 // TODO
-            //     setValueFolder(firstFolderPreset.folder.itemId); // 選択中
-            //   }
-            // }
-          }
-    
-          if (taskResponse.data?.taskSets) {
-            setTaskPresets(taskResponse.data.taskSets);  // 時間プリセット　登録
-          }
-        } catch (err) {
-          console.error("Error fetching presets:", err);
-        } finally {
-          setIsLoading(false); // データの取得が完了したらローディング状態を解除
-        }
-      };
-    
-      void fetchPresets();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-  useEffect(() => { // 全体プリセットが変更されたら1回実行
+  useEffect(() => { // アクセス時に1回実行
     const fetchPresets = async () => {
       if (!session?.user?.id) {
         setIsLoading(false); // セッションが無ければ何も表示しない
         return;
       }
       try {
+        const [timeResponse, folderResponse, taskResponse] =
+        await Promise.all([
+          axios.get<TimeApiResponse>(
+            `/api/presets/time?userId=${session.user.id}`, // 時間プリセット一覧 get
+          ),
+          axios.get<FolderApiResponse>(
+            `/api/presets/folder?userId=${session.user.id}`, // フォルダプリセット一覧 get
+          ),
+          axios.get<TaskApiResponse>(
+            `/api/presets/task?userId=${session.user.id}`, // タスクプリセット一覧 get
+          ),
+        ]);
+
+
+      if (timeResponse.data?.timeSets) {
+        setTimePresets(timeResponse.data.timeSets); // 時間プリセット[id]　登録
+        if (timeResponse.data.timeSets.length > 0) {
+          const firstTimePreset = timeResponse.data.timeSets[0];
+          if (firstTimePreset !== undefined) {
+            setSelectedTimePreset(firstTimePreset); // 選択中
+            setValueTime(firstTimePreset.time.timeId); // 選択中
+          }
+        }
+      }
+
+      if (folderResponse.data?.folderSets) { 
+        setFolderPresets(folderResponse.data.folderSets);  // フォルダプリセット　登録
+      }
+
+      if (taskResponse.data?.taskSets) {
+        setTaskPresets(taskResponse.data.taskSets);  // 時間プリセット　登録
+      }
         const detailWholeResponse = await axios.get<DetailWholeApiResponse>(
-          `/api/presets/whole/${selectedWholePreset?.itemId}?userId=${session.user.id}`, // 全体プリセット[id] get
+          `/api/presets/whole/${itemId}?userId=${session.user.id}`, // 全体プリセット[id] get
         );
         if (detailWholeResponse.data?.wholeSet) {
           setDetailWholePreset(detailWholeResponse.data.wholeSet); // 全体プリセット[id] 登録
@@ -422,23 +383,12 @@ export default function Schedule() {
         console.error("Error fetching presets:", err);
       }
     };
+    setIsLoading(false);
     void fetchPresets();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedWholePreset]);
+  }, []);
 
-  const handleWholePresetSelect = (id: string) => { // 選択中の全体プリセットが変更されたら
-    const selectedPreset = wholePresets.find(
-      (preset) => preset.itemId === id,
-    );
-    if (selectedPreset) {
-      setSelectedWholePreset({
-        name: selectedPreset.name,
-        itemId: selectedPreset.itemId,
-      });
-      setValueWhole(id);
-      setOpenWhole(false);
-    }
-  };
+
 
   const handleTimePresetSelect = (id: string) => { // 選択中の時間プリセットが変更されたら
     const selectedPreset = timePresets.find(
@@ -475,50 +425,7 @@ export default function Schedule() {
             height={27}
             className="fixed left-16 top-10 ml-2"
           />
-          <Popover open={openWhole} onOpenChange={setOpenWhole}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                role="combobox"
-                aria-expanded={openWhole}
-                className="w-[170px] py-5 text-lg"
-              >
-                <div className="ml-5">
-                  {selectedWholePreset
-                    ? selectedWholePreset.name
-                    : "プリセットを選択"}
-                </div>
-                <ChevronsUpDown className="ml-3 h-4 w-4 shrink-0 opacity-50" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-0">
-              <Command>
-                <CommandInput placeholder="全体プリセットを検索" />
-                <CommandList>
-                  <CommandEmpty>見つかりません</CommandEmpty>
-                  <CommandGroup>
-                    {wholePresets.map((preset) => (
-                      <CommandItem
-                        key={preset.itemId}
-                        value={preset.name}
-                        onSelect={() => handleWholePresetSelect(preset.itemId)}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            valueWhole === preset.itemId
-                              ? "opacity-100"
-                              : "opacity-0",
-                          )}
-                        />
-                        {preset.name}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
+            {detailWholePreset?.whole.name}
         </p>
         <p className="bg-pink-300 pb-0.5 pt-3 text-xl">
           <Image

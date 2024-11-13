@@ -77,7 +77,7 @@ export default function TabAll() {
                     <CommandItem className="mt-1 mb-1">
                       <Link
                         className="flex w-full items-center justify-between text-xl text-black"
-                        href={`presets/all/edit/${preset.itemId}`}
+                        href={`presets/all/edit?itemId=${preset.itemId}`}
                       >
                         <BoxIcon
                           color="#31D6CB"
