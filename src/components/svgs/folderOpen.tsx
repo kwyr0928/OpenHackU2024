@@ -6,7 +6,7 @@ interface PropsType {
     color?: string;
 }
 
-export default function FolderColose({ style, color }: PropsType) {
+export default function FolderOpen({ style, color }: PropsType) {
     return (
         <svg
             xmlns="http://www.w3.org/2000/svg"
