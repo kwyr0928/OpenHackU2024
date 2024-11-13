@@ -21,9 +21,16 @@ export async function instanciateFolder(prehabItemId: string, order: number) {
     if (taskItems == null) {
       throw new Error("Failed getTaskItemsInFolder");
     }
-    const taskItemIds: string[] = [];
+    const taskItemIds: {
+      itemId: string;
+      select: number;
+    }[] = [];
     for (const taskItem of taskItems) {
-      taskItemIds.push(taskItem.id);
+      const task = await getTaskInfoByItemId(taskItem.id);
+      if (task == null) {
+        throw new Error("Failed getTaskInfoByItemId");
+      }
+      taskItemIds.push({itemId: taskItem.id, select: task.optionIndex as number });
     }
 
     const folderInstanciate = await createFolder(
@@ -43,7 +50,7 @@ export async function instanciateFolder(prehabItemId: string, order: number) {
   }
 }
 
-export async function instanciateTask(itemId: string, order: number) {
+export async function instanciateTask(itemId: string, order: number, optionIdx?: number) {
   try {
     if (!itemId) {
       throw new Error("Invalid input: itemId is missing.");
@@ -69,7 +76,7 @@ export async function instanciateTask(itemId: string, order: number) {
       item.userId,
       item.name,
       options,
-      task.optionIndex as number,
+      optionIdx ?? task.optionIndex as number,
       order,
       item,
     );

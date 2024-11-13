@@ -78,9 +78,40 @@ export type folderSetPostBody = {
   userId: string;
   folderSet: {
     name: string;
-    itemIds: string[];
+    tasks: {
+      itemId: string;
+      select: number;
+    }[];
   };
 };
+
+export type folderSetPutBody = {
+  userId: string;
+  folderSet: {
+    name: string;
+    items: (taskIdInFolderPutData | taskPrefabInFolderPutData | taskInFolderPutData)[];
+  };
+};
+
+export type taskIdInFolderPutData = {
+  itemId: string;
+  select: number;
+}
+export type taskPrefabInFolderPutData = {
+  prefabId: string;
+  select: number;
+}
+export type taskInFolderPutData = {
+  taskSet: {
+    name: string;
+    isStatic: boolean;
+    select: number; //index
+    options: {
+      name: string;
+      time: number;
+    }[];
+  };
+}
 
 export type timeSetPostBody = {
   userId: string;

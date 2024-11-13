@@ -82,6 +82,25 @@ export async function updateItem(itemId:string, name: string) {
   }
 }
 
+// itemの更新
+export async function updateOrderItem(itemId:string, name: string, order: number) {
+  try {
+    if (!itemId || !name) throw new Error("Invalid option data");
+    const updateItem = await db.items.updateMany({
+      where: { id: itemId },
+      data: {
+        name: name,
+        order: order
+      },
+    });
+
+    return updateItem;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
 // wholeを更新
 export async function updateWholeSet(wholeId:string, timeId: string) {
   try {

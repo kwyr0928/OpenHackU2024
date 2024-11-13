@@ -1,4 +1,5 @@
 import { db } from "../db";
+import { presetType } from "./constants";
 import {
   getItemInfoByItemId,
   getTimeInfoByTimeId,
@@ -106,6 +107,25 @@ export async function deleteOptionsInTask(taskId: string) {
     return deleteOptions;
   } catch (error) {
     console.error("Error deleting options:", error);
+    return null;
+  }
+}
+
+// folderId to 中にあるtask一覧のうち消していいものを全削除
+export async function deleteTaskItemsCanDeleteInFolder(folderItemId: string, existIds: string[]) {
+  try {
+    const deleteResult = await db.items.deleteMany({
+      where: {
+        parentId: folderItemId,
+        itemType: presetType.task,
+        id: {
+          notIn: existIds,
+        },
+      },
+    });
+    return deleteResult.count;
+  } catch (error) {
+    console.error("Error in getTasksInFolder:", error);
     return null;
   }
 }

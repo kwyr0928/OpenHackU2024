@@ -54,7 +54,7 @@ export async function getMasterIdByItemId(itemId: string) {
       },
     });
 
-    if (!masterId) throw new Error("not found masterId");
+    if (masterId == null) throw new Error("not found masterId");
     return masterId.masterId;
   } catch (error) {
     console.error("Error in getMasterByItemId:", error);
@@ -194,7 +194,7 @@ export async function getItemInfoByItemId(itemId: string) {
       },
     });
 
-    if (!item) throw new Error("not found item");
+    if (item==null) throw new Error("not found item");
     return item;
   } catch (error) {
     console.error("Error in getItemName:", error);
@@ -277,7 +277,7 @@ export async function getTaskInfoByItemId(itemId: string) {
       },
     });
 
-    if (!task) throw new Error("not found taskSet");
+    if (task==null) throw new Error("not found taskSet");
     return task;
   } catch (error) {
     console.error("Error in getTaskInfoByItemId:", error);
@@ -318,7 +318,7 @@ export async function getKindItems(userId: string, type: number) {
     if (res.length === 0) return null;
     return res;
   } catch (error) {
-    console.error("Error in getTasksInFolder:", error);
+    console.error("Error in getKindItems:", error);
     return null;
   }
 }
@@ -351,7 +351,7 @@ export async function getItemsInWhole(wholeItemId: string) {
     if (res.length === 0) return null;
     return res;
   } catch (error) {
-    console.error("Error in getTasksInFolder:", error);
+    console.error("Error in getItemsInWhole:", error);
     return null;
   }
 }

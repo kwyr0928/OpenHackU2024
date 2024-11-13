@@ -34,12 +34,12 @@ export async function createNewWhole(
   userId: string,
   name: string,
   prehabtimeId: string,
-  prehabItemIds: string[],
+  prehabItemId: string[],
 ) {
   try {
-    if (!userId || !name || !prehabtimeId || prehabItemIds.length === 0) {
+    if (!userId || !name || !prehabtimeId || prehabItemId.length === 0) {
       throw new Error(
-        "Invalid input: userId and name and prehabtimeId and prehabItemIds are required",
+        "Invalid input: userId and name and prehabtimeId and prehabItemId are required",
       );
     }
 
@@ -84,7 +84,7 @@ export async function createNewWhole(
     // タスクorフォルダインスタンス化
     const instances: string[] = [];
     let order = 0;
-    for (const itemId of prehabItemIds) {
+    for (const itemId of prehabItemId) {
       // itemIdがタスクかフォルダか判別
       const type = await getItemInfoByItemId(itemId);
       if (type == null) {
@@ -120,7 +120,7 @@ export async function createNewWhole(
         instances.push(parentedFolder.id);
         order++;
       } else {
-        throw new Error("Don't set wholeSetItems in itemIds.");
+        throw new Error("Don't set wholeSetItems in itemId.");
       }
       if (instances == null) {
         throw new Error("Failed to .");
@@ -221,7 +221,10 @@ function parseTimeString(time: string): string | null {
 export async function createNewFolder(
   userId: string,
   folderName: string,
-  prehabTaskItemIds: string[],
+  prehabTaskItemIds: {
+    itemId: string;
+    select: number;
+  }[],
 ) {
   try {
     const ret = await createFolder(userId, folderName, 0, prehabTaskItemIds);
@@ -239,7 +242,10 @@ export async function createFolder(
   userId: string,
   folderName: string,
   order: number,
-  prehabTaskItemIds: string[],
+  prehabTaskItemIds: {
+    itemId: string;
+    select: number;
+  }[],
   prehabFolder?: itemStruct,
 ) {
   try {
@@ -288,8 +294,8 @@ export async function createFolder(
 
     // taskをインスタンス化してのparentにfolderを設定
     let taskOrder = 0;
-    for (const taskItemId of prehabTaskItemIds) {
-      const taskInstance = await instanciateTask(taskItemId, taskOrder);
+    for (const { itemId, select } of prehabTaskItemIds) {
+      const taskInstance = await instanciateTask(itemId, taskOrder, select);
       if (taskInstance == null) {
         throw new Error("Failed to instanciate task.");
       }

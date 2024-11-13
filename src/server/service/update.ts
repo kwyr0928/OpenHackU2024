@@ -1,10 +1,11 @@
 //値の更新処理
 
-import { optionStruct, taskSetPostBody } from "../repositry/constants";
-import { deleteOptionsInTask } from "../repositry/deletedata";
-import { getItemsInParentSortOrder, getMasterIdByTimeId, getTaskInfoByItemId } from "../repositry/getdata";
-import { setItemOrder, updateItem, updateTaskSet, updateTimeSet } from "../repositry/updatedata";
-import { createTaskOption } from "./create";
+import { folderSetPutBody, optionStruct, taskSetPostBody } from "../repositry/constants";
+import { deleteOptionsInTask, deleteTaskItemsCanDeleteInFolder } from "../repositry/deletedata";
+import { getFolderInfoByItemId, getItemInfoByItemId, getItemsInParentSortOrder, getMasterIdByTimeId, getTaskInfoByItemId } from "../repositry/getdata";
+import { setItemOrder, setTaskParent, updateItem, updateOrderItem, updateTaskSet, updateTimeSet } from "../repositry/updatedata";
+import { createNewTask, createTaskOption } from "./create";
+import { instanciateTask } from "./instantiate";
 
 // 今あるタスクでフォルダ内順序を再設定
 export async function setItemParentReOrder(myItemId: string) {
@@ -30,6 +31,100 @@ export async function setItemParentReOrder(myItemId: string) {
 }
 
 //////////////////////////////
+
+export async function updateFolder(itemId: string, { userId, folderSet }: folderSetPutBody) {
+  try {
+    const folderInfo = await getFolderInfoByItemId(itemId);
+    if(!folderInfo) throw new Error("Failed to get folderInfo.");
+    // item更新
+    const existTasks: string[] = []
+    await updateItem(itemId, folderSet.name);
+    let count = 0;
+    for(const items of folderSet.items){
+      if("taskSet" in items){
+        // 完全新規
+        const options: optionStruct[] = [];
+
+        if (items.taskSet.isStatic) {
+          const opst: optionStruct = {
+            optionTime: items.taskSet.options[0]!.time,
+            order: 0,
+            isStatic: true,
+            taskId: "",
+          };
+          options.push(opst);
+        } else {
+          let order = 0;
+          for (const op of items.taskSet.options) {
+            const opst: optionStruct = {
+              name: op.name,
+              optionTime: op.time,
+              order: order,
+              isStatic: false,
+              taskId: "",
+            };
+            options.push(opst);
+            order++;
+          }
+        }
+
+        const taskObj = await createNewTask(
+          userId,
+          items.taskSet.name,
+          options,
+          items.taskSet.select,
+        );
+        if(taskObj==null) throw new Error("Failed to create new task.");
+        // postと同様
+        const taskInstance = await instanciateTask(taskObj.itemId, count);
+        if (taskInstance == null) {
+          throw new Error("Failed to instanciate task.");
+        }
+        const parentedTask = await setTaskParent(
+          taskInstance.id,
+          itemId,
+        );
+        if (parentedTask == null) {
+          throw new Error("Failed to parent folder and task.");
+        }
+        existTasks.push(parentedTask.id);
+      } else if("itemId" in items) {
+        // そのタスクidのitemのorder更新
+        console.log("！！！！"+items.itemId)
+        const taskItemInfo = await getItemInfoByItemId(items.itemId);
+        if(taskItemInfo==null) throw new Error("Failed to getItemInfoByTaskId.");
+        await updateOrderItem(taskItemInfo.id, taskItemInfo.name, count);
+        //オプションインデックス更新
+        const taskInfo = await getTaskInfoByItemId(items.itemId);
+        if(taskInfo==null) throw new Error("Failed to getItemInfoByTaskId.");
+        await updateTaskSet(taskInfo.id, items.select);
+
+        existTasks.push(taskItemInfo.id);
+      } else if("prefabId" in items) {
+        // 既存プリセットから追加
+        const taskInstance = await instanciateTask(items.prefabId, count);
+        if (taskInstance == null) {
+          throw new Error("Failed to instanciate task.");
+        }
+        console.log("！"+taskInstance.id+"！"+itemId)
+        const parentedTask = await setTaskParent(
+          taskInstance.id,
+          itemId,
+        );
+        if (parentedTask == null) {
+          throw new Error("Failed to parent folder and task.");
+        }
+        existTasks.push(parentedTask.id);
+      }
+      count++;
+    }
+    await deleteTaskItemsCanDeleteInFolder(itemId, existTasks);
+
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
 
 export async function updateTask(itemId: string, { userId, taskSet }: taskSetPostBody) {
   try {
