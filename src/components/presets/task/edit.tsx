@@ -1,5 +1,7 @@
 "use client";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
+import axios from "axios";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Description from "~/components/svgs/description";
 import { Button } from "~/components/ui/button";
@@ -13,14 +15,13 @@ import {
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+
 interface EditTaskProps {
+  id: string;
   children: string;
-  id:string;
-  isStatic:boolean;
-  option:string;
 }
 
-export default function EditTask({ children }: EditTaskProps) {
+export default function EditTask({ id, children }: EditTaskProps) {
   const [name, setName] = useState<string>(children); // 表示される名前
   const [newName, setNewName] = useState<string>(children); // 入力用の一時的な名前
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false); // 削除確認ダイアログの状態
@@ -37,6 +38,8 @@ export default function EditTask({ children }: EditTaskProps) {
   const [minutes3, setMinutes3] = useState(0); // 分
   const [minutes, setMinutes] = useState(0);
 
+  const { data: session, status } = useSession();
+
   const handleSave = () => {
     // データベースに保存
     setName(newName);
@@ -44,6 +47,14 @@ export default function EditTask({ children }: EditTaskProps) {
   };
 
   const handleDelete = async () => {
+    if (!session?.user?.id) {
+      return;
+  }
+  try {
+      const response = await axios.delete(`/api/presets/task/${id}?userId=${session.user.id}`);
+    console.log(response);
+  } catch (error) {}
+
     //データベースから削除
     setDialogOpen(false);
     setIsDeleteDialogOpen(false);
