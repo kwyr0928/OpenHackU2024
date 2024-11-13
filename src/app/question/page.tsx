@@ -1,7 +1,8 @@
 "use client";
 
+import axios from "axios";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Checkbox } from "~/components/ui/checkbox";
@@ -14,15 +15,18 @@ export default function Question() {
   const [selectedValue, setSelectedValue] = useState<string>(""); // 現在の選択値
   const [inputValue, setInputValue] = useState<string>(""); // その他入力欄の値
   const [selectedItems, setSelectedItems] = useState<number[]>([]); // チェックされた選択肢を保存
+  const [timePresetValue, setTimePresetValue] = useState<string>("00:00");  // 時間プリセットの時刻
+  const [taskTime, setTaskTime] = useState<number>(0);
+  const [answerTaskJsonData, setAnswerTaskJsonData] = useState<answerTaskJsonDataPrpos>();
 
   const initialQuestionChoices: string[] = [
     "ランニング",
     "朝食",
     "着替え",
-    "薪割り",
-    "ブルアカ",
-    "ポケポケ",
-    "ラジオ体操",
+    "お風呂",
+    "メイク",
+    "運動",
+    "趣味"
   ];
   const questionContext = {
     member: [
@@ -51,7 +55,7 @@ export default function Question() {
         ],
       },
       {
-        title: "薪割りの所要時間は？",
+        title: "お風呂の所要時間は？",
         choice: [
           { text: "10分", id: "10min" },
           { text: "20分", id: "20min" },
@@ -59,7 +63,7 @@ export default function Question() {
         ],
       },
       {
-        title: "ブルアカの所要時間は？",
+        title: "メイクの所要時間は？",
         choice: [
           { text: "10分", id: "10min" },
           { text: "20分", id: "20min" },
@@ -67,7 +71,7 @@ export default function Question() {
         ],
       },
       {
-        title: "ポケポケの所要時間は？",
+        title: "運動の所要時間は？",
         choice: [
           { text: "10分", id: "10min" },
           { text: "20分", id: "20min" },
@@ -75,7 +79,7 @@ export default function Question() {
         ],
       },
       {
-        title: "ラジオ体操の所要時間は？",
+        title: "趣味の所要時間は？",
         choice: [
           { text: "10分", id: "10min" },
           { text: "20分", id: "20min" },
@@ -105,10 +109,10 @@ export default function Question() {
    */
   let nextButtonContent = null;
 
-  type questionTime = {
-    title: string;
-    choice: { text: string; id: string }[];
-  };
+  // type questionTime = {
+  //   title: string;
+  //   choice: { text: string; id: string }[];
+  // };
 
   // type questionTimeArray = {
   //   running: questionTime;
@@ -120,12 +124,36 @@ export default function Question() {
     setStep(step + 1);
     setSelectedValue(""); // 選択をリセット
     setInputValue(""); // 入力欄をリセット
+    
+    ////////////////////////////////////////////
+    // 要検討
+    if(answerTaskJsonData)
+      handleNextQuestion(answerTaskJsonData);
+    ////////////////////////////////////////////
+  };
+
+  const handleNextQuestion = (answerTaskJsonData:answerTaskJsonDataPrpos) => {
+    useEffect(() => {
+      const sendData = async () => {
+        try {
+          await axios.post("/api/presets/task/new", answerTaskJsonData);
+        } catch (error) {
+          console.error("データの送信に失敗しました。", error);
+        }
+      };
+      sendData();
+    }, []);
   };
 
   //  stepの値に応じて質問と「次へ」ボタンを設定
   switch (step) {
     case GOAL_TIME_QUESTION:
-      questionContent = <GoalTimeQuestionComponent></GoalTimeQuestionComponent>;
+      questionContent = (
+        <GoalTimeQuestionComponent
+          timePresetValue={timePresetValue}
+          setTimePresetValue={setTimePresetValue}
+        />
+      );
       nextButtonContent = <Button onClick={handleNextStep} className="bg-darkBlue">次へ</Button>;
       break;
 
@@ -148,7 +176,7 @@ export default function Question() {
       const selectedItem = selectedItems[step - 3];
       const questionData = selectedItem !== undefined ? questionContext.member[selectedItem] : undefined;
 
-      if(questionData !== undefined){
+      if (questionData !== undefined) {
         questionContent = (
           <QuestionComponent
             questionData={questionData} //  生成に用いるjsonを渡す
@@ -156,6 +184,8 @@ export default function Question() {
             setSelectedValue={setSelectedValue}
             inputValue={inputValue} //  その他の入力を取得
             setInputValue={setInputValue}
+            taskTime={taskTime}
+            setTaskTime={setTaskTime}
           />
         );
       }
@@ -205,15 +235,18 @@ export default function Question() {
   );
 }
 
+type goalTimeQuestionProps = {
+  timePresetValue: string;
+  setTimePresetValue: (timePresetValue: string) => void;
+}
+
 /**
  * 設問コンポーネント：達成時刻を入力
  * @returns HTMLオブジェクト
  */
-function GoalTimeQuestionComponent() {
-  const [time, setTime] = useState<string>("10:00"); // 初期値を設定
-
+function GoalTimeQuestionComponent({timePresetValue, setTimePresetValue }: goalTimeQuestionProps) {
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTime(e.target.value); // 入力された時刻を更新
+    setTimePresetValue(e.target.value); // 入力された時刻を更新
   };
 
   return (
@@ -223,7 +256,7 @@ function GoalTimeQuestionComponent() {
       </h2>
       <input
         type="time"
-        value={time}
+        value={timePresetValue}
         onChange={handleTimeChange}
         className="mt-4 w-full max-w-[200px] rounded-md border p-2"
       />
@@ -252,7 +285,7 @@ function InitialQuestion({
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-medium">
-        あなたの朝のルーティンは<br></br>どれですか？
+        あなたの朝のルーティンは<br></br>どれですか？<br></br>1つ以上選択してください。
       </h2>
       {initialQuestionChoices.map((item: string, index: number) => (
         <div key={item} className="flex items-center space-x-2">
@@ -287,11 +320,27 @@ type questionComponentProps = {
   setSelectedValue: (selectedValue: string) => void;
   inputValue: string;
   setInputValue: (inputValue: string) => void;
+  taskTime: number;
+  setTaskTime: (taskTime: number) => void;
 }
 
 type choiceProps = {
   text: string;
   id: string;
+}
+
+type answerTaskJsonDataPrpos = {
+  "userId": string;
+  "taskSet": {
+    "name": string,
+    "isStatic": boolean,
+    "select": number,
+    "options": [
+      {
+        "time": number
+      }
+    ]
+  }
 }
 
 /**
@@ -309,6 +358,8 @@ function QuestionComponent({
   setSelectedValue,
   inputValue,
   setInputValue,
+  taskTime,
+  setTaskTime
 }: questionComponentProps) {
   return (
     <div className="space-y-4">
@@ -317,6 +368,12 @@ function QuestionComponent({
         value={selectedValue}
         onValueChange={(value: string) => {
           setSelectedValue(value);
+          if (value == null) {
+            setTaskTime(parseInt("0"));
+          }
+          else {
+            setTaskTime(parseInt(value));
+          }
         }}
         className=""
       >
@@ -335,6 +392,13 @@ function QuestionComponent({
             onChange={(e) => {
               setInputValue(e.target.value);
               setSelectedValue("other");
+              if (e.target.value == null) {
+                setTaskTime(parseInt("0"));
+              }
+              else {
+                setTaskTime(parseInt(e.target.value));
+                // console.log(parseInt(e.target.value) + 1);
+              }
             }}
             disabled={selectedValue !== "other"}
           />
