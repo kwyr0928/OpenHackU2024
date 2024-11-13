@@ -46,7 +46,7 @@ export type folderStruct = {
 export type taskStruct = {
   id?: string;
   itemId: string;
-  optionId?: string;
+  optionIndex: number;
   created_at?: Date;
   updated_at?: Date;
 };
@@ -70,18 +70,73 @@ export type wholeSetPostBody = {
   wholeSet: {
     name: string;
     timeId: string;
-    itemIds: string[];
+    items: {
+      itemId: string;
+      select: number;
+    }[];
   };
 };
-
+export type wholeSetPutBody = {
+  userId: string;
+  wholeSet: {
+    name: string;
+    timeId: string;
+    items: (
+      | {
+          itemId: string;
+          select: number;
+        }
+      | {
+          prefabId: string;
+          select: number;
+        }
+    )[];
+  };
+};
+///folder
 export type folderSetPostBody = {
   userId: string;
   folderSet: {
     name: string;
-    itemIds: string[];
+    tasks: {
+      itemId: string;
+      select: number;
+    }[];
   };
 };
 
+export type folderSetPutBody = {
+  userId: string;
+  folderSet: {
+    name: string;
+    items: (
+      | taskIdInFolderPutData
+      | taskPrefabInFolderPutData
+      | taskInFolderPutData
+    )[];
+  };
+};
+
+export type taskIdInFolderPutData = {
+  itemId: string;
+  select: number;
+};
+export type taskPrefabInFolderPutData = {
+  prefabId: string;
+  select: number;
+};
+export type taskInFolderPutData = {
+  taskSet: {
+    name: string;
+    isStatic: boolean;
+    select: number; //index
+    options: {
+      name: string;
+      time: number;
+    }[];
+  };
+};
+///time
 export type timeSetPostBody = {
   userId: string;
   timeSet: {
@@ -89,18 +144,23 @@ export type timeSetPostBody = {
     time: string;
   };
 };
-
+///task
 export type taskSetPostBody = {
   userId: string;
   taskSet: {
     name: string;
     isStatic: boolean;
-    select: number;
+    select: number; //index
     options: {
       name: string;
       time: number;
     }[];
   };
+};
+
+export type optionPostBody = {
+  name: string;
+  time: number;
 };
 
 //
@@ -143,6 +203,7 @@ export type taskResponse = {
     name: string;
     itemId: string;
     isStatic: boolean;
+    select: number; //選択中プリセットのインデックス
     options: optionResponse[];
   };
 };

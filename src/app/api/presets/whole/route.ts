@@ -36,7 +36,7 @@ export async function GET(req: Request) {
       const wholeRes: wholeAllResponse = {
         name: item.name,
         itemId: item.id,
-        updateTime: item.updated_at
+        updateTime: item.updated_at,
       };
       res.push(wholeRes);
     }

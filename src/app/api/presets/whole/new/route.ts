@@ -18,7 +18,7 @@ export async function POST(req: Request) {
       userId,
       wholeSet.name,
       wholeSet.timeId,
-      wholeSet.itemIds,
+      wholeSet.items,
     );
     return NextResponse.json({
       message: "whole created successfully",
