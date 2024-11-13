@@ -30,14 +30,12 @@ export default function NewFolder({ handleFolderGet }: NewFolderProps) {
       folderSet: {
         name: tempName,
         itemIds: [
-          // 中身なしだとエラーでる　回避できる？ //
         ],
       },
     };
     try {
       const res = await axios.post("/api/presets/folder/new", folderData);
       console.log(res.data);
-      // データベースに保存
       setName(tempName);
       setDialogOpen(false);
     } catch (error) {}

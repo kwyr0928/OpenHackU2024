@@ -69,7 +69,7 @@ export default function TabTask() {
               <hr className="w-full border-gray-500" />
               <CommandList className="">
                 <CommandEmpty>見つかりません</CommandEmpty>
-                <CommandGroup className="">
+                <CommandGroup>
                   {taskResponse?.taskSets.map((item) => (
                     <>
                       <CommandItem key={item.task.itemId}>

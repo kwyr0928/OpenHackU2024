@@ -93,6 +93,7 @@ export default function EditFolder({
       FolderSets : {
         folder: {
           name: name,
+          items:tasks.map((task) => task.task.itemId),
         },
       },
     };
