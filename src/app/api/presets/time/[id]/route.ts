@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { timeSetPostBody } from "~/server/repositry/constants";
+import { type timeSetPostBody } from "~/server/repositry/constants";
 import { deleteTime } from "~/server/repositry/deletedata";
 import { updateTime } from "~/server/service/update";
 

@@ -65,7 +65,7 @@ export async function updateTask(itemId: string, { userId, taskSet }: taskSetPos
     //オプション作成
     await createTaskOption(options, taskInfo.id, 0);
     // item更新
-    const updatedItem = await updateItem(itemId, taskSet.name);
+    await updateItem(itemId, taskSet.name);
     // task更新しない？選択中のやつは変えると困るから
     const ret = await updateTaskSet(taskInfo.id, taskInfo.optionIndex as number);
     return ret;
@@ -77,9 +77,6 @@ export async function updateTask(itemId: string, { userId, taskSet }: taskSetPos
 
 export async function updateTime(timeId: string, name:string, time:string) {
   try {
-    // const timeInfo = await getTimeInfoByTimeId(timeId);
-    // if(!timeInfo) throw new Error("Failed to get timeInfo.");
-
     const masterId = await getMasterIdByTimeId(timeId);
     if(masterId == null) throw new Error("Failed getMasterIdByTimeId");
     // timeSet更新
