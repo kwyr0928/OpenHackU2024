@@ -324,7 +324,7 @@ export async function createNewTask(
   selectIndex: number,
 ) {
   try {
-    const ret = await createTask(userId, name, options, 0, selectIndex);
+    const ret = await createTask(userId, name, options, selectIndex, 0);
     if (ret == null) {
       throw new Error("Failed on createTask");
     }
