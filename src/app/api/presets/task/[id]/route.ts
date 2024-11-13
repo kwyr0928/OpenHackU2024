@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
-import {
-  type optionStruct,
-  presetType,
-  type taskSetPostBody,
-} from "~/server/repositry/constants";
+import { presetType, type taskSetPostBody } from "~/server/repositry/constants";
 import { deleteItem } from "~/server/repositry/deletedata";
-import { getItemName } from "~/server/repositry/getdata";
+import {
+  getAllItemsByMasterId,
+  getItemName,
+  getMasterIdByItemId,
+} from "~/server/repositry/getdata";
+import { updateMaster } from "~/server/repositry/manageMaster";
 import { fetchTask } from "~/server/service/fetch";
-import { setItemParentReOrder } from "~/server/service/update";
+import { setItemParentReOrder, updateTask } from "~/server/service/update";
 
 export async function GET(req: Request) {
   try {
@@ -61,50 +62,25 @@ export async function PUT(
       );
     }
 
-    const options: optionStruct[] = [];
-    if (taskSet.isStatic) {
-      const opst: optionStruct = {
-        optionTime: taskSet.options[0]!.time,
-        order: 0,
-        isStatic: true,
-        taskId: "",
-      };
-      options.push(opst);
-    } else {
-      let order = 0;
-      for (const op of taskSet.options) {
-        const opst: optionStruct = {
-          name: op.name,
-          optionTime: op.time,
-          order: order,
-          isStatic: false,
-          taskId: "",
-        };
-        options.push(opst);
-        order++;
-      }
+    const masterId = await getMasterIdByItemId(itemId);
+    if (masterId == null) {
+      throw new Error("not found masterId");
     }
-
-    const taskObj = await updateTask(
-      userId,
-      taskSet.name,
-      options,
-      taskSet.select,
-    );
-
-    const deleted = await deleteItem(itemId, presetType.task);
-    if (deleted == null) {
-      return NextResponse.json(
-        { error: "Invalid input: userId is required" },
-        { status: 400 },
-      );
+    // master更新
+    await updateMaster(masterId, taskSet.name);
+    // masterIdが同じitemを
+    const allItems = await getAllItemsByMasterId(masterId);
+    if (allItems == null) {
+      throw new Error("not found allItems");
     }
-    // フォルダ(deleted.item.parentId)と同じmasterを持つフォルダもこれをもとに更新
-    // @here
+    let updatedTask;
+    for (const items of allItems) {
+      updatedTask = await updateTask(items.id, { userId, taskSet });
+    }
 
     return NextResponse.json({
       message: "update task successfully",
-      task: taskObj,
+      task: updatedTask,
     });
   } catch (error) {
     console.error("Error in UPDATE task request:", error);

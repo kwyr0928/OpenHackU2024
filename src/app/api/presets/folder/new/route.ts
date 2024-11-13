@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     const folder = await createNewFolder(
       userId,
       folderSet.name,
-      folderSet.itemIds,
+      folderSet.tasks,
     );
 
     return NextResponse.json({
