@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { presetType } from "~/server/repositry/constants";
+import { optionStruct, presetType, taskSetPostBody } from "~/server/repositry/constants";
 import { deleteItem } from "~/server/repositry/deletedata";
 import { getItemName } from "~/server/repositry/getdata";
 import { fetchTask } from "~/server/service/fetch";
@@ -42,10 +42,72 @@ export async function GET(req: Request) {
   }
 }
 
-export async function PUT() {
-  return NextResponse.json({
-    message: "特定のプリセットを更新",
-  });
+export async function PUT(  req: Request,
+  { params }: { params: { id: string } },
+) {
+  try {
+    const itemId = params.id;
+    const { userId, taskSet }: taskSetPostBody =
+      (await req.json()) as taskSetPostBody;
+      if (!userId || !taskSet) {
+        return NextResponse.json(
+          { error: "Invalid input: userId and task are required" },
+          { status: 400 },
+        );
+      }
+    
+      const options: optionStruct[] = [];
+      if (taskSet.isStatic) {
+        const opst: optionStruct = {
+          optionTime: taskSet.options[0]!.time,
+          order: 0,
+          isStatic: true,
+          taskId: "",
+        };
+        options.push(opst);
+      } else {
+        let order = 0;
+        for (const op of taskSet.options) {
+          const opst: optionStruct = {
+            name: op.name,
+            optionTime: op.time,
+            order: order,
+            isStatic: false,
+            taskId: "",
+          };
+          options.push(opst);
+          order++;
+        }
+      }
+  
+      const taskObj = await updateTask(
+        userId,
+        taskSet.name,
+        options,
+        taskSet.select,
+      );
+      
+      const deleted = await deleteItem(itemId, presetType.task);
+      if (deleted == null) {
+        return NextResponse.json(
+          { error: "Invalid input: userId is required" },
+          { status: 400 },
+        );
+      }
+      // フォルダ(deleted.item.parentId)と同じmasterを持つフォルダもこれをもとに更新
+      // @here
+
+    return NextResponse.json({
+      message: "update task successfully",
+      task: taskObj,
+    });
+  } catch (error) {
+    console.error("Error in UPDATE task request:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
+  }
 }
 
 export async function DELETE(
@@ -62,12 +124,14 @@ export async function DELETE(
       );
     }
     // タスクの入ってたフォルダ or 全体プリセットの再順序付け
-    const res = await setItemParentReOrder(deleted.item.parentId!);
-    if (res == null) {
-      return NextResponse.json(
-        { error: "Invalid input: userId is required" },
-        { status: 400 },
-      );
+    if(deleted.item.parentId!=null) {
+      const res = await setItemParentReOrder(deleted.item.parentId);
+      if (res == null) {
+        return NextResponse.json(
+          { error: "Invalid input: parentId is required" },
+          { status: 400 },
+        );
+      }
     }
     // フォルダ(deleted.item.parentId)と同じmasterを持つフォルダもこれをもとに更新
     // @here
