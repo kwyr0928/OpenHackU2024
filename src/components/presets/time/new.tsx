@@ -23,14 +23,13 @@ export default function NewTime() {
     setTime(e.target.value); // 入力された時刻を更新
   };
 
-
   const handleTimeCreate = async () => {
     const timeData = {
       userId: "cm390e361000010avus2xru9v",
       timeSet: {
         name: name,
-        time: time
-      }
+        time: time,
+      },
     };
     try {
       const res = await axios.post("/api/presets/time/new", timeData);

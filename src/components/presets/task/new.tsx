@@ -11,7 +11,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
@@ -43,7 +43,7 @@ export default function NewTask() {
     setMinutes3(0);
   };
 
-  const handlePullDownTaskCreate = async () => {
+  const handleTaskCreate = async () => {
     const taskData1 = {
       userId: session?.user.id,
       taskSet: {
@@ -74,19 +74,16 @@ export default function NewTask() {
         select: 0,
         options: [
           {
-           time: minutes
+            time: minutes,
           },
         ],
       },
     };
-   
-    
-  
 
     try {
-      if(activeTab === "pulldown"){
-      const res = await axios.post("/api/presets/task/new", taskData1);
-      }else{
+      if (activeTab === "pulldown") {
+        const res = await axios.post("/api/presets/task/new", taskData1);
+      } else {
         const res = await axios.post("/api/presets/task/new", taskData2);
       }
     } catch (error) {}
@@ -94,13 +91,12 @@ export default function NewTask() {
     setDialogOpen(false);
   };
 
-
   return (
     <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
-      <div className="mt-4 flex items-center justify-center">
+        <div className="mt-4 flex items-center justify-center">
           <PlusCircle
-            color='#FFA660'
+            color="#FFA660"
             style={{ width: "50px", height: "50px" }}
           />
         </div>
@@ -117,21 +113,23 @@ export default function NewTask() {
             />
           </DialogTitle>
         </DialogHeader>
-        <Tabs defaultValue="pulldown" 
-        onValueChange={(value) => setActiveTab(value)}
-          className="mt-2" >
+        <Tabs
+          defaultValue="pulldown"
+          onValueChange={(value) => setActiveTab(value)}
+          className="mt-2"
+        >
           <TabsList className="mb-4 grid w-full grid-cols-2">
             <TabsTrigger value="pulldown">プルダウン</TabsTrigger>
             <TabsTrigger value="static">固定値</TabsTrigger>
           </TabsList>
           <TabsContent value="pulldown" className="h-[150px]">
             <ScrollArea>
-              <div className="flex items-center justify-center mb-3">
+              <div className="mb-3 flex items-center justify-center">
                 <Input
                   type="text"
                   value={options1}
                   onChange={(e) => setOptions1(e.target.value)}
-                  className="w-36 text-center mr-7"
+                  className="mr-7 w-36 text-center"
                 />
                 <Input
                   type="number"
@@ -141,12 +139,12 @@ export default function NewTask() {
                 />
                 <p>min</p>
               </div>
-              <div className="flex items-center justify-center mb-3">
+              <div className="mb-3 flex items-center justify-center">
                 <Input
                   type="text"
                   value={options2}
                   onChange={(e) => setOptions2(e.target.value)}
-                  className="w-36 text-center mr-7"
+                  className="mr-7 w-36 text-center"
                 />
                 <Input
                   type="number"
@@ -156,12 +154,12 @@ export default function NewTask() {
                 />
                 <p>min</p>
               </div>
-              <div className="flex items-center justify-center mb-3">
+              <div className="mb-3 flex items-center justify-center">
                 <Input
                   type="text"
                   value={options3}
                   onChange={(e) => setOptions3(e.target.value)}
-                  className="w-36 text-center mr-7"
+                  className="mr-7 w-36 text-center"
                 />
                 <Input
                   type="number"
@@ -188,7 +186,7 @@ export default function NewTask() {
         <div className="mt-auto flex justify-around">
           <Button
             className="bg-darkBlue hover:bg-blue-900"
-            onClick={handlePullDownTaskCreate}
+            onClick={handleTaskCreate}
             disabled={!name} // newNameが空の場合はボタンを無効化
           >
             作成

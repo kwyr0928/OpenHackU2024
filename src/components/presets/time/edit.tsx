@@ -22,10 +22,10 @@ import TimeIcon from "~/components/svgs/timeIcon";
 interface EditTimeProps {
   children: string;
   id: string;
-  time :string
+  time: string;
 }
 
-export default function EditTime({ children ,id ,time}: EditTimeProps) {
+export default function EditTime({ children, id, time }: EditTimeProps) {
   const [tempTime, setTempTime] = useState<string>(time); // 初期値を設定
   const [isDialogOpen, setIsDialogOpen] = useState(false); // ダイアログの開閉状態
   const [name, setName] = useState<string>(children); // 表示される名前
@@ -48,14 +48,13 @@ export default function EditTime({ children ,id ,time}: EditTimeProps) {
     setIsDialogOpen(false);
   };
 
-
   return (
     <Accordion type="single" collapsible className="w-full">
       <AccordionItem value="item-1">
         <AccordionTrigger className="w-full items-center justify-between p-1 text-xl text-black">
           <div>
             <TimeIcon
-              color='#FF9AC6'
+              color="#FF9AC6"
               style={{ width: "35px", height: "35px" }}
             />
           </div>

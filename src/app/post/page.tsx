@@ -24,37 +24,37 @@ const taskData = {
 };
 
 const folderData = {
-    userId: "cm3fwxjau0000ou5zhszjrvrd",
-    folderSet: {
-        name: "運動する日",
-        itemIds: [
-            "cm3fx0bdx002dou5zlz6vbkbg",
-            "cm3fwznem000vou5zhvy4y3d7",
-            "cm3fx0s2e002mou5zej3hkbor",
-        ]
-    }
+  userId: "cm3fwxjau0000ou5zhszjrvrd",
+  folderSet: {
+    name: "運動する日",
+    itemIds: [
+      "cm3fx0bdx002dou5zlz6vbkbg",
+      "cm3fwznem000vou5zhvy4y3d7",
+      "cm3fx0s2e002mou5zej3hkbor",
+    ],
+  },
 };
 
 const timeData = {
-    userId: "cm3fwxjau0000ou5zhszjrvrd",
-    timeSet: {
-        name: "4限電車",
-        time: "14:40"
-    }
+  userId: "cm3fwxjau0000ou5zhszjrvrd",
+  timeSet: {
+    name: "4限電車",
+    time: "14:40",
+  },
 };
 
 const wholeData = {
-    userId: "cm3fwxjau0000ou5zhszjrvrd",
-    wholeSet: {
-        name: "筋トレ1限",
-        timeId: "cm3fx3bex004hou5zbg5qyhh3",
-        itemIds: [
-            "cm3fx07s10024ou5z1pzjhnnm", // 駅まで徒歩
-            "cm3fwzejk000dou5zm1rd2g8g", // ごはん
-            "cm3fx2jcl003oou5zziu1esf6", // おしゃれする
-        ]
-    }
-}
+  userId: "cm3fwxjau0000ou5zhszjrvrd",
+  wholeSet: {
+    name: "筋トレ1限",
+    timeId: "cm3fx3bex004hou5zbg5qyhh3",
+    itemIds: [
+      "cm3fx07s10024ou5z1pzjhnnm", // 駅まで徒歩
+      "cm3fwzejk000dou5zm1rd2g8g", // ごはん
+      "cm3fx2jcl003oou5zziu1esf6", // おしゃれする
+    ],
+  },
+};
 
 export default function Page() {
   const [taskResponse, setTaskResponse] = useState(null);

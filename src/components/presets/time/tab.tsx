@@ -23,7 +23,7 @@ export default function TabTime() {
 
   useEffect(() => {
     let isMounted = true; // マウント状態を追跡
-  
+
     const handleTimeGet = async () => {
       if (!session?.user?.id) {
         setLoading(false);
@@ -39,9 +39,9 @@ export default function TabTime() {
         }
       } catch (error) {}
     };
-  
+
     handleTimeGet();
-  
+
     return () => {
       isMounted = false; // クリーンアップ
     };
@@ -65,7 +65,9 @@ export default function TabTime() {
                   {timeResponse?.timeSets?.map((item) => (
                     <>
                       <CommandItem key={item.time.timeId}>
-                        <EditTime id={item.time.timeId} time={item.time.time}>{item.time.name}</EditTime>
+                        <EditTime id={item.time.timeId} time={item.time.time}>
+                          {item.time.name}
+                        </EditTime>
                       </CommandItem>
                       <hr className="w-full border-gray-500" />
                     </>

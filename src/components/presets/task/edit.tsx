@@ -1,8 +1,10 @@
 "use client";
+
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { boolean } from "zod";
 import Description from "~/components/svgs/description";
 import { Button } from "~/components/ui/button";
 import {
@@ -19,9 +21,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 interface EditTaskProps {
   id: string;
   children: string;
+  task: Task;
 }
 
-export default function EditTask({ id, children }: EditTaskProps) {
+type Task = {
+  // タスクプリセット　中身
+  name: string;
+  itemId: string;
+  isStatic: boolean;
+  options: {
+    name: string;
+    time: number;
+  }[];
+};
+
+export default function EditTask({ id, children, task }: EditTaskProps) {
   const [name, setName] = useState<string>(children); // 表示される名前
   const [newName, setNewName] = useState<string>(children); // 入力用の一時的な名前
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false); // 削除確認ダイアログの状態
@@ -30,7 +44,9 @@ export default function EditTask({ id, children }: EditTaskProps) {
 
   const [number, setNumber] = useState<number>(0);
 
-  const [options1, setOptions1] = useState("デフォルト"); // プルダウン
+  const [isStatic, setIsStatic] = useState(task.isStatic);
+
+  const [options1, setOptions1] = useState(""); // プルダウン
   const [options2, setOptions2] = useState("");
   const [options3, setOptions3] = useState("");
   const [minutes1, setMinutes1] = useState(0); // 分
@@ -49,16 +65,32 @@ export default function EditTask({ id, children }: EditTaskProps) {
   const handleDelete = async () => {
     if (!session?.user?.id) {
       return;
-  }
-  try {
-      const response = await axios.delete(`/api/presets/task/${id}?userId=${session.user.id}`);
-    console.log(response);
-  } catch (error) {}
+    }
+    try {
+      const response = await axios.delete(
+        `/api/presets/task/${id}?userId=${session.user.id}`,
+      );
+      console.log(response);
+    } catch (error) {}
 
     //データベースから削除
     setDialogOpen(false);
     setIsDeleteDialogOpen(false);
+  };
 
+  const handleDialogOpen = () => {
+    // ここで関数の処理を定義します
+    console.log("Dialog Trigger clicked");
+    if (isStatic) {
+      setMinutes(task.options[0]?.time ?? 0);
+    } else {
+      setMinutes1(task.options[0]?.time ?? 0);
+      setMinutes2(task.options[1]?.time ?? 0);
+      setMinutes3(task.options[2]?.time ?? 0);
+      setOptions1(task.options[0]?.name ?? "デフォルト");
+      setOptions2(task.options[1]?.name ?? "");
+      setOptions3(task.options[2]?.name ?? "");
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -88,12 +120,15 @@ export default function EditTask({ id, children }: EditTaskProps) {
         }
       }}
     >
-      <DialogTrigger className="flex items-center justify-start w-full text-xl text-black">
-          <Description
-            color='#FFA660'
-            style={{ width: "35px", height: "35px" }}
-          />
-          【{name}】
+      <DialogTrigger
+        className="flex w-full items-center justify-start text-xl text-black"
+        onClick={handleDialogOpen}
+      >
+        <Description
+          color="#FFA660"
+          style={{ width: "35px", height: "35px" }}
+        />
+        【{name}】
       </DialogTrigger>
       <DialogContent className="w-[90%] rounded-xl">
         <DialogHeader>
@@ -121,7 +156,7 @@ export default function EditTask({ id, children }: EditTaskProps) {
           </DialogTitle>
           <DialogDescription></DialogDescription>
         </DialogHeader>
-        <Tabs defaultValue="pulldown" className="">
+        <Tabs defaultValue={isStatic ? "static" : "pulldown"} className="">
           <TabsList className="mb-4 grid w-full grid-cols-2">
             <TabsTrigger value="pulldown">プルダウン</TabsTrigger>
             <TabsTrigger value="static">固定値</TabsTrigger>

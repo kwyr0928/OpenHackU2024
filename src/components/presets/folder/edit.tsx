@@ -29,20 +29,22 @@ interface EditFolderProps {
   children: string;
 }
 
-type FolderSet = { // フォルダプリセット　中身
+type FolderSet = {
+  // フォルダプリセット　中身
   folder: {
     name: string;
     itemId: string;
     tasks: {
       task: {
-      name: string;
-      itemId: string;
-      isStatic: boolean;
-      options: {
         name: string;
-        time: number;
-      }[];
-    }}[];
+        itemId: string;
+        isStatic: boolean;
+        options: {
+          name: string;
+          time: number;
+        }[];
+      };
+    }[];
   };
 };
 
@@ -59,12 +61,19 @@ type TaskSet = {
   };
 };
 
-type TaskApiResponse = { // タスクプリセットの取得
+type TaskApiResponse = {
+  // タスクプリセットの取得
   message: string;
   taskSets: TaskSet[];
 };
 
-export default function EditFolder({ id, item, tasks, taskResponse, children }: EditFolderProps) {
+export default function EditFolder({
+  id,
+  item,
+  tasks,
+  taskResponse,
+  children,
+}: EditFolderProps) {
   const [time, setTime] = useState<string>("10:00"); // 初期値を設定
   const [isDialogOpen, setIsDialogOpen] = useState(false); // ダイアログの開閉状態
   const [name, setName] = useState<string>(children); // 表示される名前
@@ -88,23 +97,24 @@ export default function EditFolder({ id, item, tasks, taskResponse, children }: 
     setIsDialogOpen(false);
   };
 
-  type FolderSet = { // フォルダプリセット　中身
+  type FolderSet = {
+    // フォルダプリセット　中身
     folder: {
       name: string;
       itemId: string;
       tasks: {
         task: {
-        name: string;
-        itemId: string;
-        isStatic: boolean;
-        options: {
           name: string;
-          time: number;
-        }[];
-      }}[];
+          itemId: string;
+          isStatic: boolean;
+          options: {
+            name: string;
+            time: number;
+          }[];
+        };
+      }[];
     };
   };
-
 
   return (
     <Accordion type="single" collapsible className="w-full">
@@ -133,12 +143,14 @@ export default function EditFolder({ id, item, tasks, taskResponse, children }: 
           <div className="mx-auto w-[90%]">
             {tasks.map((task, index) => (
               <div key={index}>
-                <EditTask id={task.task.itemId}>{task.task.name}</EditTask>
+                <EditTask task={task.task} id={task.task.itemId}>
+                  {task.task.name}
+                </EditTask>
                 <hr className="mb-1 mt-1 w-full border-gray-500" />
               </div>
             ))}
             <div className="flex items-center justify-around">
-              <NewFolderTask item={item} taskResponse={taskResponse}/>
+              <NewFolderTask item={item} taskResponse={taskResponse} />
               <Button
                 className="ml-2 rounded-full bg-gray-500 p-2"
                 onClick={() => setIsDialogOpen(true)}

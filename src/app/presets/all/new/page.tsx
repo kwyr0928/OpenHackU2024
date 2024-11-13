@@ -1,6 +1,6 @@
 "use client";
 
-import { closestCenter, DndContext, DragEndEvent } from "@dnd-kit/core";
+import { closestCenter, DndContext, type DragEndEvent } from "@dnd-kit/core";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import { Check, ChevronsUpDown } from "lucide-react";
@@ -39,7 +39,7 @@ type Task = {
   name: string;
   duration: number;
   priority: number;
-  type: 'task';
+  type: "task";
 };
 
 type TaskFolder = {
@@ -47,7 +47,7 @@ type TaskFolder = {
   name: string;
   tasks: Task[];
   priority: number;
-  type: 'folder';
+  type: "folder";
 };
 
 type Folder = {
@@ -83,16 +83,14 @@ export default function Schedule() {
   const [valueFolder, setValueFolder] = useState("");
   const [openAll, setOpenAll] = useState(false);
   const [valueAll, setValueAll] = useState("");
-  
+
   const [time, setTime] = useState("９：２０");
 
-  const [scheduleItems, setScheduleItems] = useState<ScheduleItem[]>([
-   
-  ]);
+  const [scheduleItems, setScheduleItems] = useState<ScheduleItem[]>([]);
 
   const [tasks, setTasks] = useState<Task[]>([
-    { id: 1, name: "駅まで徒歩", duration: 15, priority: 1, type: 'task' },
-    { id: 2, name: "ごはん", duration: 15, priority: 2, type: 'task' },
+    { id: 1, name: "駅まで徒歩", duration: 15, priority: 1, type: "task" },
+    { id: 2, name: "ごはん", duration: 15, priority: 2, type: "task" },
   ]);
 
   const [taskFolders, setTaskFolders] = useState<TaskFolder[]>([
@@ -100,11 +98,12 @@ export default function Schedule() {
       id: 6,
       name: "おしゃれする",
       tasks: [
-        { id: 3, name: "着替え", duration: 15, priority: 1, type: 'task' },
-        { id: 4, name: "メイク", duration: 15, priority: 2, type: 'task' },
-        { id: 5, name: "ヘアメイク", duration: 15, priority: 3, type: 'task' },
+        { id: 3, name: "着替え", duration: 15, priority: 1, type: "task" },
+        { id: 4, name: "メイク", duration: 15, priority: 2, type: "task" },
+        { id: 5, name: "ヘアメイク", duration: 15, priority: 3, type: "task" },
       ],
-      priority: 3, type: 'folder'
+      priority: 3,
+      type: "folder",
     },
   ]);
 
@@ -146,11 +145,11 @@ export default function Schedule() {
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    
+
     if (active && over && active.id !== over.id) {
       setScheduleItems((items) => {
-        const oldIndex = items.findIndex(item => item.id === active.id);
-        const newIndex = items.findIndex(item => item.id === over.id);
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
         return arrayMove(items, oldIndex, newIndex);
       });
     }
@@ -158,17 +157,21 @@ export default function Schedule() {
 
   const handleFolderDragEnd = (folderId: number) => (event: DragEndEvent) => {
     const { active, over } = event;
-    
+
     if (active && over && active.id !== over.id) {
       setScheduleItems((items) => {
-        return items.map(item => {
-          if (item.type === 'folder' && item.id === folderId) {
+        return items.map((item) => {
+          if (item.type === "folder" && item.id === folderId) {
             const folder = item;
-            const oldIndex = folder.tasks.findIndex(task => task.id === active.id);
-            const newIndex = folder.tasks.findIndex(task => task.id === over.id);
+            const oldIndex = folder.tasks.findIndex(
+              (task) => task.id === active.id,
+            );
+            const newIndex = folder.tasks.findIndex(
+              (task) => task.id === over.id,
+            );
             return {
               ...folder,
-              tasks: arrayMove(folder.tasks, oldIndex, newIndex)
+              tasks: arrayMove(folder.tasks, oldIndex, newIndex),
             };
           }
           return item;
@@ -187,7 +190,7 @@ export default function Schedule() {
               variant="outline"
               role="combobox"
               aria-expanded={openAll}
-              className="mt-3 mr-5 w-[200px] text-xl py-5"
+              className="mr-5 mt-3 w-[200px] py-5 text-xl"
             >
               <div className="ml-5">
                 {valueAll
@@ -230,15 +233,15 @@ export default function Schedule() {
           </PopoverContent>
         </Popover>
         <Image
-            src="/image/save.svg"
-            alt="保存アイコン"
-            width={20}
-            height={20}
-            className="absolute top-10 left-14 ml-1"
-          />
+          src="/image/save.svg"
+          alt="保存アイコン"
+          width={20}
+          height={20}
+          className="absolute left-14 top-10 ml-1"
+        />
       </p>
       <div className="mb-5 h-svh w-96 items-center justify-center bg-white">
-        <div className="bg-rose-100 pb-1 relative">
+        <div className="relative bg-rose-100 pb-1">
           {/* 時間プリセット */}
           <Popover open={openTime} onOpenChange={setOpenTime}>
             <PopoverTrigger asChild>
@@ -246,7 +249,7 @@ export default function Schedule() {
                 variant="outline"
                 role="combobox"
                 aria-expanded={openTime}
-                className="mt-3 w-[200px] mr-5 text-lg"
+                className="mr-5 mt-3 w-[200px] text-lg"
               >
                 <div className="ml-5">
                   {valueTime
@@ -296,7 +299,7 @@ export default function Schedule() {
             alt="保存アイコン"
             width={20}
             height={20}
-            className="absolute top-5 left-7"
+            className="absolute left-7 top-5"
           />
           <div className="mx-5 my-2 flex h-16 items-center justify-center bg-white text-3xl font-bold">
             {time}
@@ -308,10 +311,10 @@ export default function Schedule() {
           onDragEnd={handleDragEnd}
           modifiers={[restrictToVerticalAxis]}
         >
-          <SortableContext items={scheduleItems.map(item => item.id)}>
+          <SortableContext items={scheduleItems.map((item) => item.id)}>
             {scheduleItems.map((item) => (
               <Droppable key={item.id} id={item.id}>
-                {item.type === 'task' ? (
+                {item.type === "task" ? (
                   <TaskPreset
                     id={item.id}
                     name={item.name}
@@ -334,24 +337,25 @@ export default function Schedule() {
           </SortableContext>
         </DndContext>
         <DropdownMenu>
-  <DropdownMenuTrigger><Image
-          src="/image/plus.svg"
-          alt="新規作成アイコン"
-          width={40}
-          height={40}
-          className="mx-auto mt-5"
-        /></DropdownMenuTrigger>
-  <DropdownMenuContent>
-    <DropdownMenuLabel>タスクの作成</DropdownMenuLabel>
-    <DropdownMenuSeparator />
-    <DropdownMenuItem>既存プリセットから</DropdownMenuItem>
-    <DropdownMenuItem>新規作成</DropdownMenuItem>
-    <DropdownMenuSeparator />
-    <DropdownMenuItem>閉じる</DropdownMenuItem>
-  </DropdownMenuContent>
-</DropdownMenu>
-        
-        
+          <DropdownMenuTrigger>
+            <Image
+              src="/image/plus.svg"
+              alt="新規作成アイコン"
+              width={40}
+              height={40}
+              className="mx-auto mt-5"
+            />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuLabel>タスクの作成</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>既存プリセットから</DropdownMenuItem>
+            <DropdownMenuItem>新規作成</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>閉じる</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
         <div className="absolute bottom-12 left-0 right-0">
           <Link href="/presets">
             <Button className="bg-darkBlue px-6 py-6 font-mPlus text-2xl text-slate-100 hover:bg-darkBlue">

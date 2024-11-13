@@ -16,34 +16,39 @@ import { ScrollArea } from "~/components/ui/scroll-area";
 import EditFolder from "./edit";
 import NewFolder from "./new";
 
-type FolderApiResponse = { // フォルダプリセットの取得
+type FolderApiResponse = {
+  // フォルダプリセットの取得
   message: string;
   folderSets: FolderSet[];
 };
 
-type FolderSet = { // フォルダプリセット　中身
+type FolderSet = {
+  // フォルダプリセット　中身
   folder: {
     name: string;
     itemId: string;
     tasks: {
       task: {
-      name: string;
-      itemId: string;
-      isStatic: boolean;
-      options: {
         name: string;
-        time: number;
-      }[];
-    }}[];
+        itemId: string;
+        isStatic: boolean;
+        options: {
+          name: string;
+          time: number;
+        }[];
+      };
+    }[];
   };
 };
 
-type TaskApiResponse = { // タスクプリセットの取得
+type TaskApiResponse = {
+  // タスクプリセットの取得
   message: string;
   taskSets: TaskSet[];
 };
 
-type TaskSet = { // タスクプリセット　中身
+type TaskSet = {
+  // タスクプリセット　中身
   task: {
     name: string;
     itemId: string;
@@ -59,14 +64,13 @@ export default function TabFolder() {
   const [folderResponse, setFolderResponse] = useState<FolderApiResponse>();
   const [taskResponse, setTaskResponse] = useState<TaskApiResponse>();
   const { data: session, status } = useSession();
-  
+
   const handleFolderGet = async () => {
     if (!session?.user?.id) {
       return;
     }
     try {
-      const [folderResponse, taskResponse] =
-      await Promise.all([
+      const [folderResponse, taskResponse] = await Promise.all([
         axios.get<FolderApiResponse>(
           `/api/presets/folder?userId=${session.user.id}`, // フォルダプリセット一覧 get
         ),
@@ -96,17 +100,23 @@ export default function TabFolder() {
               <CommandList className="">
                 <CommandEmpty>見つかりません</CommandEmpty>
                 <CommandGroup className="">
-                <hr className=" w-full border-gray-500" />
+                  <hr className="w-full border-gray-500" />
 
-                {folderResponse?.folderSets?.map((item) => (
+                  {folderResponse?.folderSets?.map((item) => (
                     <>
                       <CommandItem key={item.folder.itemId}>
-                        <EditFolder id={item.folder.itemId} item={item} tasks={item.folder.tasks} taskResponse={taskResponse}>{item.folder.name}</EditFolder>
+                        <EditFolder
+                          id={item.folder.itemId}
+                          item={item}
+                          tasks={item.folder.tasks}
+                          taskResponse={taskResponse}
+                        >
+                          {item.folder.name}
+                        </EditFolder>
                       </CommandItem>
                       <hr className="mt-2 w-full border-gray-500" />
                     </>
                   ))}
-
                 </CommandGroup>
                 <NewFolder></NewFolder>
               </CommandList>
