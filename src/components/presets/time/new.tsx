@@ -40,7 +40,6 @@ export default function NewTime({handleTimeGet}: NewTimeProps) {
     };
     try {
       const res = await axios.post("/api/presets/time/new", timeData);
-      setTimeResponse(res.data);
       console.log(res.data);
     } catch (error) {}
     setDialogOpen(false);

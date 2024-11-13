@@ -62,7 +62,10 @@ type TaskSet = {
 
 export default function TabFolder() {
   const [folderResponse, setFolderResponse] = useState<FolderApiResponse>();
-  const [taskResponse, setTaskResponse] = useState<TaskApiResponse>();
+  const [taskResponse, setTaskResponse] = useState<TaskApiResponse>({
+    message: "",
+    taskSets: [],
+  });
   const { data: session, status } = useSession();
 
   const handleFolderGet = async () => {
@@ -84,7 +87,7 @@ export default function TabFolder() {
   };
 
   useEffect(() => {
-    handleFolderGet();
+    void handleFolderGet();
   }, [session]);
 
   return (
@@ -108,8 +111,8 @@ export default function TabFolder() {
                           id={item.folder.itemId}
                           item={item}
                           tasks={item.folder.tasks}
-                          taskResponse={taskResponse}
-                          handleFolder={handleFolderGet}
+                          taskApiResponse={taskResponse}
+                          handleFolderGet={handleFolderGet}
                         >
                           {item.folder.name}
                         </EditFolder>

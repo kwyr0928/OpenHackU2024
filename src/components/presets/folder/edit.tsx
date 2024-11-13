@@ -27,7 +27,7 @@ interface EditFolderProps {
   id: string;
   item: FolderSet;
   tasks: TaskSet[];
-  taskResponse: TaskApiResponse;
+  taskApiResponse: TaskApiResponse;
   children: string;
   handleFolderGet:() => void;
 }
@@ -74,7 +74,7 @@ export default function EditFolder({
   id,
   item,
   tasks,
-  taskResponse,
+  taskApiResponse,
   children,
   handleFolderGet,
 }: EditFolderProps) {
@@ -86,9 +86,27 @@ export default function EditFolder({
 
   const { data: session, status } = useSession();
 
-  const handleSave = () => {
-    // 名前を変更
+  const handleSave = async () => {
     setName(newName);
+    const folderData = {
+      userId: session?.user.id,
+      FolderSets : {
+        folder: {
+          name: name,
+        },
+      },
+    };
+    if (!session?.user?.id) {
+      return;
+    }
+    try {
+      const res = await axios.put(
+        `/api/presets/time/${id}?userId=${session.user.id}`,
+        folderData,
+      );
+      console.log(res.data);
+    } catch (error) {}
+    // 名前を変更
     setIsDialogOpen(false);
     handleFolderGet();
   };
@@ -161,7 +179,7 @@ export default function EditFolder({
               </div>
             ))}
             <div className="flex items-center justify-around">
-              <NewFolderTask item={item} taskResponse={taskResponse} />
+              <NewFolderTask item={item} taskResponse={taskApiResponse} />
               <Button
                 className="ml-2 rounded-full bg-gray-500 p-2"
                 onClick={() => setIsDialogOpen(true)}

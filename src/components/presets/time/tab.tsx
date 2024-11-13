@@ -16,9 +16,26 @@ import {
   CommandList,
 } from "~/components/ui/command";
 
+type TimeApiResponse = {
+  // 時間プリセットの取得
+  message: string;
+  timeSets: TimeSet[];
+};
+
+
+type TimeSet = {
+  // 時間プリセット　中身
+  time: {
+    name: string;
+    timeId: string;
+    time: string;
+  };
+};
+
+
 export default function TabTime() {
   const { data: session, status } = useSession();
-  const [timeResponse, setTimeResponse] = useState(null);
+  const [timeResponse, setTimeResponse] = useState<TimeApiResponse>();
   const [loading, setLoading] = useState(true);
 
   const handleTimeGet = async () => {
@@ -28,7 +45,7 @@ export default function TabTime() {
       return;
     }
     try {
-      const res = await axios.get(
+      const res = await axios.get<TimeApiResponse>(
         `/api/presets/time?userId=${session.user.id}`,
       );
       if (isMounted) {
@@ -40,7 +57,7 @@ export default function TabTime() {
   };
 
   useEffect(() => {
-    handleTimeGet();
+   void handleTimeGet();
   }, [session]);
 
   return (

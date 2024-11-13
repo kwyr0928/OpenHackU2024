@@ -28,6 +28,15 @@ interface EditTimeProps {
   handleTimeGet: () => void;
 }
 
+type Time = {
+  // 時間プリセット　中身
+  time: {
+    name: string;
+    timeId: string;
+    time: string;
+  };
+};
+
 export default function EditTime({
   children,
   id,
@@ -61,7 +70,6 @@ export default function EditTime({
         `/api/presets/time/${id}?userId=${session.user.id}`,
         timeData,
       );
-      setTimeResponse(res.data);
       console.log(res.data);
     } catch (error) {}
     handleTimeGet();
@@ -85,7 +93,6 @@ export default function EditTime({
         `/api/presets/time/${id}?userId=${session.user.id}`,
         timeData,
       );
-      setTimeResponse(res.data);
       console.log(res.data);
     } catch (error) {}
     setIsDialogOpen(false);
