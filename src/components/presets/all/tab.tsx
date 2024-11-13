@@ -73,9 +73,9 @@ export default function TabAll() {
             </div>
             <ScrollArea className="h-[640px]">
               <CommandList className="">
+              <hr className="w-full border-gray-500" />
                 <CommandEmpty>見つかりません</CommandEmpty>
                 <CommandGroup className="">
-                  <hr className="w-full border-gray-500" />
                   {wholePresets.map((preset) => (
                     <div key={preset.itemId}>
                       <CommandItem className="mb-1 mt-1">

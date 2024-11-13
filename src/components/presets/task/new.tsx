@@ -16,7 +16,11 @@ import {
 import { Input } from "~/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
-export default function NewTask() {
+interface NewTaskProps {
+  handleTaskGet: () => void; // 追加
+}
+
+export default function NewTask({handleTaskGet}: NewTaskProps) {
   const [name, setName] = useState<string>(""); // 表示される名前
   const [isDialogOpen, setDialogOpen] = useState(false); // ダイアログの状態
   const [options1, setOptions1] = useState("デフォルト"); // プルダウン
@@ -26,7 +30,6 @@ export default function NewTask() {
   const [minutes2, setMinutes2] = useState(0); // 分
   const [minutes3, setMinutes3] = useState(0); // 分
   const [minutes, setMinutes] = useState(0);
-  const [taskResponse, setTaskResponse] = useState(null);
   const [activeTab, setActiveTab] = useState("pulldown");
 
   const { data: session, status } = useSession(); // セッション情報
@@ -89,6 +92,7 @@ export default function NewTask() {
     } catch (error) {}
     handleCancel();
     setDialogOpen(false);
+    handleTaskGet();
   };
 
   return (

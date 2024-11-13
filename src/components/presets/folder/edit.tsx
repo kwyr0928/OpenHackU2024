@@ -20,6 +20,8 @@ import {
 import { Input } from "~/components/ui/input";
 import EditTask from "../task/edit";
 import NewFolderTask from "./taskNew";
+import axios from "axios";
+import { useSession } from "next-auth/react";
 
 interface EditFolderProps {
   id: string;
@@ -27,6 +29,7 @@ interface EditFolderProps {
   tasks: TaskSet[];
   taskResponse: TaskApiResponse;
   children: string;
+  handleFolderGet:() => void;
 }
 
 type FolderSet = {
@@ -73,28 +76,36 @@ export default function EditFolder({
   tasks,
   taskResponse,
   children,
+  handleFolderGet,
 }: EditFolderProps) {
-  const [time, setTime] = useState<string>("10:00"); // 初期値を設定
   const [isDialogOpen, setIsDialogOpen] = useState(false); // ダイアログの開閉状態
   const [name, setName] = useState<string>(children); // 表示される名前
   const [newName, setNewName] = useState<string>(children); // 新しい名前
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false); // 削除確認ダイアログの状態
   const [isOpen, setIsOpen] = useState(false); // アコーディオンの開閉状態を管理
 
-  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTime(e.target.value); // 入力された時刻を更新
-  };
+  const { data: session, status } = useSession();
 
   const handleSave = () => {
     // 名前を変更
     setName(newName);
     setIsDialogOpen(false);
+    handleFolderGet();
   };
 
-  const handleDelete = () => {
-    // 削除処理
+  const handleDelete = async () => {
+    if (!session?.user?.id) {
+      return;
+    }
+    try {
+      const response = await axios.delete(
+        `/api/presets/folder/${id}?userId=${session.user.id}`,
+      );
+      console.log(response);
+    } catch (error) {}
     setIsDeleteDialogOpen(false);
     setIsDialogOpen(false);
+    handleFolderGet();
   };
 
   type FolderSet = {
@@ -143,7 +154,7 @@ export default function EditFolder({
           <div className="mx-auto w-[90%]">
             {tasks.map((task, index) => (
               <div key={index}>
-                <EditTask task={task.task} id={task.task.itemId}>
+                <EditTask task={task.task} id={task.task.itemId} handleTaskGet={handleFolderGet}>
                   {task.task.name}
                 </EditTask>
                 <hr className="mb-1 mt-1 w-full border-gray-500" />

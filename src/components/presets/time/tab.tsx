@@ -21,30 +21,26 @@ export default function TabTime() {
   const [timeResponse, setTimeResponse] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const handleTimeGet = async () => {
     let isMounted = true; // マウント状態を追跡
-
-    const handleTimeGet = async () => {
-      if (!session?.user?.id) {
-        setLoading(false);
-        return;
+    if (!session?.user?.id) {
+      setLoading(false);
+      return;
+    }
+    try {
+      const res = await axios.get(
+        `/api/presets/time?userId=${session.user.id}`,
+      );
+      if (isMounted) {
+        setTimeResponse(res.data);
+        console.log(res.data);
       }
-      try {
-        const res = await axios.get(
-          `/api/presets/time?userId=${session.user.id}`,
-        );
-        if (isMounted) {
-          setTimeResponse(res.data);
-          console.log(res.data);
-        }
-      } catch (error) {}
-    };
+    } catch (error) {}
+    isMounted = false; // クリーンアップ
+  };
 
+  useEffect(() => {
     handleTimeGet();
-
-    return () => {
-      isMounted = false; // クリーンアップ
-    };
   }, [session]);
 
   return (
@@ -58,14 +54,17 @@ export default function TabTime() {
             </div>
             <ScrollArea className="h-[640px]">
               <CommandList className="">
+                <hr className="w-full border-gray-500" />
                 <CommandEmpty>見つかりません</CommandEmpty>
                 <CommandGroup>
-                  <hr className="w-full border-gray-500" />
-
                   {timeResponse?.timeSets?.map((item) => (
                     <>
                       <CommandItem key={item.time.timeId}>
-                        <EditTime id={item.time.timeId} time={item.time.time}>
+                        <EditTime
+                          id={item.time.timeId}
+                          time={item.time.time}
+                          handleTimeGet={handleTimeGet}
+                        >
                           {item.time.name}
                         </EditTime>
                       </CommandItem>
@@ -73,7 +72,7 @@ export default function TabTime() {
                     </>
                   ))}
                 </CommandGroup>
-                <NewTime></NewTime>
+                <NewTime handleTimeGet={handleTimeGet}></NewTime>
               </CommandList>
             </ScrollArea>
           </Command>

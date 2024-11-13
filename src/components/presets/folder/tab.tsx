@@ -98,10 +98,9 @@ export default function TabFolder() {
             </div>
             <ScrollArea className="h-[640px]">
               <CommandList className="">
+                <hr className="w-full border-gray-500" />
                 <CommandEmpty>見つかりません</CommandEmpty>
                 <CommandGroup className="">
-                  <hr className="w-full border-gray-500" />
-
                   {folderResponse?.folderSets?.map((item) => (
                     <>
                       <CommandItem key={item.folder.itemId}>
@@ -110,6 +109,7 @@ export default function TabFolder() {
                           item={item}
                           tasks={item.folder.tasks}
                           taskResponse={taskResponse}
+                          handleFolder={handleFolderGet}
                         >
                           {item.folder.name}
                         </EditFolder>
@@ -118,7 +118,7 @@ export default function TabFolder() {
                     </>
                   ))}
                 </CommandGroup>
-                <NewFolder></NewFolder>
+                <NewFolder handleFolderGet={handleFolderGet}></NewFolder>
               </CommandList>
             </ScrollArea>
           </Command>

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import {
   Accordion,
   AccordionContent,
@@ -17,35 +18,93 @@ import {
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import TimeIcon from "~/components/svgs/timeIcon";
+import axios from "axios";
 
 // childrenを受け取るために型定義を追加
 interface EditTimeProps {
   children: string;
   id: string;
   time: string;
+  handleTimeGet: () => void;
 }
 
-export default function EditTime({ children, id, time }: EditTimeProps) {
+export default function EditTime({
+  children,
+  id,
+  time,
+  handleTimeGet,
+}: EditTimeProps) {
   const [tempTime, setTempTime] = useState<string>(time); // 初期値を設定
   const [isDialogOpen, setIsDialogOpen] = useState(false); // ダイアログの開閉状態
   const [name, setName] = useState<string>(children); // 表示される名前
   const [newName, setNewName] = useState<string>(children); // 新しい名前
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false); // 削除確認ダイアログの状態
+  const [timeResponse, setTimeResponse] = useState(null);
 
-  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTempTime(e.target.value); // 入力された時刻を更新
+  const { data: session, status } = useSession();
+
+  const handleTimeChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    //時間の変更
+    setTempTime(e.target.value);
+    const timeData = {
+      userId: session?.user.id,
+      timeSet: {
+        name: name,
+        time: tempTime,
+      },
+    };
+    if (!session?.user?.id) {
+      return;
+    }
+    try {
+      const res = await axios.put(
+        `/api/presets/time/${id}?userId=${session.user.id}`,
+        timeData,
+      );
+      setTimeResponse(res.data);
+      console.log(res.data);
+    } catch (error) {}
+    handleTimeGet();
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     // 名前を変更
     setName(newName);
+    const timeData = {
+      userId: session?.user.id,
+      timeSet: {
+        name: name,
+        time: time,
+      },
+    };
+    if (!session?.user?.id) {
+      return;
+    }
+    try {
+      const res = await axios.put(
+        `/api/presets/time/${id}?userId=${session.user.id}`,
+        timeData,
+      );
+      setTimeResponse(res.data);
+      console.log(res.data);
+    } catch (error) {}
     setIsDialogOpen(false);
+    handleTimeGet();
   };
 
-  const handleDelete = () => {
-    // 削除処理
+  const handleDelete = async () => {
+    if (!session?.user?.id) {
+      return;
+    }
+    try {
+      const response = await axios.delete(
+        `/api/presets/time/${id}?userId=${session.user.id}`,
+      );
+      console.log(response);
+    } catch (error) {}
     setIsDeleteDialogOpen(false);
     setIsDialogOpen(false);
+    handleTimeGet();
   };
 
   return (
@@ -61,6 +120,8 @@ export default function EditTime({ children, id, time }: EditTimeProps) {
           【{name}】
         </AccordionTrigger>
         <AccordionContent className="items-center justify-start space-x-4 rounded-b-md text-xl">
+          <hr className="mt-2 w-full border-gray-500" />
+
           <div className="flex justify-center pt-3">
             <input
               type="time"

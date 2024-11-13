@@ -14,10 +14,10 @@ import {
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 interface NewFolderProps {
-  children: string;
+  handleFolderGet: () => void;
 }
 
-export default function NewFolder() {
+export default function NewFolder({ handleFolderGet }: NewFolderProps) {
   const [name, setName] = useState<string>(); // 表示される名前
   const [tempName, setTempName] = useState<string>(); // 入力用の一時的な名前
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false); // 削除確認ダイアログの状態
@@ -41,12 +41,7 @@ export default function NewFolder() {
       setName(tempName);
       setDialogOpen(false);
     } catch (error) {}
-  };
-
-  const handleDelete = async () => {
-    //データベースから削除
-    setDialogOpen(false);
-    setIsDeleteDialogOpen(false);
+    handleFolderGet();
   };
 
   return (

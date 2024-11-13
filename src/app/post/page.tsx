@@ -44,14 +44,14 @@ const timeData = {
 };
 
 const wholeData = {
-  userId: "cm3fwxjau0000ou5zhszjrvrd",
+  userId: "cm390e361000010avus2xru9v",
   wholeSet: {
     name: "筋トレ1限",
-    timeId: "cm3fx3bex004hou5zbg5qyhh3",
+    timeId: "cm3enfbbj00017w54gmm0cp50",
     itemIds: [
-      "cm3fx07s10024ou5z1pzjhnnm", // 駅まで徒歩
-      "cm3fwzejk000dou5zm1rd2g8g", // ごはん
-      "cm3fx2jcl003oou5zziu1esf6", // おしゃれする
+      "cm3enk1aw00047w54u7a10yec", // 駅まで徒歩
+      "cm3eo2x5f000d7w54zliuha8n", // ごはん
+      "cm3es0sj6001w7w54ap22rfa5", // おしゃれする
     ],
   },
 };
