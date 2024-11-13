@@ -16,6 +16,7 @@ import {
   getMasterIdByTimeId,
   getTaskInfoByItemId,
 } from "../repositry/getdata";
+import { updateMaster } from "../repositry/manageMaster";
 import {
   setItemOrder,
   setTaskParent,
@@ -197,6 +198,8 @@ export async function updateTime(timeId: string, name: string, time: string) {
   try {
     const masterId = await getMasterIdByTimeId(timeId);
     if (masterId == null) throw new Error("Failed getMasterIdByTimeId");
+    // master更新
+    await updateMaster(masterId, name)
     // timeSet更新
     const updatedTime = await updateTimeSet(masterId, name, time);
     if (updatedTime == null) throw new Error("Failed getMasterIdByTimeId");

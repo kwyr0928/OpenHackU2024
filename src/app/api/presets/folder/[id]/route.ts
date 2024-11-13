@@ -5,6 +5,7 @@ import {
   getAllItemsByMasterId,
   getMasterIdByItemId,
 } from "~/server/repositry/getdata";
+import { updateMaster } from "~/server/repositry/manageMaster";
 import { setItemParentReOrder, updateFolder } from "~/server/service/update";
 
 export async function PUT(
@@ -26,6 +27,8 @@ export async function PUT(
     if (masterId == null) {
       throw new Error("not found masterId");
     }
+    // master更新
+    await updateMaster(masterId, folderSet.name)
     // masterIdが同じitemを取得
     const allItems = await getAllItemsByMasterId(masterId);
     if (allItems == null) {
