@@ -3,7 +3,7 @@ import {
   getItemsInParentSortOrder,
   getOptionsInTask,
   getTaskInfoByItemId,
-  getTimeInfoByTimeId
+  getTimeInfoByTimeId,
 } from "../repositry/getdata";
 import { createFolder, createTask, createTime } from "./create";
 
@@ -30,7 +30,10 @@ export async function instanciateFolder(prehabItemId: string, order: number) {
       if (task == null) {
         throw new Error("Failed getTaskInfoByItemId");
       }
-      taskItemIds.push({itemId: taskItem.id, select: task.optionIndex as number });
+      taskItemIds.push({
+        itemId: taskItem.id,
+        select: task.optionIndex,
+      });
     }
 
     const folderInstanciate = await createFolder(
@@ -50,7 +53,11 @@ export async function instanciateFolder(prehabItemId: string, order: number) {
   }
 }
 
-export async function instanciateTask(itemId: string, order: number, optionIdx?: number) {
+export async function instanciateTask(
+  itemId: string,
+  order: number,
+  optionIdx?: number,
+) {
   try {
     if (!itemId) {
       throw new Error("Invalid input: itemId is missing.");
@@ -76,7 +83,7 @@ export async function instanciateTask(itemId: string, order: number, optionIdx?:
       item.userId,
       item.name,
       options,
-      optionIdx ?? task.optionIndex as number,
+      optionIdx ?? (task.optionIndex),
       order,
       item,
     );

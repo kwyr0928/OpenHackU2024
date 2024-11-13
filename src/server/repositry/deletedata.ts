@@ -112,7 +112,10 @@ export async function deleteOptionsInTask(taskId: string) {
 }
 
 // folderId to 中にあるtask一覧のうち消していいものを全削除
-export async function deleteTaskItemsCanDeleteInFolder(folderItemId: string, existIds: string[]) {
+export async function deleteTaskItemsCanDeleteInFolder(
+  folderItemId: string,
+  existIds: string[],
+) {
   try {
     const deleteResult = await db.items.deleteMany({
       where: {

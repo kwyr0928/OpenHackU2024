@@ -3,19 +3,20 @@ import { type timeSetPostBody } from "~/server/repositry/constants";
 import { deleteTime } from "~/server/repositry/deletedata";
 import { updateTime } from "~/server/service/update";
 
-export async function PUT(  req: Request,
+export async function PUT(
+  req: Request,
   { params }: { params: { id: string } },
 ) {
   try {
     const timeId = params.id;
     const { userId, timeSet }: timeSetPostBody =
       (await req.json()) as timeSetPostBody;
-      if (!timeId || !userId || !timeSet) {
-        return NextResponse.json(
-          { error: "Invalid input: userId and timeSet are required" },
-          { status: 400 },
-        );
-      }
+    if (!timeId || !userId || !timeSet) {
+      return NextResponse.json(
+        { error: "Invalid input: userId and timeSet are required" },
+        { status: 400 },
+      );
+    }
 
     const updatedTime = await updateTime(timeId, timeSet.name, timeSet.time);
     return NextResponse.json({
@@ -30,7 +31,6 @@ export async function PUT(  req: Request,
     );
   }
 }
-
 
 export async function DELETE(
   req: Request,

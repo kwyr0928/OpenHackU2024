@@ -1,9 +1,29 @@
 //値の更新処理
 
-import { folderSetPutBody, optionStruct, taskSetPostBody } from "../repositry/constants";
-import { deleteOptionsInTask, deleteTaskItemsCanDeleteInFolder } from "../repositry/deletedata";
-import { getFolderInfoByItemId, getItemInfoByItemId, getItemsInParentSortOrder, getMasterIdByTimeId, getTaskInfoByItemId } from "../repositry/getdata";
-import { setItemOrder, setTaskParent, updateItem, updateOrderItem, updateTaskSet, updateTimeSet } from "../repositry/updatedata";
+import {
+  type folderSetPutBody,
+  type optionStruct,
+  type taskSetPostBody,
+} from "../repositry/constants";
+import {
+  deleteOptionsInTask,
+  deleteTaskItemsCanDeleteInFolder,
+} from "../repositry/deletedata";
+import {
+  getFolderInfoByItemId,
+  getItemInfoByItemId,
+  getItemsInParentSortOrder,
+  getMasterIdByTimeId,
+  getTaskInfoByItemId,
+} from "../repositry/getdata";
+import {
+  setItemOrder,
+  setTaskParent,
+  updateItem,
+  updateOrderItem,
+  updateTaskSet,
+  updateTimeSet,
+} from "../repositry/updatedata";
 import { createNewTask, createTaskOption } from "./create";
 import { instanciateTask } from "./instantiate";
 
@@ -32,16 +52,19 @@ export async function setItemParentReOrder(myItemId: string) {
 
 //////////////////////////////
 
-export async function updateFolder(itemId: string, { userId, folderSet }: folderSetPutBody) {
+export async function updateFolder(
+  itemId: string,
+  { userId, folderSet }: folderSetPutBody,
+) {
   try {
     const folderInfo = await getFolderInfoByItemId(itemId);
-    if(!folderInfo) throw new Error("Failed to get folderInfo.");
+    if (!folderInfo) throw new Error("Failed to get folderInfo.");
     // item更新
-    const existTasks: string[] = []
+    const existTasks: string[] = [];
     await updateItem(itemId, folderSet.name);
     let count = 0;
-    for(const items of folderSet.items){
-      if("taskSet" in items){
+    for (const items of folderSet.items) {
+      if ("taskSet" in items) {
         // 完全新規
         const options: optionStruct[] = [];
 
@@ -74,43 +97,36 @@ export async function updateFolder(itemId: string, { userId, folderSet }: folder
           options,
           items.taskSet.select,
         );
-        if(taskObj==null) throw new Error("Failed to create new task.");
+        if (taskObj == null) throw new Error("Failed to create new task.");
         // postと同様
         const taskInstance = await instanciateTask(taskObj.itemId, count);
         if (taskInstance == null) {
           throw new Error("Failed to instanciate task.");
         }
-        const parentedTask = await setTaskParent(
-          taskInstance.id,
-          itemId,
-        );
+        const parentedTask = await setTaskParent(taskInstance.id, itemId);
         if (parentedTask == null) {
           throw new Error("Failed to parent folder and task.");
         }
         existTasks.push(parentedTask.id);
-      } else if("itemId" in items) {
+      } else if ("itemId" in items) {
         // そのタスクidのitemのorder更新
-        console.log("！！！！"+items.itemId)
         const taskItemInfo = await getItemInfoByItemId(items.itemId);
-        if(taskItemInfo==null) throw new Error("Failed to getItemInfoByTaskId.");
+        if (taskItemInfo == null)
+          throw new Error("Failed to getItemInfoByTaskId.");
         await updateOrderItem(taskItemInfo.id, taskItemInfo.name, count);
         //オプションインデックス更新
         const taskInfo = await getTaskInfoByItemId(items.itemId);
-        if(taskInfo==null) throw new Error("Failed to getItemInfoByTaskId.");
+        if (taskInfo == null) throw new Error("Failed to getItemInfoByTaskId.");
         await updateTaskSet(taskInfo.id, items.select);
 
         existTasks.push(taskItemInfo.id);
-      } else if("prefabId" in items) {
+      } else if ("prefabId" in items) {
         // 既存プリセットから追加
         const taskInstance = await instanciateTask(items.prefabId, count);
         if (taskInstance == null) {
           throw new Error("Failed to instanciate task.");
         }
-        console.log("！"+taskInstance.id+"！"+itemId)
-        const parentedTask = await setTaskParent(
-          taskInstance.id,
-          itemId,
-        );
+        const parentedTask = await setTaskParent(taskInstance.id, itemId);
         if (parentedTask == null) {
           throw new Error("Failed to parent folder and task.");
         }
@@ -119,22 +135,25 @@ export async function updateFolder(itemId: string, { userId, folderSet }: folder
       count++;
     }
     await deleteTaskItemsCanDeleteInFolder(itemId, existTasks);
-
   } catch (error) {
     console.error(error);
     return null;
   }
 }
 
-export async function updateTask(itemId: string, { userId, taskSet }: taskSetPostBody) {
+export async function updateTask(
+  itemId: string,
+  { userId, taskSet }: taskSetPostBody,
+) {
   try {
     const taskInfo = await getTaskInfoByItemId(itemId);
-    if(!taskInfo) throw new Error("Failed to get taskInfo.");
+    if (!taskInfo) throw new Error("Failed to get taskInfo.");
     // 今あるオプションを全部消す
     await deleteOptionsInTask(taskInfo.id);
     // オプションデータを作成する
     const options: optionStruct[] = [];
-    if (taskSet.isStatic) { //固定値
+    if (taskSet.isStatic) {
+      //固定値
       const opst: optionStruct = {
         optionTime: taskSet.options[0]!.time,
         order: 0,
@@ -142,7 +161,8 @@ export async function updateTask(itemId: string, { userId, taskSet }: taskSetPos
         taskId: taskInfo.id,
       };
       options.push(opst);
-    } else { //オプションあり
+    } else {
+      //オプションあり
       let order = 0;
       for (const op of taskSet.options) {
         const opst: optionStruct = {
@@ -156,13 +176,16 @@ export async function updateTask(itemId: string, { userId, taskSet }: taskSetPos
         order++;
       }
     }
-    
+
     //オプション作成
     await createTaskOption(options, taskInfo.id, 0);
     // item更新
     await updateItem(itemId, taskSet.name);
     // task更新しない？選択中のやつは変えると困るから
-    const ret = await updateTaskSet(taskInfo.id, taskInfo.optionIndex as number);
+    const ret = await updateTaskSet(
+      taskInfo.id,
+      taskInfo.optionIndex,
+    );
     return ret;
   } catch (error) {
     console.error(error);
@@ -170,13 +193,13 @@ export async function updateTask(itemId: string, { userId, taskSet }: taskSetPos
   }
 }
 
-export async function updateTime(timeId: string, name:string, time:string) {
+export async function updateTime(timeId: string, name: string, time: string) {
   try {
     const masterId = await getMasterIdByTimeId(timeId);
-    if(masterId == null) throw new Error("Failed getMasterIdByTimeId");
+    if (masterId == null) throw new Error("Failed getMasterIdByTimeId");
     // timeSet更新
     const updatedTime = await updateTimeSet(masterId, name, time);
-    if(updatedTime == null) throw new Error("Failed getMasterIdByTimeId");
+    if (updatedTime == null) throw new Error("Failed getMasterIdByTimeId");
     return updatedTime;
   } catch (error) {
     console.error(error);

@@ -135,7 +135,7 @@ export async function fetchTask(itemId: string, name: string) {
         name: name,
         itemId: itemId,
         isStatic: options.isStatic,
-        select: task.optionIndex as number,
+        select: task.optionIndex,
         options: options.options,
       },
     };

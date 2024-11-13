@@ -47,7 +47,7 @@ export async function getMasterIdByItemId(itemId: string) {
   try {
     const masterId = await db.items.findFirst({
       select: {
-        masterId: true
+        masterId: true,
       },
       where: {
         id: itemId,
@@ -66,7 +66,7 @@ export async function getMasterIdByTimeId(timeId: string) {
   try {
     const masterId = await db.timeSets.findFirst({
       select: {
-        masterId: true
+        masterId: true,
       },
       where: {
         id: timeId,
@@ -194,7 +194,7 @@ export async function getItemInfoByItemId(itemId: string) {
       },
     });
 
-    if (item==null) throw new Error("not found item");
+    if (item == null) throw new Error("not found item");
     return item;
   } catch (error) {
     console.error("Error in getItemName:", error);
@@ -277,7 +277,7 @@ export async function getTaskInfoByItemId(itemId: string) {
       },
     });
 
-    if (task==null) throw new Error("not found taskSet");
+    if (task == null) throw new Error("not found taskSet");
     return task;
   } catch (error) {
     console.error("Error in getTaskInfoByItemId:", error);

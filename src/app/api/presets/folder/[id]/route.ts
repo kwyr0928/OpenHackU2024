@@ -1,41 +1,45 @@
 import { NextResponse } from "next/server";
-import { folderSetPutBody, presetType } from "~/server/repositry/constants";
+import { type folderSetPutBody, presetType } from "~/server/repositry/constants";
 import { deleteItem } from "~/server/repositry/deletedata";
-import { getAllItemsByMasterId, getMasterIdByItemId } from "~/server/repositry/getdata";
+import {
+  getAllItemsByMasterId,
+  getMasterIdByItemId,
+} from "~/server/repositry/getdata";
 import { setItemParentReOrder, updateFolder } from "~/server/service/update";
 
-export async function PUT(  req: Request,
+export async function PUT(
+  req: Request,
   { params }: { params: { id: string } },
 ) {
   try {
     const itemId = params.id;
     const { userId, folderSet }: folderSetPutBody =
       (await req.json()) as folderSetPutBody;
-      if (!userId || !folderSet) {
-        return NextResponse.json(
-          { error: "Invalid input: userId and task are required" },
-          { status: 400 },
-        );
-      }
+    if (!userId || !folderSet) {
+      return NextResponse.json(
+        { error: "Invalid input: userId and task are required" },
+        { status: 400 },
+      );
+    }
 
     const masterId = await getMasterIdByItemId(itemId);
-    if(masterId == null) {
+    if (masterId == null) {
       throw new Error("not found masterId");
     }
     // masterIdが同じitemを取得
     const allItems = await getAllItemsByMasterId(masterId);
-    if(allItems == null) {
+    if (allItems == null) {
       throw new Error("not found allItems");
     }
     let updatedFolder;
-    for(const item of allItems){
+    for (const item of allItems) {
       updatedFolder = await updateFolder(item.id, { userId, folderSet });
     }
 
-  return NextResponse.json({
-    message: "update folder successfully",
-    task: updatedFolder,
-  });
+    return NextResponse.json({
+      message: "update folder successfully",
+      task: updatedFolder,
+    });
   } catch (error) {
     console.error("Error in UPDATE folder request:", error);
     return NextResponse.json(

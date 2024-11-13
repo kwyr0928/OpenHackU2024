@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { presetType, type taskSetPostBody } from "~/server/repositry/constants";
 import { deleteItem } from "~/server/repositry/deletedata";
-import { getAllItemsByMasterId, getItemName, getMasterIdByItemId } from "~/server/repositry/getdata";
+import {
+  getAllItemsByMasterId,
+  getItemName,
+  getMasterIdByItemId,
+} from "~/server/repositry/getdata";
 import { fetchTask } from "~/server/service/fetch";
 import { setItemParentReOrder, updateTask } from "~/server/service/update";
 
@@ -42,38 +46,39 @@ export async function GET(req: Request) {
   }
 }
 
-export async function PUT(  req: Request,
+export async function PUT(
+  req: Request,
   { params }: { params: { id: string } },
 ) {
   try {
     const itemId = params.id;
     const { userId, taskSet }: taskSetPostBody =
       (await req.json()) as taskSetPostBody;
-      if (!userId || !taskSet) {
-        return NextResponse.json(
-          { error: "Invalid input: userId and task are required" },
-          { status: 400 },
-        );
-      }
+    if (!userId || !taskSet) {
+      return NextResponse.json(
+        { error: "Invalid input: userId and task are required" },
+        { status: 400 },
+      );
+    }
 
     const masterId = await getMasterIdByItemId(itemId);
-    if(masterId == null) {
+    if (masterId == null) {
       throw new Error("not found masterId");
     }
     // masterIdが同じitemを
     const allItems = await getAllItemsByMasterId(masterId);
-    if(allItems == null) {
+    if (allItems == null) {
       throw new Error("not found allItems");
     }
     let updatedTask;
-    for(const items of allItems){
+    for (const items of allItems) {
       updatedTask = await updateTask(items.id, { userId, taskSet });
     }
 
-  return NextResponse.json({
-    message: "update task successfully",
-    task: updatedTask,
-  });
+    return NextResponse.json({
+      message: "update task successfully",
+      task: updatedTask,
+    });
   } catch (error) {
     console.error("Error in UPDATE task request:", error);
     return NextResponse.json(
@@ -97,7 +102,7 @@ export async function DELETE(
       );
     }
     // タスクの入ってたフォルダ or 全体プリセットの再順序付け
-    if(deleted.item.parentId!=null) {
+    if (deleted.item.parentId != null) {
       const res = await setItemParentReOrder(deleted.item.parentId);
       if (res == null) {
         return NextResponse.json(

@@ -376,16 +376,20 @@ export async function createTask(
     //taskを作る
     const taskData: taskStruct = {
       itemId: masterSetItem.id,
-      optionIndex: selectIndex
+      optionIndex: selectIndex,
     };
     const newTask = await insertTaskSet(taskData);
     if (newTask == null) {
       throw new Error("Failed to create task.");
     }
-    
+
     //オプション作成
-    const selectedOptionId = await createTaskOption(options, newTask.id, selectIndex);
-    if(selectedOptionId==null) throw new Error("Failed to create option.");
+    const selectedOptionId = await createTaskOption(
+      options,
+      newTask.id,
+      selectIndex,
+    );
+    if (selectedOptionId == null) throw new Error("Failed to create option.");
 
     // taskに設定中のオプションをセット
     const setOptionedTask = await setSelectingTaskOption(
@@ -400,7 +404,11 @@ export async function createTask(
   }
 }
 
-export async function createTaskOption(options: optionStruct[], newTaskId: string, selectIndex: number){
+export async function createTaskOption(
+  options: optionStruct[],
+  newTaskId: string,
+  selectIndex: number,
+) {
   try {
     //optionを作る
     let selectedOptionId = "";

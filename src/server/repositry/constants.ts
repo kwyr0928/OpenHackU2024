@@ -89,18 +89,22 @@ export type folderSetPutBody = {
   userId: string;
   folderSet: {
     name: string;
-    items: (taskIdInFolderPutData | taskPrefabInFolderPutData | taskInFolderPutData)[];
+    items: (
+      | taskIdInFolderPutData
+      | taskPrefabInFolderPutData
+      | taskInFolderPutData
+    )[];
   };
 };
 
 export type taskIdInFolderPutData = {
   itemId: string;
   select: number;
-}
+};
 export type taskPrefabInFolderPutData = {
   prefabId: string;
   select: number;
-}
+};
 export type taskInFolderPutData = {
   taskSet: {
     name: string;
@@ -111,7 +115,7 @@ export type taskInFolderPutData = {
       time: number;
     }[];
   };
-}
+};
 
 export type timeSetPostBody = {
   userId: string;
@@ -140,14 +144,14 @@ export type taskSetPutBody = {
     name: string;
     isStatic: boolean;
     select: number; //プレハブなら0入れてもらう
-    updateOptions : optionPostBody | { optionId: string; }[];
+    updateOptions: optionPostBody | { optionId: string }[];
   };
 };
 
 export type optionPostBody = {
   name: string;
   time: number;
-}
+};
 
 //
 // GETのレスポンス
