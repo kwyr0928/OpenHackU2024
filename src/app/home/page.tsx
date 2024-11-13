@@ -41,44 +41,102 @@ const data = {
     {
       name: "sasaki",
       itemId: "itemId",
-      timeSet: [
-        { name: "1限電車", goleTime: "11:10" },
-      ],
-      lastEditedTime: "2024/11/14 22:33",
+      updateTime: "2024/11/14 22:33",
+      timeSet: {
+        time: {
+          naem: "1限電車",
+          time: "11:10"
+        }
+      },
       items: [
         {
-          tasks: [
-            { name: "駅まで歩く", timeRequired: 5 },
-            { name: "自転車移動", timeRequired: 15 },
-            { name: "英単語暗記", timeRequired: 5 },
-          ],
+          task: {
+            name: "駅まで歩く",
+            isStatic: true,
+            select: 0,
+            options: [
+              {
+                name: "",
+                time: 15
+              }
+            ]
+          },
         },
         {
-          folders: [
-            {
-              name: "おしゃれ",
-              tasks: [
-                { name: "着替え", timeRequired: 10 },
-                { name: "メイク", timeRequired: 10 },
-                { name: "ヘアメイク", timeRequired: 10 },
-              ],
-            },
-            {
-              name: "おしゃれ2",
-              tasks: [
-                { name: "着替え2", timeRequired: 10 },
-                { name: "メイク2", timeRequired: 10 },
-                { name: "ヘアメイク2", timeRequired: 10 },
-              ],
-            },
-          ],
+          task: {
+            name: "自転車移動",
+            isStatic: true,
+            select: 0,
+            options: [
+              {
+                name: "",
+                time: 15
+              }
+            ]
+          },
         },
         {
-          tasks: [
-            { name: "シャワー", timeRequired: 20 },
-            { name: "朝ごはん", timeRequired: 20 },
-            { name: "洗顔", timeRequired: 10 },
-          ],
+          task: {
+            name: "英単語暗記",
+            isStatic: true,
+            select: 0,
+            options: [
+              {
+                name: "",
+                time: 15
+              }
+            ]
+          },
+        },
+        {
+          folder: {
+            name: "おしゃれ",
+            tasks: [
+              {
+                task: {
+                  name: "着替え",
+                  isStatic: true,
+                  select: 0,
+                  options: [
+                    {
+                      name: "",
+                      time: 15
+                    }
+                  ]
+                }
+              },
+              {
+                task: {
+                  name: "メイク",
+                  isStatic: false,
+                  select: 1,
+                  options: [
+                    {
+                      name: "簡単に",
+                      time: 5
+                    },
+                    {
+                      name: "真面目に",
+                      time: 10
+                    }
+                  ]
+                }
+              },
+            ],
+          },
+        },
+        {
+          task: {
+            name: "朝ごはん",
+            isStatic: true,
+            select: 0,
+            options: [
+              {
+                name: "",
+                time: 15
+              }
+            ]
+          },
         },
       ],
     }
@@ -89,7 +147,9 @@ const data = {
 
 type Task = {
   name: string;
-  timeRequired: number;
+  isStatic: boolean;
+  select: number
+  options: [{ name: string, time: number }]
 };
 type Folder = {
   name: string;
@@ -99,43 +159,107 @@ type Item = {
   tasks?: Task[];
   folders?: Folder[];
 };
+type Member = {
+  name: string;
+  itemId: string;
+  updateTime: string;
+  timeSet: {
+    time: {
+      naem: string;
+      time: string; // e.g., "11:10"
+    };
+  };
+  items: Array<{
+    task?: {
+      name: string;
+      isStatic: boolean;
+      select: number;
+      options: Array<{ name: string; time: number }>;
+    };
+    folder?: {
+      name: string;
+      tasks: Array<{
+        task: {
+          name: string;
+          isStatic: boolean;
+          select: number;
+          options: Array<{ name: string; time: number }>;
+        };
+      }>;
+    };
+  }>;
+};
 
 //個人を識別するための仮の番号、データベースが完成したらidになるのかな？
 const memberNumber = 0;
 
-// タスクの合計時間を求める関数
-const calculateTotalTime = (items: Item[]) => {
-  return items.reduce((totalTime: number, item: Item) => {
-    if (item.tasks) {
-      totalTime += item.tasks.reduce(
-        (sum: number, task: Task) => sum + task.timeRequired,
-        0,
-      );
-    }
-    if (item.folders) {
-      item.folders.forEach((folder: Folder) => {
-        totalTime += folder.tasks.reduce(
-          (sum: number, task: Task) => sum + task.timeRequired,
-          0,
-        );
+// // タスクの合計時間を求める関数
+// const calculateTotalTime = (items: Item[]) => {
+//   return items.reduce((totalTime: number, item: Item) => {
+//     if (item.tasks) {
+//       totalTime += item.tasks.reduce(
+//         (sum: number, task: Task) => sum + task.options[0].time,
+//         0,
+//       );
+//     }
+//     if (item.folders) {
+//       item.folders.forEach((folder: Folder) => {
+//         totalTime += folder.tasks.reduce(
+//           (sum: number, task: Task) => sum + task.options[0].time,
+//           0,
+//         );
+//       });
+//     }
+//     return totalTime;
+//   }, 0);
+// };
+
+// // 起床時刻の計算
+// const calculateWakeUpTime = (goalTime: string, totalTime: number) => {
+//   const [goalHour, goalMinute] = goalTime
+//     ? goalTime.split(":").map(Number)
+//     : [0, 0];
+
+//   let goalInMinutes = 0;
+//   if (goalHour !== undefined && goalMinute !== undefined) {
+//     goalInMinutes = goalHour * 60 + goalMinute;
+//   }
+
+//   let wakeUpTimeInMinutes = goalInMinutes - totalTime;
+
+// if (wakeUpTimeInMinutes < 0) {
+//   wakeUpTimeInMinutes += 1440;
+// }
+
+// const wakeUpHour = Math.floor(wakeUpTimeInMinutes / 60);
+// const wakeUpMinute = wakeUpTimeInMinutes % 60;
+
+// return `${wakeUpHour < 10 ? "0" : ""}${wakeUpHour}:${wakeUpMinute < 10 ? "0" : ""}${wakeUpMinute}`;
+// };
+
+function calculateRemainingTime(data: { member: Member[] }) {
+  const member = data.member[0];
+
+  // Parse timeSet.time.time (e.g., "11:10") to minutes
+  const [hours, minutes] = member.timeSet.time.time.split(":").map(Number);
+  const totalTimeInMinutes = hours * 60 + minutes;
+
+  // Calculate the total time of all tasks in items
+  let taskTimeTotal = 0;
+  member.items.forEach(item => {
+    if (item.task) {
+      // For individual tasks
+      taskTimeTotal += item.task.options[item.task.select].time;
+    } else if (item.folder) {
+      // For tasks inside folders
+      item.folder.tasks.forEach(folderTask => {
+        taskTimeTotal += folderTask.task.options[folderTask.task.select].time;
       });
     }
-    return totalTime;
-  }, 0);
-};
+  });
 
-// 起床時刻の計算
-const calculateWakeUpTime = (goalTime: string, totalTime: number) => {
-  const [goalHour, goalMinute] = goalTime
-    ? goalTime.split(":").map(Number)
-    : [0, 0];
-
-  let goalInMinutes = 0;
-  if (goalHour !== undefined && goalMinute !== undefined) {
-    goalInMinutes = goalHour * 60 + goalMinute;
-  }
-
-  let wakeUpTimeInMinutes = goalInMinutes - totalTime;
+  // Calculate remaining time
+  let wakeUpTimeInMinutes = totalTimeInMinutes - taskTimeTotal;
 
   if (wakeUpTimeInMinutes < 0) {
     wakeUpTimeInMinutes += 1440;
@@ -145,7 +269,9 @@ const calculateWakeUpTime = (goalTime: string, totalTime: number) => {
   const wakeUpMinute = wakeUpTimeInMinutes % 60;
 
   return `${wakeUpHour < 10 ? "0" : ""}${wakeUpHour}:${wakeUpMinute < 10 ? "0" : ""}${wakeUpMinute}`;
-};
+}
+const remainingTime = calculateRemainingTime(data);
+
 
 
 export default function Home() {
@@ -155,77 +281,66 @@ export default function Home() {
     return <div>Loading...</div>;
   }
 
-  const goleTimePreset = member.timeSet.find(
-    (preset) => 'goleTime' in preset && 'name' in preset
-  ) as { goleTime: string; name: string } | undefined;
+  // const goleTimePreset = member.timeSet.find(
+  //   (preset) => 'goleTime' in preset && 'name' in preset
+  // ) as { goleTime: string; name: string } | undefined;
 
-  const totalTime = calculateTotalTime(member.items);
-  const wakeUpTime = goleTimePreset
-    ? calculateWakeUpTime(goleTimePreset.goleTime, totalTime)
-    : "N/A"; // goleTimeがない場合は "N/A"などのデフォルト値を設定
+  // const totalTime = calculateTotalTime(member.items);
+  // const wakeUpTime = goleTimePreset
+  //   ? calculateWakeUpTime(goleTimePreset.goleTime, totalTime)
+  //   : "N/A"; // goleTimeがない場合は "N/A"などのデフォルト値を設定
 
   return (
-    <div className="flex h-screen flex-col items-center justify-center bg-slate-50 text-center font-mPlus text-darkBlue max-w-md mx-auto">
+    <div className="flex h-screen flex-col items-center justify-center bg-slate-50 text-center font-mPlus text-color-all max-w-md mx-auto">
       {/* 現在時刻の表示 */}
       <h1 className="mb-1">
         <DisplayTime />
       </h1>
-      <Card className="mt-4 w-3/4 max-w-md border-darkBlue">
-        <h5 className="pb-1 pt-1">最終更新時刻：{member?.lastEditedTime}</h5>
+      <Card className="mt-4 w-3/4 max-w-md border-4 border-color-all text-gray-700">
+        <h5 className="pb-1 pt-1">最終更新時刻：{member?.updateTime}</h5>
         <CardHeader className="pb-2 pt-0">
-          <div className="bg-slate-0 mb-1 rounded-lg border border-pink-300 p-4 text-3xl shadow-sm">
-            <p className="mb-1 text-lg leading-none">{goleTimePreset?.name || "-"}</p>
-            <p className="font-bold">{goleTimePreset?.goleTime || "N/A"}</p>
+          <div className="bg-slate-0 mb-1 rounded-lg border-4 border-pink-300 p-4 text-3xl shadow-sm">
+            <p className="mb-1 text-lg leading-none">{member.timeSet.time.naem || "-"}</p>
+            <p className="font-bold">{member.timeSet.time.time || "N/A"}</p>
           </div>
         </CardHeader>
         <CardContent>
           <ScrollArea className="h-64 w-full rounded-md border p-0">
-            <div className="space-y-3">
+            <div className="divide-y divide-black">
               {member.items.map((item, index) => (
-                <div key={index} className="space-y-4">
-                  {/* items内のタスク */}
-                  {item.tasks && (
-                    <div>
-                      {item.tasks.map((task, taskIndex) => (
-                        <div key={taskIndex}>
-                          <div className="flex items-center justify-between mt-2">
-                            <div className="flex items-center">
-                              <DescriptionSvg style={{ width: "30px", height: "30px" }} color={"#FFA660"} />
-                              <p className="ml-3 text-lg font-medium">{task.name}</p>
-                            </div>
-                            <p className="text-sm mr-3">{task.timeRequired}分</p>
-                          </div>
-                          <Separator className="my-2" />
+                <div key={index} className="">
+                  {/* 単一のタスク */}
+                  {item.task && (
+                      <div className="flex items-center justify-between mb-2 mt-2">
+                        <div className="flex items-center">
+                          <DescriptionSvg style={{ width: "30px", height: "30px" }} color={"#FFA660"} />
+                          <p className="ml-3 text-lg">{item.task.name}</p>
                         </div>
-                      ))}
-                    </div>
+                        <p className="text-sm mr-3">
+                          {item.task.options[item.task.select].time}分
+                        </p>
+                      </div>
                   )}
 
-                  {/* フォルダ内タスク */}
-                  {item.folders && (
-                    <div className="space-y-2">
-                      {item.folders.map((folder, folderIndex) => (
-                        <div
-                          key={folderIndex}
-                          className="rounded-lg border border-gray-300 bg-color-folder p-4"
-                        >
-                          <h4 className="mb-2 text-lg font-bold">{folder.name}</h4>
-                          <div className="space-y-2">
-                            {folder.tasks.map((task, taskIndex) => (
-                              <div key={taskIndex}>
-                                <div className="flex items-center justify-between bg-white">
-                                  <div className="flex items-center">
-                                    <DescriptionSvg style={{ width: "30px", height: "30px" }} color={"#FFA660"} />
-                                    <p className="ml-3 text-lg font-medium">{task.name}</p>
-                                  </div>
-                                  <p className="text-sm mr-3">{task.timeRequired}分</p>
-                                </div>
-                                <Separator className="my-2 bg-white" />
+                  {/* フォルダとその内部タスク */}
+                  {item.folder && (
+                    <div className="border border-gray-300 bg-color-folder p-2">
+                      <h4 className="mb-2 text-lg font-bold">{item.folder.name}</h4>
+                      <div className="divide-y divide-darkBlue">
+                        {item.folder.tasks.map((folderTask, taskIndex) => (
+                          <div key={taskIndex}>
+                            <div className="flex items-center justify-between bg-white p-2">
+                              <div className="flex items-center">
+                                <DescriptionSvg style={{ width: "30px", height: "30px" }} color={"#FFA660"} />
+                                <p className="ml-3 text-lg">{folderTask.task.name}</p>
                               </div>
-                            ))}
+                              <p className="text-sm mr-3">
+                                {folderTask.task.options[folderTask.task.select].time}分
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -233,16 +348,16 @@ export default function Home() {
             </div>
           </ScrollArea>
           <div
-            className="mb-1 mt-4 rounded-lg border p-4 text-3xl shadow-sm"
-            style={{ borderColor: "#ACC763" }}
+            className="mb-1 mt-4 rounded-lg border-4 p-4 text-3xl shadow-sm"
+            style={{ borderColor: "#9FE48A" }}
           >
             <p className="mb-1 text-lg leading-none">起床時刻</p>
-            <p className="font-bold">{wakeUpTime}</p>
+            <p className="font-bold">{remainingTime}</p>
           </div>
           <Link href="/schedule/new">
             <Button
               size="sm"
-              className="mt-3 bg-darkBlue px-8 py-5 text-lg shadow-lg hover:bg-blue-900"
+              className="mt-3 bg-color-all px-8 py-5 text-lg shadow-lg hover:bg-emerald-500"
             >
               変更
             </Button>
@@ -253,7 +368,7 @@ export default function Home() {
       <div className="mt-2 flex space-x-12">
         <div className="mt-4 flex-col">
           <Link href="/presets">
-            <Button className="bg-darkBlue shadow-lg hover:bg-blue-950">
+            <Button className="bg-color-all shadow-lg hover:bg-emerald-500">
               <FolderIconSvg style={{ width: "30px", height: "30px" }} color={""} />
             </Button>
           </Link>
@@ -264,7 +379,7 @@ export default function Home() {
 
         <div className="mt-4 flex-col">
           <Link href="/settings">
-            <Button className="bg-darkBlue shadow-lg hover:bg-blue-950">
+            <Button className="bg-color-all shadow-lg hover:bg-emerald-500">
               <SettingIconSvg style={{ width: "30px", height: "30px" }} color={""} />
             </Button>
           </Link>
