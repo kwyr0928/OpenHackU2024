@@ -82,14 +82,15 @@ export type wholeSetPutBody = {
     name: string;
     timeId: string;
     items: (
-      {
-      itemId: string;
-      select: number;
-      }
-    |{
-      prefabId: string;
-      select: number;
-    })[];
+      | {
+          itemId: string;
+          select: number;
+        }
+      | {
+          prefabId: string;
+          select: number;
+        }
+    )[];
   };
 };
 ///folder

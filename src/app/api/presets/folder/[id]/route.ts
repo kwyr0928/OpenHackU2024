@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
-import { type folderSetPutBody, presetType } from "~/server/repositry/constants";
+import {
+  type folderSetPutBody,
+  presetType,
+} from "~/server/repositry/constants";
 import { deleteItem } from "~/server/repositry/deletedata";
 import {
   getAllItemsByMasterId,
@@ -28,7 +31,7 @@ export async function PUT(
       throw new Error("not found masterId");
     }
     // master更新
-    await updateMaster(masterId, folderSet.name)
+    await updateMaster(masterId, folderSet.name);
     // masterIdが同じitemを取得
     const allItems = await getAllItemsByMasterId(masterId);
     if (allItems == null) {

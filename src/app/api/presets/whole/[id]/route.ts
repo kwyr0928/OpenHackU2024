@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { presetType, wholeSetPutBody } from "~/server/repositry/constants";
+import { presetType, type wholeSetPutBody } from "~/server/repositry/constants";
 import { deleteItem } from "~/server/repositry/deletedata";
 import { getMasterIdByItemId } from "~/server/repositry/getdata";
 import { updateMaster } from "~/server/repositry/manageMaster";
@@ -59,7 +59,7 @@ export async function PUT(
       throw new Error("not found masterId");
     }
     // master更新
-    await updateMaster(masterId, wholeSet.name)
+    await updateMaster(masterId, wholeSet.name);
     // // masterIdが同じitemを取得
     // const allItems = await getAllItemsByMasterId(masterId);
     // if (allItems == null) {

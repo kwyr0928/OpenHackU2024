@@ -2,7 +2,7 @@
 
 import {
   presetType,
-  wholeSetPutBody,
+  type wholeSetPutBody,
   type folderSetPutBody,
   type optionStruct,
   type taskSetPostBody,
@@ -73,11 +73,12 @@ export async function updateWhole(
         const itemInfo = await getItemInfoByItemId(items.itemId);
         if (itemInfo == null) throw new Error("Failed to getItemInfoByTaskId.");
         await updateOrderItem(itemInfo.id, itemInfo.name, count);
-        
-        if(itemInfo.itemType == presetType.task){
+
+        if (itemInfo.itemType == presetType.task) {
           //オプションインデックス更新
           const taskInfo = await getTaskInfoByItemId(items.itemId);
-          if (taskInfo == null) throw new Error("Failed to getItemInfoByTaskId.");
+          if (taskInfo == null)
+            throw new Error("Failed to getItemInfoByTaskId.");
           await updateTaskSet(taskInfo.id, items.select);
         }
 
@@ -87,8 +88,12 @@ export async function updateWhole(
         const itemInfo = await getItemInfoByItemId(items.prefabId);
         if (itemInfo == null) throw new Error("Failed to getItemInfoByTaskId.");
         let instanceId;
-        if(itemInfo.itemType == presetType.task){
-          const taskInstance = await instanciateTask(items.prefabId, count, items.select);
+        if (itemInfo.itemType == presetType.task) {
+          const taskInstance = await instanciateTask(
+            items.prefabId,
+            count,
+            items.select,
+          );
           if (taskInstance == null) {
             throw new Error("Failed to instanciate task.");
           }
@@ -185,7 +190,11 @@ export async function updateFolder(
         existTasks.push(taskItemInfo.id);
       } else if ("prefabId" in items) {
         // 既存プリセットから追加
-        const taskInstance = await instanciateTask(items.prefabId, count, items.select);
+        const taskInstance = await instanciateTask(
+          items.prefabId,
+          count,
+          items.select,
+        );
         if (taskInstance == null) {
           throw new Error("Failed to instanciate task.");
         }
@@ -247,7 +256,7 @@ export async function updateTask(
     // task更新しない？選択中のやつは変えると困るから
     const ret = await updateTaskSet(
       taskInfo.id,
-      taskInfo.optionIndex as number,
+      taskInfo.optionIndex,
     );
     return ret;
   } catch (error) {
@@ -261,7 +270,7 @@ export async function updateTime(timeId: string, name: string, time: string) {
     const masterId = await getMasterIdByTimeId(timeId);
     if (masterId == null) throw new Error("Failed getMasterIdByTimeId");
     // master更新
-    await updateMaster(masterId, name)
+    await updateMaster(masterId, name);
     // timeSet更新
     const updatedTime = await updateTimeSet(masterId, name, time);
     if (updatedTime == null) throw new Error("Failed getMasterIdByTimeId");

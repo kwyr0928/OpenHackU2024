@@ -94,7 +94,11 @@ export async function createNewWhole(
         throw new Error("Failed to get itemType.");
       } else if (type.itemType == presetType.task) {
         // タスクインスタンス化
-        const taskInstance = await instanciateTask(item.itemId, order, item.select);
+        const taskInstance = await instanciateTask(
+          item.itemId,
+          order,
+          item.select,
+        );
         if (taskInstance == null) {
           throw new Error("Failed to instanciateTask.");
         }

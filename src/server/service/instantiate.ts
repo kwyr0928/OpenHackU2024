@@ -32,7 +32,7 @@ export async function instanciateFolder(prefabItemId: string, order: number) {
       }
       taskItemIds.push({
         itemId: taskItem.id,
-        select: task.optionIndex as number,
+        select: task.optionIndex,
       });
     }
 
@@ -83,7 +83,7 @@ export async function instanciateTask(
       item.userId,
       item.name,
       options,
-      optionIdx ?? (task.optionIndex as number),
+      optionIdx ?? (task.optionIndex),
       order,
       item,
     );
