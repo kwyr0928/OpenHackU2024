@@ -7,17 +7,17 @@ import {
 } from "../repositry/getdata";
 import { createFolder, createTask, createTime } from "./create";
 
-export async function instanciateFolder(prehabItemId: string, order: number) {
+export async function instanciateFolder(prefabItemId: string, order: number) {
   try {
-    if (!prehabItemId) {
-      throw new Error("Invalid input: prehabItemId is missing.");
+    if (!prefabItemId) {
+      throw new Error("Invalid input: prefabItemId is missing.");
     }
     // itemStruct取得
-    const item = await getItemInfoByItemId(prehabItemId);
+    const item = await getItemInfoByItemId(prefabItemId);
     if (item == null) {
       throw new Error("Not found item");
     }
-    const taskItems = await getItemsInParentSortOrder(prehabItemId);
+    const taskItems = await getItemsInParentSortOrder(prefabItemId);
     if (taskItems == null) {
       throw new Error("Failed getTaskItemsInFolder");
     }

@@ -33,16 +33,16 @@ import {
 export async function createNewWhole(
   userId: string,
   name: string,
-  prehabtimeId: string,
-  prehabItems: {
+  prefabtimeId: string,
+  prefabItems: {
     itemId: string;
     select: number;
   }[],
 ) {
   try {
-    if (!userId || !name || !prehabtimeId || prehabItems.length === 0) {
+    if (!userId || !name || !prefabtimeId || prefabItems.length === 0) {
       throw new Error(
-        "Invalid input: userId and name and prehabtimeId and prehabItemId are required",
+        "Invalid input: userId and name and prefabtimeId and prefabItemId are required",
       );
     }
 
@@ -73,7 +73,7 @@ export async function createNewWhole(
       throw new Error("Failed to create folder.");
     }
     // 時間プリセットインスタンス化
-    const timeInstance = await instanciateTime(prehabtimeId);
+    const timeInstance = await instanciateTime(prefabtimeId);
     if (timeInstance == null) {
       throw new Error("Failed to instanciateTime.");
     }
@@ -87,7 +87,7 @@ export async function createNewWhole(
     // タスクorフォルダインスタンス化
     const instances: string[] = [];
     let order = 0;
-    for (const item of prehabItems) {
+    for (const item of prefabItems) {
       // itemIdがタスクかフォルダか判別
       const type = await getItemInfoByItemId(item.itemId);
       if (type == null) {
@@ -159,7 +159,7 @@ export async function createTime(
   userId: string,
   name: string,
   time: string,
-  prehab?: timeStruct,
+  prefab?: timeStruct,
 ) {
   try {
     if (!userId || !name || !time) {
@@ -183,14 +183,14 @@ export async function createTime(
     }
 
     let masterSetTimeSet;
-    if (prehab == null) {
+    if (prefab == null) {
       //新規masterをセット
       masterSetTimeSet = await setNewMasterTimeSet(newTimeSet);
-    } else if (prehab.masterId != null) {
+    } else if (prefab.masterId != null) {
       //既存masterをセット
       masterSetTimeSet = await setExistMasterTimeSet(
         newTimeSet.id,
-        prehab.masterId,
+        prefab.masterId,
       );
     }
     if (masterSetTimeSet == null) {
@@ -224,13 +224,13 @@ function parseTimeString(time: string): string | null {
 export async function createNewFolder(
   userId: string,
   folderName: string,
-  prehabTaskItemIds: {
+  prefabTaskItemIds: {
     itemId: string;
     select: number;
   }[],
 ) {
   try {
-    const ret = await createFolder(userId, folderName, 0, prehabTaskItemIds);
+    const ret = await createFolder(userId, folderName, 0, prefabTaskItemIds);
     if (ret == null) {
       throw new Error("Failed on createFolder");
     }
@@ -245,11 +245,11 @@ export async function createFolder(
   userId: string,
   folderName: string,
   order: number,
-  prehabTaskItemIds: {
+  prefabTaskItemIds: {
     itemId: string;
     select: number;
   }[],
-  prehabFolder?: itemStruct,
+  prefabFolder?: itemStruct,
 ) {
   try {
     if (!userId || !folderName || order < 0) {
@@ -272,14 +272,14 @@ export async function createFolder(
     }
 
     let masterSetItem;
-    if (prehabFolder == null) {
+    if (prefabFolder == null) {
       //新規masterをセット
       masterSetItem = await setNewMasterItem(newItem);
-    } else if (prehabFolder.masterId != null) {
+    } else if (prefabFolder.masterId != null) {
       //既存masterをセット
       masterSetItem = await setExistMasterItem(
         newItem.id,
-        prehabFolder.masterId,
+        prefabFolder.masterId,
       );
     }
     if (masterSetItem == null) {
@@ -297,7 +297,7 @@ export async function createFolder(
 
     // taskをインスタンス化してのparentにfolderを設定
     let taskOrder = 0;
-    for (const { itemId, select } of prehabTaskItemIds) {
+    for (const { itemId, select } of prefabTaskItemIds) {
       const taskInstance = await instanciateTask(itemId, taskOrder, select);
       if (taskInstance == null) {
         throw new Error("Failed to instanciate task.");
@@ -345,7 +345,7 @@ export async function createTask(
   options: optionStruct[],
   selectIndex: number,
   order: number,
-  prehab?: itemStruct,
+  prefab?: itemStruct,
 ) {
   try {
     if (!userId || !name || options.length === 0) {
@@ -366,12 +366,12 @@ export async function createTask(
     }
 
     let masterSetItem;
-    if (prehab == null) {
+    if (prefab == null) {
       //新規masterをセット
       masterSetItem = await setNewMasterItem(newItem);
-    } else if (prehab.masterId != null) {
+    } else if (prefab.masterId != null) {
       //既存masterをセット
-      masterSetItem = await setExistMasterItem(newItem.id, prehab.masterId);
+      masterSetItem = await setExistMasterItem(newItem.id, prefab.masterId);
     }
     if (masterSetItem == null) {
       throw new Error("Failed to set master.");
