@@ -1,6 +1,8 @@
 //値の更新処理
 
 import {
+  presetType,
+  wholeSetPutBody,
   type folderSetPutBody,
   type optionStruct,
   type taskSetPostBody,
@@ -26,7 +28,7 @@ import {
   updateTimeSet,
 } from "../repositry/updatedata";
 import { createNewTask, createTaskOption } from "./create";
-import { instanciateTask } from "./instantiate";
+import { instanciateFolder, instanciateTask } from "./instantiate";
 
 // 今あるタスクでフォルダ内順序を再設定
 export async function setItemParentReOrder(myItemId: string) {
@@ -52,6 +54,66 @@ export async function setItemParentReOrder(myItemId: string) {
 }
 
 //////////////////////////////
+
+export async function updateWhole(
+  itemId: string,
+  { userId, wholeSet }: wholeSetPutBody,
+) {
+  try {
+    const folderInfo = await getFolderInfoByItemId(itemId);
+    if (!folderInfo) throw new Error("Failed to get folderInfo.");
+    // item更新
+    const existTasks: string[] = [];
+    await updateItem(itemId, wholeSet.name);
+
+    let count = 0;
+    for (const items of wholeSet.items) {
+      if ("itemId" in items) {
+        // そのタスクidのitemのorder更新
+        const itemInfo = await getItemInfoByItemId(items.itemId);
+        if (itemInfo == null) throw new Error("Failed to getItemInfoByTaskId.");
+        await updateOrderItem(itemInfo.id, itemInfo.name, count);
+        
+        if(itemInfo.itemType == presetType.task){
+          //オプションインデックス更新
+          const taskInfo = await getTaskInfoByItemId(items.itemId);
+          if (taskInfo == null) throw new Error("Failed to getItemInfoByTaskId.");
+          await updateTaskSet(taskInfo.id, items.select);
+        }
+
+        existTasks.push(itemInfo.id);
+      } else if ("prefabId" in items) {
+        // 既存プリセットから追加
+        const itemInfo = await getItemInfoByItemId(items.prefabId);
+        if (itemInfo == null) throw new Error("Failed to getItemInfoByTaskId.");
+        let instanceId;
+        if(itemInfo.itemType == presetType.task){
+          const taskInstance = await instanciateTask(items.prefabId, count, items.select);
+          if (taskInstance == null) {
+            throw new Error("Failed to instanciate task.");
+          }
+          instanceId = taskInstance.id;
+        } else {
+          const folderInstance = await instanciateFolder(items.prefabId, count);
+          if (folderInstance == null) {
+            throw new Error("Failed to instanciate folder.");
+          }
+          instanceId = folderInstance.id;
+        }
+        const parentedTask = await setTaskParent(instanceId, itemId);
+        if (parentedTask == null) {
+          throw new Error("Failed to parent whole and item.");
+        }
+        existTasks.push(parentedTask.id);
+      }
+      count++;
+    }
+    await deleteTaskItemsCanDeleteInFolder(itemId, existTasks);
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
 
 export async function updateFolder(
   itemId: string,

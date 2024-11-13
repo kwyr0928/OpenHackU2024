@@ -76,7 +76,23 @@ export type wholeSetPostBody = {
     }[];
   };
 };
-
+export type wholeSetPutBody = {
+  userId: string;
+  wholeSet: {
+    name: string;
+    timeId: string;
+    items: (
+      {
+      itemId: string;
+      select: number;
+      }
+    |{
+      prefabId: string;
+      select: number;
+    })[];
+  };
+};
+///folder
 export type folderSetPostBody = {
   userId: string;
   folderSet: {
@@ -119,7 +135,7 @@ export type taskInFolderPutData = {
     }[];
   };
 };
-
+///time
 export type timeSetPostBody = {
   userId: string;
   timeSet: {
@@ -127,7 +143,7 @@ export type timeSetPostBody = {
     time: string;
   };
 };
-
+///task
 export type taskSetPostBody = {
   userId: string;
   taskSet: {
@@ -138,16 +154,6 @@ export type taskSetPostBody = {
       name: string;
       time: number;
     }[];
-  };
-};
-
-export type taskSetPutBody = {
-  userId: string;
-  taskSet: {
-    name: string;
-    isStatic: boolean;
-    select: number; //プレハブなら0入れてもらう
-    updateOptions: optionPostBody | { optionId: string }[];
   };
 };
 
