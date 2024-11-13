@@ -7,7 +7,7 @@ export async function POST(req: Request) {
     const { userId, wholeSet }: wholeSetPostBody =
       (await req.json()) as wholeSetPostBody;
 
-    if (!userId ||  !wholeSet) {
+    if (!userId || !wholeSet) {
       return NextResponse.json(
         { error: "Invalid input: userId and name and wholeSet are required" },
         { status: 400 },

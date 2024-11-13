@@ -21,7 +21,7 @@ export type itemStruct = {
 export type wholeStruct = {
   id?: string;
   itemId: string;
-  timeSetId: string;
+  timeSetId?: string;
   created_at?: Date;
   updated_at?: Date;
 };
@@ -127,7 +127,7 @@ export type timeResponse = {
     timeId: string;
     time: string;
   };
-};
+} | null;
 
 export type folderResponse = {
   folder: {
