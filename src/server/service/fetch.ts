@@ -98,13 +98,13 @@ export async function fetchFolder(itemId: string, name: string) {
   try {
     if (!itemId || !name) throw new Error("itemId and name are required");
     const taskItemsInFolder = await getTaskItemsInFolder(itemId);
-    if (!taskItemsInFolder) throw new Error("not found taskItemsInFolder");
-
     const retTasks: taskResponse[] = [];
-    for (const taskItem of taskItemsInFolder) {
-      const taskRes = await fetchTask(taskItem.id, taskItem.name);
-      if (!taskRes) throw new Error("not found taskResPonse");
-      retTasks.push(taskRes);
+    if (taskItemsInFolder!=null){
+      for (const taskItem of taskItemsInFolder) {
+        const taskRes = await fetchTask(taskItem.id, taskItem.name);
+        if (!taskRes) throw new Error("not found taskResPonse");
+        retTasks.push(taskRes);
+      }
     }
     const getFolder: folderResponse = {
       folder: {
@@ -135,7 +135,7 @@ export async function fetchTask(itemId: string, name: string) {
         name: name,
         itemId: itemId,
         isStatic: options.isStatic,
-        select: task.optionIndex,
+        select: task.optionIndex as number,
         options: options.options,
       },
     };

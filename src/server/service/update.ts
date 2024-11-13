@@ -91,6 +91,7 @@ export async function updateFolder(
           }
         }
 
+        console.log("！！！"+items.taskSet.select)
         const taskObj = await createNewTask(
           userId,
           items.taskSet.name,
@@ -122,7 +123,7 @@ export async function updateFolder(
         existTasks.push(taskItemInfo.id);
       } else if ("prefabId" in items) {
         // 既存プリセットから追加
-        const taskInstance = await instanciateTask(items.prefabId, count);
+        const taskInstance = await instanciateTask(items.prefabId, count, items.select);
         if (taskInstance == null) {
           throw new Error("Failed to instanciate task.");
         }
@@ -184,7 +185,7 @@ export async function updateTask(
     // task更新しない？選択中のやつは変えると困るから
     const ret = await updateTaskSet(
       taskInfo.id,
-      taskInfo.optionIndex,
+      taskInfo.optionIndex as number,
     );
     return ret;
   } catch (error) {

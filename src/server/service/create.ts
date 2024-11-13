@@ -249,7 +249,7 @@ export async function createFolder(
   prehabFolder?: itemStruct,
 ) {
   try {
-    if (!userId || !folderName || order < 0 || prehabTaskItemIds.length === 0) {
+    if (!userId || !folderName || order < 0) {
       throw new Error(
         "Invalid input: userId and folderName and taskIds are required",
       );
