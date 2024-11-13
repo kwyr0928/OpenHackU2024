@@ -4,6 +4,8 @@ import {
 } from "@prisma/client/sql";
 import { db } from "../db";
 import { presetType } from "./constants";
+import { strict } from "assert";
+import { string } from "zod";
 
 // userId to ユーザー名
 export async function getUserName(userId: string) {
@@ -20,7 +22,6 @@ export async function getUserName(userId: string) {
 }
 
 // isSetting な wholeItem
-
 
 // itemId to itemName
 export async function getItemName(itemId: string) {
@@ -53,7 +54,7 @@ export async function getSettingWhole(userId: string) {
       where: {
         userId: userId,
         isSetting: true,
-        itemType: presetType.whole
+        itemType: presetType.whole,
       },
     });
 
@@ -307,6 +308,29 @@ export async function getOptionsInTask(taskId: string) {
     return options;
   } catch (error) {
     console.error("Error in getOptionsInTask:", error);
+    return null;
+  }
+}
+
+//from userId to taskData
+export async function getAllTaskByUserId(userId: string) {
+  try {
+    const taskItems = await db.items.findMany({
+      where: {
+        userId: userId,
+      },
+    });
+
+    const taskData = [];
+    for (const item of taskItems) {
+      const task = await db.taskSets.findUnique({
+        where: { itemId: item.id },
+      });
+      taskData.push(task);
+    }
+    return taskData;
+  } catch (error) {
+    console.error("Error in getAllTask:", error);
     return null;
   }
 }
