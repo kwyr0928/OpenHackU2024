@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createTime, createNewWhole } from "~/server/service/create";
+import { createNewWhole } from "~/server/service/create";
 import { presetType, timeSetPostBody } from "~/server/repositry/constants";
-import { getKindItems, getAllTaskByUserId } from "~/server/repositry/getdata";
+import { getKindItems, getAllTaskByUserId, getTimeFirstByUserId } from "~/server/repositry/getdata";
 
 export default async function POST(req: NextRequest) {
   try {
@@ -11,11 +11,11 @@ export default async function POST(req: NextRequest) {
     if (!userId) {
       return NextResponse.json(
         { error: "Invalid input userId is required" },
-        { status: 500 },
+        { status: 400 },
       );
     }
 
-    //時間セットの作成
+    //時間セットの取得
     const defaultTimeName = "デフォルトタイム";
     const { timeSet }: timeSetPostBody = (await req.json()) as timeSetPostBody;
     if (!timeSet) {
@@ -31,7 +31,20 @@ export default async function POST(req: NextRequest) {
         { status: 400 },
       );
     }
-    const createdTimeSet = await createTime(userId, defaultTimeName, time);
+    const timeData = await getTimeFirstByUserId();
+    if(!timeData){
+      return NextResponse.json(
+        { error: "Invalid input timeData is required" },
+        { status: 400 },
+      );
+    }
+    const timeId = timeData.id
+    if (!timeId) {
+      return NextResponse.json(
+        { error: "Invalid input: timeId is required" },
+        { status: 400 },
+      );
+    }
 
     //タスクの取得
     const taskItems = await getKindItems(userId, presetType.task);
@@ -46,13 +59,6 @@ export default async function POST(req: NextRequest) {
 
     //全体セットの生成
     const defaultWholeName = "デフォルトセット";
-    const timeId = createdTimeSet?.id;
-    if (!timeId) {
-      return NextResponse.json(
-        { error: "Invalid input: timeId is required" },
-        { status: 400 },
-      );
-    }
     const prefabItemIds: string[] = [];
     const taskData = await getAllTaskByUserId(userId);
     if (!taskData) {
@@ -81,7 +87,6 @@ export default async function POST(req: NextRequest) {
     return NextResponse.json({
       message: "first wholeSet created successfully",
       question: {
-        timeSet: createdTimeSet,
         wholeSet: createdWholeSet,
       },
     });

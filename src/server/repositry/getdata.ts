@@ -334,3 +334,8 @@ export async function getAllTaskByUserId(userId: string) {
     return null;
   }
 }
+
+export async function getTimeFirstByUserId(){
+  const timeData = await db.timeSets.findFirst();
+  return timeData;
+}
