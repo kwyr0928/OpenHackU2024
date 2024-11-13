@@ -42,6 +42,62 @@ export async function getItemName(itemId: string) {
 // id to object
 //
 
+// itemId to masterId
+export async function getMasterIdByItemId(itemId: string) {
+  try {
+    const masterId = await db.items.findFirst({
+      select: {
+        masterId: true
+      },
+      where: {
+        id: itemId,
+      },
+    });
+
+    if (!masterId) throw new Error("not found masterId");
+    return masterId.masterId;
+  } catch (error) {
+    console.error("Error in getMasterByItemId:", error);
+    return null;
+  }
+}
+// timeId to masterId
+export async function getMasterIdByTimeId(timeId: string) {
+  try {
+    const masterId = await db.timeSets.findFirst({
+      select: {
+        masterId: true
+      },
+      where: {
+        id: timeId,
+      },
+    });
+
+    if (!masterId) throw new Error("not found masterId");
+    return masterId.masterId;
+  } catch (error) {
+    console.error("Error in getMasterByTimeId:", error);
+    return null;
+  }
+}
+
+// masterId to all items
+export async function getAllItemsByMasterId(masterId: string) {
+  try {
+    const items = await db.items.findMany({
+      where: {
+        masterId: masterId,
+      },
+    });
+
+    if (!items) throw new Error("not found items");
+    return items;
+  } catch (error) {
+    console.error("Error in getMasterByTimeId:", error);
+    return null;
+  }
+}
+
 // wholeItem
 export async function getSettingWhole(userId: string) {
   try {

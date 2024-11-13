@@ -315,10 +315,10 @@ export async function createNewTask(
   userId: string,
   name: string,
   options: optionStruct[],
-  select: number,
+  selectIndex: number,
 ) {
   try {
-    const ret = await createTask(userId, name, options, 0, select);
+    const ret = await createTask(userId, name, options, 0, selectIndex);
     if (ret == null) {
       throw new Error("Failed on createTask");
     }
@@ -334,7 +334,7 @@ export async function createTask(
   userId: string,
   name: string,
   options: optionStruct[],
-  select: number,
+  selectIndex: number,
   order: number,
   prehab?: itemStruct,
 ) {
@@ -370,11 +370,32 @@ export async function createTask(
     //taskを作る
     const taskData: taskStruct = {
       itemId: masterSetItem.id,
+      optionIndex: selectIndex
     };
     const newTask = await insertTaskSet(taskData);
     if (newTask == null) {
       throw new Error("Failed to create task.");
     }
+    
+    //オプション作成
+    const selectedOptionId = await createTaskOption(options, newTask.id, selectIndex);
+    if(selectedOptionId==null) throw new Error("Failed to create option.");
+
+    // taskに設定中のオプションをセット
+    const setOptionedTask = await setSelectingTaskOption(
+      selectIndex,
+      newTask.id,
+    );
+
+    return { task: setOptionedTask, item: masterSetItem };
+  } catch (error) {
+    console.error("Error in createNewTask:", error);
+    return null;
+  }
+}
+
+export async function createTaskOption(options: optionStruct[], newTaskId: string, selectIndex: number){
+  try {
     //optionを作る
     let selectedOptionId = "";
     let count = 0;
@@ -383,12 +404,12 @@ export async function createTask(
       const data: optionStruct = {
         ...op,
         id: undefined,
-        taskId: newTask.id,
+        taskId: newTaskId,
       };
       const newOption = await createOption(data);
       if (newOption != null) {
         newOptions.push(newOption.id);
-        if (count === select) {
+        if (count === selectIndex) {
           selectedOptionId = newOption.id;
         }
       } else {
@@ -396,13 +417,7 @@ export async function createTask(
       }
       count++;
     }
-    // taskに設定中のオプションをセット
-    const setOptionedTask = await setSelectingTaskOption(
-      selectedOptionId,
-      newTask.id,
-    );
-
-    return { task: setOptionedTask, item: masterSetItem };
+    return selectedOptionId;
   } catch (error) {
     console.error("Error in createNewTask:", error);
     return null;

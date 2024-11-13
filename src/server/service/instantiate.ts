@@ -1,10 +1,9 @@
 import {
   getItemInfoByItemId,
   getItemsInParentSortOrder,
-  getOptionInfo,
   getOptionsInTask,
   getTaskInfoByItemId,
-  getTimeInfoByTimeId,
+  getTimeInfoByTimeId
 } from "../repositry/getdata";
 import { createFolder, createTask, createTime } from "./create";
 
@@ -53,8 +52,8 @@ export async function instanciateTask(itemId: string, order: number) {
     const task = await getTaskInfoByItemId(itemId);
     if (task == null) {
       throw new Error("Not found getTaskInfoByItemId");
-    } else if (task.optionId == null) {
-      throw new Error("Not found task optionId");
+    } else if (task.optionIndex == null) {
+      throw new Error("Not found task optionIndex");
     }
     // itemStruct取得
     const item = await getItemInfoByItemId(itemId);
@@ -66,18 +65,11 @@ export async function instanciateTask(itemId: string, order: number) {
     if (options == null) {
       throw new Error("Failed find options");
     }
-    // 設定中のタスクを取得
-    const selectedOption = await getOptionInfo(task.optionId);
-    if (selectedOption == null) {
-      throw new Error("Failed find order");
-    } else if (selectedOption.order == null) {
-      throw new Error("Not found option order");
-    }
     const taskInstanciate = await createTask(
       item.userId,
       item.name,
       options,
-      selectedOption.order,
+      task.optionIndex as number,
       order,
       item,
     );

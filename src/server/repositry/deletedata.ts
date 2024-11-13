@@ -94,3 +94,18 @@ export async function deleteMaster(masterId: string) {
     return null;
   }
 }
+
+// taskId同じものを削除
+export async function deleteOptionsInTask(taskId: string) {
+  try {
+    const deleteOptions = await db.taskOptions.deleteMany({
+      where: {
+        taskId: taskId,
+      },
+    });
+    return deleteOptions;
+  } catch (error) {
+    console.error("Error deleting options:", error);
+    return null;
+  }
+}

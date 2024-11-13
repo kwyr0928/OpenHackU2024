@@ -46,7 +46,7 @@ export type folderStruct = {
 export type taskStruct = {
   id?: string;
   itemId: string;
-  optionId?: string;
+  optionIndex: number;
   created_at?: Date;
   updated_at?: Date;
 };
@@ -95,13 +95,28 @@ export type taskSetPostBody = {
   taskSet: {
     name: string;
     isStatic: boolean;
-    select: number;
+    select: number; //index
     options: {
       name: string;
       time: number;
     }[];
   };
 };
+
+export type taskSetPutBody = {
+  userId: string;
+  taskSet: {
+    name: string;
+    isStatic: boolean;
+    select: number; //プレハブなら0入れてもらう
+    updateOptions : optionPostBody | { optionId: string; }[];
+  };
+};
+
+export type optionPostBody = {
+  name: string;
+  time: number;
+}
 
 //
 // GETのレスポンス
@@ -143,6 +158,7 @@ export type taskResponse = {
     name: string;
     itemId: string;
     isStatic: boolean;
+    select: number; //選択中プリセットのインデックス
     options: optionResponse[];
   };
 };
