@@ -1,15 +1,14 @@
 "use client";
 
-import { closestCenter, DndContext, DragEndEvent } from "@dnd-kit/core";
-import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
-import { arrayMove, SortableContext } from "@dnd-kit/sortable";
+import axios from "axios";
 import { Check, ChevronsUpDown } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
-import Droppable from "~/components/dndKit/droppable";
-import FolderPreset from "~/components/FolderPreset/folderPreset";
-import TaskPreset from "~/components/taskPreset/taskPreset";
+import { useEffect, useState } from "react";
+import FolderPreset from "~/components/schedule/Folder";
+import TaskPreset from "~/components/schedule/Task";
+import PlusCircle from "~/components/svgs/plusCircle";
 import { Button } from "~/components/ui/button";
 import {
   Command,
@@ -20,6 +19,12 @@ import {
   CommandList,
 } from "~/components/ui/command";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -27,233 +32,515 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
+import { Input } from "~/components/ui/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
+import { ScrollArea } from "~/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { cn } from "~/lib/utils";
 
-type Task = {
-  id: number;
+type WholeApiResponse = { // 全体プリセットの取得
+  message: string;
+  wholeSets: WholeSet[];
+};
+
+type WholeSet = { // 全体プリセット　中身
   name: string;
-  duration: number;
-  priority: number;
-  type: 'task';
+  itemId: string;
 };
 
-type TaskFolder = {
-  id: number;
-  name: string;
-  tasks: Task[];
-  priority: number;
-  type: 'folder';
+type DetailWholeApiResponse = { // 全体プリセット[id]の取得
+  message: string;
+  wholeSet: DetailWhole;
 };
 
-type Folder = {
-  value: string;
-  label: string;
+type DetailWhole = { // 全体プリセット[id]　中身
+    whole: {
+      name: string; // 全体プリセット　名前
+      itemId: string; // 全体プリセット　ID
+      timeSet: {
+        time: {
+          name: string; // 時間プリセット　名前
+          timeId: string; // 時間プリセット　ID
+          time: string; // 時間プリセット　時間
+        };
+      };
+      itemSet: {
+        task?: {
+          name: string; // タスクプリセット　名前
+          itemId: string; // タスクプリセット　ID
+          isStatic: boolean; // 固定値かどうか
+          options: {
+            // プルダウン
+            name: string; // 名前
+            time: number; // 時間
+          }[];
+        };
+        folder?: {
+          name: string; // フォルダプリセット　名前
+          itemId: string; // フォルダプリセット　ID
+          tasks: {
+            name: string; // タスクプリセット　名前
+            itemId: string; // タスクプリセット　ID
+            isStatic: boolean; // 固定値かどうか
+            options: {
+              // プルダウン
+              name: string; // 名前
+              time: number; // 時間
+            }[];
+          }[];
+        };
+      }[];
+    };
+  };
+
+type TimeApiResponse = { // 時間プリセットの取得
+  message: string;
+  timeSets: TimeSet[];
 };
 
-type All = {
-  value: string;
-  label: string;
+type TimeSet = { // 時間プリセット　中身
+  time: {
+    name: string;
+    timeId: string;
+    time: string;
+  };
 };
 
-type Time = {
-  value: string;
-  label: string;
-  time: string;
+type FolderApiResponse = { // フォルダプリセットの取得
+  message: string;
+  folderSets: FolderSet[];
 };
 
-type Json = {
-  id: number;
-  name: string;
-  type: string;
-  parent_id: number | null;
-  priority: number;
+type FolderSet = { // フォルダプリセット　中身
+  folder: {
+    name: string;
+    itemId: string;
+    tasks: {
+      task: {
+      name: string;
+      itemId: string;
+      isStatic: boolean;
+      options: {
+        name: string;
+        time: number;
+      }[];
+    }}[];
+  };
 };
 
-type ScheduleItem = Task | TaskFolder;
+type TaskApiResponse = { // タスクプリセットの取得
+  message: string;
+  taskSets: TaskSet[];
+};
 
-export default function Schedule() {
-  const [openTime, setOpenTime] = useState(false);
-  const [valueTime, setValueTime] = useState("");
-  const [openFolder, setOpenFolder] = useState(false);
-  const [valueFolder, setValueFolder] = useState("");
-  const [openAll, setOpenAll] = useState(false);
-  const [valueAll, setValueAll] = useState("");
+type TaskSet = { // タスクプリセット　中身
+  task: {
+    name: string;
+    itemId: string;
+    isStatic: boolean;
+    options: {
+      name: string;
+      time: number;
+    }[];
+  };
+};
+
+export default function WholeNew() {
+  const [openWhole, setOpenWhole] = useState(false); // 全体　プルダウン
+  const [valueWhole, setValueWhole] = useState(""); // 全体　プルダウン
+  const [openTime, setOpenTime] = useState(false); // 時間　プルダウン
+  const [valueTime, setValueTime] = useState(""); // 時間　プルダウン
+  const [isLoading, setIsLoading] = useState(true); // ローディング中かどうか
+
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false); // タスク追加　既存プリセット
+  const [isTaskModalOpen2, setIsTaskModalOpen2] = useState(false); // タスク追加　新規作成
+  const [isFolderModalOpen, setIsFolderModalOpen] = useState(false); // フォルダ追加　既存プリセット
+  const [isFolderModalOpen2, setIsFolderModalOpen2] = useState(false); // フォルダ追加　新規作成
+
+  const { data: session, status } = useSession(); // セッション情報
+
+  const [tempName, setTempName] = useState<string>(""); // タスク追加　新規作成　タスク名
+  const [options1, setOptions1] = useState("デフォルト"); // タスク追加　新規作成　プルダウン　オプション名1
+  const [minutes1, setMinutes1] = useState(0); // タスク追加　新規作成　プルダウン　時間1
+  const [options2, setOptions2] = useState(""); // 同上2
+  const [minutes2, setMinutes2] = useState(0); // 同上2
+  const [options3, setOptions3] = useState(""); // 同上3
+  const [minutes3, setMinutes3] = useState(0); // 同上3
+  const [minutes, setMinutes] = useState(0); // タスク追加　新規作成　固定値　時間
+
+  const [wholePresets, setWholePresets] = useState<WholeSet[]>([]); // 全体プリセット一覧
+  const [timePresets, setTimePresets] = useState<TimeSet[]>([]); // 時間プリセット一覧 time:
+  const [folderPresets, setFolderPresets] = useState<FolderSet[]>([]); // フォルダプリセット一覧 folder:
+  const [taskPresets, setTaskPresets] = useState<TaskSet[]>([]); // タスクプリセット一覧 task;
+
+  const [selectedWholePreset, setSelectedWholePreset] = useState<WholeSet>(); // 選択中の全体プリセット
+  const [detailWholePreset, setDetailWholePreset] = useState<DetailWhole>(); // 選択中の全体プリセット[id]
+  const [selectedTimePreset, setSelectedTimePreset] = useState<TimeSet>(); // 選択中の時間プリセット
   
-  const [time, setTime] = useState("９：２０");
 
-  const [scheduleItems, setScheduleItems] = useState<ScheduleItem[]>([
-   
-  ]);
-
-  const [tasks, setTasks] = useState<Task[]>([
-    { id: 1, name: "駅まで徒歩", duration: 15, priority: 1, type: 'task' },
-    { id: 2, name: "ごはん", duration: 15, priority: 2, type: 'task' },
-  ]);
-
-  const [taskFolders, setTaskFolders] = useState<TaskFolder[]>([
-    {
-      id: 6,
-      name: "おしゃれする",
-      tasks: [
-        { id: 3, name: "着替え", duration: 15, priority: 1, type: 'task' },
-        { id: 4, name: "メイク", duration: 15, priority: 2, type: 'task' },
-        { id: 5, name: "ヘアメイク", duration: 15, priority: 3, type: 'task' },
-      ],
-      priority: 3, type: 'folder'
-    },
-  ]);
-
-  const [times, setTimes] = useState<Time[]>([
-    { value: "1限電車", label: "1限電車", time: "９：２０" },
-    { value: "2限電車", label: "2限電車", time: "１０：１０" },
-    { value: "3限電車", label: "3限電車", time: "１１：２０" },
-    { value: "4限電車", label: "4限電車", time: "１３：００" },
-  ]);
-
-  const [folders, setfolders] = useState<Folder[]>([
-    { value: "おしゃれする", label: "おしゃれする" },
-    { value: "急ぎ1限", label: "急ぎ1限" },
-    { value: "寝落ち2限", label: "寝落ち2限" },
-    { value: "ゆっくり", label: "ゆっくり" },
-  ]);
-
-  const [alls, setAlls] = useState<All[]>([
-    { value: "おしゃれ1限", label: "おしゃれ1限" },
-    { value: "おしゃれ2限", label: "おしゃれ2限" },
-    { value: "おしゃれ3限", label: "おしゃれ3限" },
-    { value: "おしゃれ4限", label: "おしゃれ4限" },
-  ]);
-
-  const [jsons, setJsons] = useState<Json[]>([
-    { id: 1, name: "駅まで徒歩", type: "task", parent_id: null, priority: 1 },
-    { id: 2, name: "ごはん", type: "task", parent_id: null, priority: 2 },
-    { id: 3, name: "着替え", type: "task", parent_id: 6, priority: 1 },
-    { id: 4, name: "メイク", type: "task", parent_id: 6, priority: 2 },
-    { id: 5, name: "ヘアメイク", type: "task", parent_id: 6, priority: 3 },
-    {
-      id: 6,
-      name: "おしゃれする",
-      type: "foler",
-      parent_id: null,
-      priority: 3,
-    },
-  ]);
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
+  const handleSortUp = (index: number) => { // タスクフォルダ並び替え　↑
+    // スケジュール内のタスクフォルダを並び替える itemSets // TODO
+    // 全体プリセットで仮実装済
+      setDetailWholePreset((prev) => {
+        if (!prev) return undefined; // データが無ければreturn
     
-    if (active && over && active.id !== over.id) {
-      setScheduleItems((items) => {
-        const oldIndex = items.findIndex(item => item.id === active.id);
-        const newIndex = items.findIndex(item => item.id === over.id);
-        return arrayMove(items, oldIndex, newIndex);
+        const updatedItemSet = [...prev.whole.itemSet]; // 現在の配列を取得　
+    
+        if (index > 0 && index < updatedItemSet.length) {
+          [updatedItemSet[index - 1], updatedItemSet[index]] = [updatedItemSet[index], updatedItemSet[index - 1]]; // 赤線解消できない // TODO
+        }
+        return { // 新しい配列を登録
+          ...prev,
+            whole: {
+              ...prev.whole,
+              itemSet: updatedItemSet,
+            },
+        };
       });
-    }
+    };
+
+    const handleSortDown = (index: number) => { // タスクフォルダ並び替え　↓
+      // スケジュール内のタスクフォルダを並び替える itemSets // TODO
+      // 全体プリセットで仮実装済
+      setDetailWholePreset((prev) => {
+        if (!prev) return undefined; // データが無ければreturn
+    
+        const updatedItemSet = [...prev.whole.itemSet]; // 現在の配列を取得
+
+        if (index >= 0 && index < updatedItemSet.length - 1) { // -1で合ってる？動作確認必須 // TODO
+          [updatedItemSet[index], updatedItemSet[index + 1]] = [updatedItemSet[index + 1], updatedItemSet[index]]; // 赤線解消できない // TODO
+        }
+        return { // 新しい配列を登録
+          ...prev,
+            whole: {
+              ...prev.whole,
+              itemSet: updatedItemSet,
+          },
+        };
+      });
+    };
+
+  const handleDelete = (target) => { // タスクフォルダ削除 // 型定義 // TODO
+      // スケジュール内のタスクフォルダを並び替える itemSets // TODO
+      // 全体プリセットで仮実装済
+    setDetailWholePreset((prev) => {
+      if (!prev) return undefined; // データが無ければreturn
+  
+      return { // 新しい配列を登録
+        ...prev,
+          whole: {
+            ...prev.whole,
+            itemSet: prev.whole.itemSet.filter( // 該当itemを除く
+              (item) => item !== target
+            ),
+        },
+      };
+    });
   };
 
-  const handleFolderDragEnd = (folderId: number) => (event: DragEndEvent) => {
-    const { active, over } = event;
+  const handleTaskAdd = () => { // タスク追加　既存プリセット
+    setIsTaskModalOpen(true);
+  };
+
+  const handleTaskAdd2 = () => { // タスク追加　新規作成
+    setIsTaskModalOpen2(true);
+  };
+
+  const handleFolderAdd = () => { // フォルダ追加　既存プリセット
+    setIsFolderModalOpen(true);
+  };
+
+  const handleFolderAdd2 = () => { // フォルダ追加　新規作成
+    setIsFolderModalOpen2(true);
+  }
+
+    const handleTaskSelect = (target) => { // タスク追加　既存プリセット　選択 // 型定義 // TODO
+
+      setDetailWholePreset((prev) => {
+        if (!prev) return undefined; // データが無ければreturn
     
-    if (active && over && active.id !== over.id) {
-      setScheduleItems((items) => {
-        return items.map(item => {
-          if (item.type === 'folder' && item.id === folderId) {
-            const folder = item;
-            const oldIndex = folder.tasks.findIndex(task => task.id === active.id);
-            const newIndex = folder.tasks.findIndex(task => task.id === over.id);
-            return {
-              ...folder,
-              tasks: arrayMove(folder.tasks, oldIndex, newIndex)
-            };
+        return { // 新しい配列を登録
+          ...prev,
+            whole: {
+              ...prev.whole,
+              itemSet: [...prev.whole.itemSet, target], // 赤線解消できない // TODO
+            },
+        };
+      });
+      setIsTaskModalOpen(false);
+    }
+
+      
+  const handleFolderSelect = (target) => { // フォルダ追加　既存プリセット　選択 // 型定義 // TODO
+
+     setDetailWholePreset((prev) => {
+        if (!prev) return undefined; // データが無ければreturn
+    
+        return { // 新しい配列を登録
+          ...prev,
+            whole: {
+              ...prev.whole,
+              itemSet: [...prev.whole.itemSet, target], // 赤線解消できない // TODO
+            },
+        };
+      });
+      setIsFolderModalOpen(false);
+    };
+
+
+    const handleTaskAddCancel = () => { // タスク追加　既存プリセット　キャンセルボタン
+      setIsTaskModalOpen(false);
+      console.log("キャンセルしました");
+    };
+
+    const handleTaskAddCreate2 = () => { // タスク追加　新規作成　作成ボタン
+      setIsTaskModalOpen2(false);
+      // スケジュールにタスクを追加 // TODO
+      console.log("作成しました");
+    };
+  
+    const handleTaskAddCancel2 = () => { // タスク追加　新規作成　キャンセルボタン
+      setIsTaskModalOpen2(false);
+      console.log("キャンセルしました");
+    };
+
+
+    const handleFolderAddCancel = () => { // タスク追加　既存プリセット　キャンセルボタン
+      setIsFolderModalOpen(false);
+      console.log("キャンセルしました");
+    };
+  
+
+    const handleFolderAddCreate2 = () => { // フォルダ追加　新規作成　作成ボタン
+      setIsFolderModalOpen2(false);
+      // スケジュールにタスクを追加 // TODO
+      console.log("作成しました");
+    };
+  
+    const handleFolderAddCancel2 = () => { // フォルダ追加　新規作成　キャンセルボタン
+      setIsFolderModalOpen2(false);
+      console.log("キャンセルしました");
+    };
+
+    useEffect(() => { // アクセス時に1回実行
+      const fetchPresets = async () => {
+        if (!session?.user?.id) {
+          setIsLoading(false); // セッションが無ければ何も表示しない
+          return;
+        }
+    
+        try {
+          const [wholeResponse, timeResponse, folderResponse, taskResponse] =
+            await Promise.all([
+              axios.get<WholeApiResponse>(
+                `/api/presets/whole?userId=${session.user.id}`, // 全体プリセット一覧 get
+              ),
+              axios.get<TimeApiResponse>(
+                `/api/presets/time?userId=${session.user.id}`, // 時間プリセット一覧 get
+              ),
+              axios.get<FolderApiResponse>(
+                `/api/presets/folder?userId=${session.user.id}`, // フォルダプリセット一覧 get
+              ),
+              axios.get<TaskApiResponse>(
+                `/api/presets/task?userId=${session.user.id}`, // タスクプリセット一覧 get
+              ),
+            ]);
+    
+          if (wholeResponse.data?.wholeSets) {
+            setWholePresets(wholeResponse.data.wholeSets); // 全体プリセット一覧　登録
+            if (wholeResponse.data.wholeSets.length > 0) {
+              const firstPreset = wholeResponse.data.wholeSets[0];
+              if (firstPreset !== undefined) {
+                setSelectedWholePreset({ // 選択中
+                  name: firstPreset.name,
+                  itemId: firstPreset.itemId,
+                });
+                setValueWhole(firstPreset.itemId); // 選択中
+              }
+            }
           }
-          return item;
-        });
+    
+          if (timeResponse.data?.timeSets) {
+            setTimePresets(timeResponse.data.timeSets); // 時間プリセット[id]　登録
+            if (timeResponse.data.timeSets.length > 0) {
+              const firstTimePreset = timeResponse.data.timeSets[0];
+              if (firstTimePreset !== undefined) {
+                setSelectedTimePreset(firstTimePreset); // 選択中
+                setValueTime(firstTimePreset.time.timeId); // 選択中
+              }
+            }
+          }
+    
+          if (folderResponse.data?.folderSets) { 
+            setFolderPresets(folderResponse.data.folderSets);  // フォルダプリセット　登録
+            // if (folderResponse.data.folderSets.length > 0) {
+            //   const firstFolderPreset = folderResponse.data.folderSets[0];
+            //   if (firstFolderPreset?.folder !== undefined) {
+            //     setSelectedFolderPreset(firstFolderPreset); // 選択中   // いらないかも？要検討 // TODO
+            //     setValueFolder(firstFolderPreset.folder.itemId); // 選択中
+            //   }
+            // }
+          }
+    
+          if (taskResponse.data?.taskSets) {
+            setTaskPresets(taskResponse.data.taskSets);  // 時間プリセット　登録
+          }
+        } catch (err) {
+          console.error("Error fetching presets:", err);
+        } finally {
+          setIsLoading(false); // データの取得が完了したらローディング状態を解除
+        }
+      };
+    
+      void fetchPresets();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+  useEffect(() => { // 全体プリセットが変更されたら1回実行
+    const fetchPresets = async () => {
+      if (!session?.user?.id) {
+        setIsLoading(false); // セッションが無ければ何も表示しない
+        return;
+      }
+      try {
+        const detailWholeResponse = await axios.get<DetailWholeApiResponse>(
+          `/api/presets/whole/${selectedWholePreset?.itemId}?userId=${session.user.id}`, // 全体プリセット[id] get
+        );
+        if (detailWholeResponse.data?.wholeSet) {
+          setDetailWholePreset(detailWholeResponse.data.wholeSet); // 全体プリセット[id] 登録
+        }
+        const firstTimePreset = detailWholeResponse.data.wholeSet.whole.timeSet; // 時間プリセット
+    if (firstTimePreset !== undefined) {
+      setSelectedTimePreset(firstTimePreset); ; // 選択中
+      setValueTime(firstTimePreset.time.timeId); ; // 選択中
+    }
+      } catch (err) {
+        console.error("Error fetching presets:", err);
+      }
+    };
+    void fetchPresets();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedWholePreset]);
+
+  const handleWholePresetSelect = (id: string) => { // 選択中の全体プリセットが変更されたら
+    const selectedPreset = wholePresets.find(
+      (preset) => preset.itemId === id,
+    );
+    if (selectedPreset) {
+      setSelectedWholePreset({
+        name: selectedPreset.name,
+        itemId: selectedPreset.itemId,
       });
+      setValueWhole(id);
+      setOpenWhole(false);
     }
   };
+
+  const handleTimePresetSelect = (id: string) => { // 選択中の時間プリセットが変更されたら
+    const selectedPreset = timePresets.find(
+      (preset) => preset.time.timeId === id,
+    );
+    if (selectedPreset) {
+      setSelectedTimePreset(selectedPreset);
+      setValueTime(id);
+      setOpenTime(false);
+    }
+  };
+
+  
+
+  if (isLoading) return <p>Loading...</p>;
 
   return (
-    <div className="relative mx-auto flex h-svh w-full max-w-md flex-col items-center justify-center bg-cyan-50 text-center font-mPlus text-gray-700">
-      <p className="my-5 text-center text-2xl">
-        {/* 全体プリセット */}
-        <Popover open={openAll} onOpenChange={setOpenAll}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              role="combobox"
-              aria-expanded={openAll}
-              className="mt-3 mr-5 w-[200px] text-xl py-5"
-            >
-              <div className="ml-5">
-                {valueAll
-                  ? alls.find((all) => all.value === valueAll)?.label
-                  : alls[0]?.value}
-              </div>
-              {/* 読み込み時、配列の0番目をボックス内に格納 → 前回内容を反映するように後に変更予定 */}
-              <ChevronsUpDown className="ml-3 h-4 w-4 shrink-0 opacity-50" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-[200px] p-0">
-            <Command>
-              <CommandInput placeholder="全体プリセットを検索" />
-              <CommandList>
-                <CommandEmpty>見つかりません</CommandEmpty>
-                <CommandGroup>
-                  {alls.map((all) => (
-                    <CommandItem
-                      key={all.value}
-                      value={all.value}
-                      onSelect={(currentValue) => {
-                        setValueAll(
-                          currentValue === valueAll ? "" : currentValue,
-                        );
-                        setOpenAll(false);
-                      }}
-                    >
-                      <Check
-                        className={cn(
-                          "mr-2 h-4 w-4",
-                          valueAll === all.value ? "opacity-100" : "opacity-0",
-                        )}
-                      />
-                      {all.label}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
-        <Image
-            src="/image/save.svg"
-            alt="保存アイコン"
-            width={20}
-            height={20}
-            className="absolute top-10 left-14 ml-1"
+    <div className="mx-auto h-svh max-w-md bg-slate-50 pt-5 text-center font-mPlus">
+      <div className="mx-5 h-[660px] rounded-xl border-2 border-teal-400 bg-white">
+        <p className="rounded-t-lg bg-teal-400 py-3 text-xl">
+          <Link href="/home">
+            <Image
+              src="/image/Backicon.svg"
+              alt="Backicon"
+              width={25}
+              height={25}
+              className="fixed left-3 top-10 mx-5 mt-0.5"
+            />
+          </Link>
+          <Image
+            src="/image/Allicon.svg"
+            alt="All"
+            width={27}
+            height={27}
+            className="fixed left-16 top-10 ml-2"
           />
-      </p>
-      <div className="mb-5 h-svh w-96 items-center justify-center bg-white">
-        <div className="bg-rose-100 pb-1 relative">
-          {/* 時間プリセット */}
+          <Popover open={openWhole} onOpenChange={setOpenWhole}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={openWhole}
+                className="w-[170px] py-5 text-lg"
+              >
+                <div className="ml-5">
+                  {selectedWholePreset
+                    ? selectedWholePreset.name
+                    : "プリセットを選択"}
+                </div>
+                <ChevronsUpDown className="ml-3 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[200px] p-0">
+              <Command>
+                <CommandInput placeholder="全体プリセットを検索" />
+                <CommandList>
+                  <CommandEmpty>見つかりません</CommandEmpty>
+                  <CommandGroup>
+                    {wholePresets.map((preset) => (
+                      <CommandItem
+                        key={preset.itemId}
+                        value={preset.name}
+                        onSelect={() => handleWholePresetSelect(preset.itemId)}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            valueWhole === preset.itemId
+                              ? "opacity-100"
+                              : "opacity-0",
+                          )}
+                        />
+                        {preset.name}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </p>
+        <p className="bg-pink-300 pb-0.5 pt-3 text-xl">
+          <Image
+            src="/image/Timeicon.svg"
+            alt="Time"
+            width={27}
+            height={27}
+            className="fixed left-16 top-24 ml-2 mt-3"
+          />
           <Popover open={openTime} onOpenChange={setOpenTime}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 role="combobox"
                 aria-expanded={openTime}
-                className="mt-3 w-[200px] mr-5 text-lg"
+                className="w-[170px] py-5 text-lg"
               >
                 <div className="ml-5">
-                  {valueTime
-                    ? times.find((time) => time.value === valueTime)?.label
-                    : times[0]?.value}
+                  {selectedTimePreset
+                    ? selectedTimePreset.time.name
+                    : "プリセットを選択"}
                 </div>
-                {/* 読み込み時、配列の0番目をボックス内に格納 → 前回内容を反映するように後に変更予定 */}
                 <ChevronsUpDown className="ml-3 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
@@ -263,27 +550,23 @@ export default function Schedule() {
                 <CommandList>
                   <CommandEmpty>見つかりません</CommandEmpty>
                   <CommandGroup>
-                    {times.map((time) => (
+                    {timePresets.map((preset) => (
                       <CommandItem
-                        key={time.value}
-                        value={time.value}
-                        onSelect={(currentValue) => {
-                          setTime(time.time);
-                          setValueTime(
-                            currentValue === valueTime ? "" : currentValue,
-                          );
-                          setOpenTime(false);
-                        }}
+                        key={preset.time.timeId}
+                        value={preset.time.name}
+                        onSelect={() =>
+                          handleTimePresetSelect(preset.time.timeId)
+                        }
                       >
                         <Check
                           className={cn(
                             "mr-2 h-4 w-4",
-                            valueTime === time.value
+                            valueTime === preset.time.timeId
                               ? "opacity-100"
                               : "opacity-0",
                           )}
                         />
-                        {time.label}
+                        {preset.time.name}
                       </CommandItem>
                     ))}
                   </CommandGroup>
@@ -291,74 +574,222 @@ export default function Schedule() {
               </Command>
             </PopoverContent>
           </Popover>
-          <Image
-            src="/image/save.svg"
-            alt="保存アイコン"
-            width={20}
-            height={20}
-            className="absolute top-5 left-7"
-          />
-          <div className="mx-5 my-2 flex h-16 items-center justify-center bg-white text-3xl font-bold">
-            {time}
-          </div>
-        </div>
 
-        <DndContext
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-          modifiers={[restrictToVerticalAxis]}
-        >
-          <SortableContext items={scheduleItems.map(item => item.id)}>
-            {scheduleItems.map((item) => (
-              <Droppable key={item.id} id={item.id}>
-                {item.type === 'task' ? (
-                  <TaskPreset
-                    id={item.id}
-                    name={item.name}
-                    duration={item.duration}
-                  />
-                ) : (
-                  <FolderPreset
-                    id={item.id}
-                    openFolder={openFolder}
-                    setOpenFolder={setOpenFolder}
-                    valueFolder={valueFolder}
-                    setValueFolder={setValueFolder}
-                    folders={folders}
-                    taskFolders={[item]}
-                    handleDragEnd2={handleFolderDragEnd(item.id)}
-                  />
-                )}
-              </Droppable>
-            ))}
-          </SortableContext>
-        </DndContext>
-        <DropdownMenu>
-  <DropdownMenuTrigger><Image
-          src="/image/plus.svg"
-          alt="新規作成アイコン"
-          width={40}
-          height={40}
-          className="mx-auto mt-5"
-        /></DropdownMenuTrigger>
-  <DropdownMenuContent>
-    <DropdownMenuLabel>タスクの作成</DropdownMenuLabel>
-    <DropdownMenuSeparator />
-    <DropdownMenuItem>既存プリセットから</DropdownMenuItem>
-    <DropdownMenuItem>新規作成</DropdownMenuItem>
-    <DropdownMenuSeparator />
-    <DropdownMenuItem>閉じる</DropdownMenuItem>
-  </DropdownMenuContent>
-</DropdownMenu>
-        
-        
-        <div className="absolute bottom-12 left-0 right-0">
-          <Link href="/presets">
-            <Button className="bg-darkBlue px-6 py-6 font-mPlus text-2xl text-slate-100 hover:bg-darkBlue">
-              新規作成
-            </Button>
-          </Link>
+          <p className="mx-2 mb-2 mt-3 bg-white py-3 text-3xl font-extrabold">
+            {selectedTimePreset?.time.time}
+          </p>
+        </p>
+        <ScrollArea className="h-[380px]">
+        {detailWholePreset ? (
+          detailWholePreset.whole?.itemSet?.map((item, index) => (
+            <div key={index}>
+              {item.task && (
+                <TaskPreset
+                  index={index}
+                  name={item.task.name}
+                  options={item.task.options}
+                  task={item} // 変更した　動作要確認 // TODO
+                  handleDelete={handleDelete}
+                  handleSortUp={handleSortUp}
+                  handleSortDown={handleSortDown}
+                />
+              )}
+              {item.folder && (
+                <FolderPreset
+                  index={index}
+                  folder={item} // 変更した　動作要確認 // TODO
+                  folderPresets={folderPresets}
+                  handleDelete={handleDelete}
+                  handleSortUp={handleSortUp}
+                  handleSortDown={handleSortDown}
+                />
+              )}
+            </div>
+          ))
+        ) : (
+          <p>Loading tasks and folders...</p>
+        )}
+          </ScrollArea>
+
+        <div className="mt-3 flex justify-center">
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <PlusCircle
+                style={{ width: "50px", height: "50px" }}
+                color={"#31D6CB"}
+              />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="flex space-x-4 p-4">
+        <div>
+          <DropdownMenuLabel>タスクの作成</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={handleTaskAdd}>
+            既存プリセットから
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleTaskAdd2}>
+            新規作成
+          </DropdownMenuItem>
         </div>
+        <div>
+          <DropdownMenuLabel>フォルダの作成</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={handleFolderAdd}>
+            既存プリセットから
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleFolderAdd2}>
+            新規作成
+          </DropdownMenuItem>
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
+        </div>
+        <Dialog open={isTaskModalOpen} onOpenChange={setIsTaskModalOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>追加するタスクを選んでください</DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-2 py-4">
+              {taskPresets.map((taskSet, index) => (
+                <div key={index} onClick={() => handleTaskSelect(taskSet)}>
+                <TaskPreset
+                  index={index}
+                  name={taskSet.task.name}
+                  options={taskSet.task.options}
+                  task={taskSet} // 変更した 要確認 // TODO
+                  handleDelete={handleDelete}
+                  handleSortUp={handleSortUp}
+                  handleSortDown={handleSortDown}
+                />
+                </div>
+              ))}
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={isTaskModalOpen2} onOpenChange={setIsTaskModalOpen2}>
+          <DialogContent className="w-[90%] rounded-xl">
+            <DialogHeader>
+              <DialogTitle>
+                <Input
+                  value={tempName}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setTempName(e.target.value)
+                  }
+                  className="mt-4 text-center text-gray-700"
+                />
+              </DialogTitle>
+            </DialogHeader>
+            <Tabs defaultValue="pulldown" className="mt-2">
+              <TabsList className="mb-4 grid w-full grid-cols-2">
+                <TabsTrigger value="pulldown">プルダウン</TabsTrigger>
+                <TabsTrigger value="static">固定値</TabsTrigger>
+              </TabsList>
+              <TabsContent value="pulldown" className="h-[150px]">
+                <ScrollArea>
+                  <div className="mb-3 flex items-center justify-center">
+                    <Input
+                      type="text"
+                      value={options1}
+                      onChange={(e) => setOptions1(e.target.value)}
+                      className="mr-7 w-36 text-center"
+                    />
+                    <Input
+                      type="number"
+                      value={minutes1}
+                      onChange={(e) => setMinutes1(Number(e.target.value))}
+                      className="w-16 text-center"
+                    />
+                    <p>min</p>
+                  </div>
+                  <div className="mb-3 flex items-center justify-center">
+                    <Input
+                      type="text"
+                      value={options2}
+                      onChange={(e) => setOptions2(e.target.value)}
+                      className="mr-7 w-36 text-center"
+                    />
+                    <Input
+                      type="number"
+                      value={minutes2}
+                      onChange={(e) => setMinutes2(Number(e.target.value))}
+                      className="w-16 text-center"
+                    />
+                    <p>min</p>
+                  </div>
+                  <div className="mb-3 flex items-center justify-center">
+                    <Input
+                      type="text"
+                      value={options3}
+                      onChange={(e) => setOptions3(e.target.value)}
+                      className="mr-7 w-36 text-center"
+                    />
+                    <Input
+                      type="number"
+                      value={minutes3}
+                      onChange={(e) => setMinutes3(Number(e.target.value))}
+                      className="w-16 text-center"
+                    />
+                    <p>min</p>
+                  </div>
+                </ScrollArea>
+              </TabsContent>
+              <TabsContent value="static" className="h-[150px]">
+                <div className="flex h-40 items-center justify-center">
+                  <Input
+                    type="number"
+                    value={minutes}
+                    onChange={(e) => setMinutes(Number(e.target.value))}
+                    className="w-24 text-center"
+                  />
+                  <p>min</p>
+                </div>
+              </TabsContent>
+            </Tabs>
+            <div className="mt-auto flex justify-around">
+              <Button onClick={handleTaskAddCancel2} className="bg-gray-600">
+                キャンセル
+              </Button>
+              <Button
+                className="bg-darkBlue hover:bg-blue-900"
+                onClick={handleTaskAdd2}
+                disabled={!tempName} // tempNameが空の場合はボタンを無効化
+              >
+                作成
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={isFolderModalOpen} onOpenChange={setIsFolderModalOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>追加するフォルダを選んでください</DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-2 py-4">
+              {folderPresets.map((folderSet, index) => (
+                <div key={index} onClick={() => handleFolderSelect(folderSet)}>
+                  <FolderPreset
+                  index={index}
+                  folder={folderSet}// 変更した 要確認 // TODO
+                  folderPresets={folderPresets}
+                  handleDelete={handleDelete}
+                  handleSortUp={handleSortUp}
+                  handleSortDown={handleSortDown}
+                />
+                </div>
+              ))}
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+      <div className="fixed bottom-5 left-1/2 -translate-x-1/2 transform">
+        <p className="mt-3 text-teal-500">間に合う時刻</p>
+        <p className="text-3xl font-extrabold text-red-600">７：３０</p>
+        <Link href="/home">
+          <Button className="my-2 w-36 bg-teal-400 py-6 text-2xl hover:bg-teal-500">
+            設定
+          </Button>
+        </Link>
       </div>
     </div>
   );
