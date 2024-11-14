@@ -91,7 +91,16 @@ export default function Home() {
 
   if (!whole) {
     handleScheduleGet();
-    return <div>Loading...</div>;
+    return <div>Loading...
+      <div className="mt-4 flex-col">
+        <Link href="/presets">
+          <Button className="bg-color-all shadow-lg hover:bg-emerald-500">
+            <FolderIconSvg style={{ width: "30px", height: "30px" }} color={""} />
+          </Button>
+        </Link>
+        <h1>プリセット</h1>
+      </div>
+    </div>;
   } else {
     console.log(dataFromDb);
   }

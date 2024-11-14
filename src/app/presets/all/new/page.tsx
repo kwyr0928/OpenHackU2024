@@ -571,18 +571,12 @@ export default function Schedule() {
                 <DropdownMenuItem onClick={handleTaskAdd}>
                   既存プリセットから
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleTaskAdd2}>
-                  新規作成
-                </DropdownMenuItem>
               </div>
               <div>
                 <DropdownMenuLabel>フォルダの作成</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleFolderAdd}>
                   既存プリセットから
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleFolderAdd2}>
-                  新規作成
                 </DropdownMenuItem>
               </div>
             </DropdownMenuContent>
