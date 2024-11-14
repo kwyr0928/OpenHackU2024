@@ -44,6 +44,7 @@ type FolderSet = {
       name: string;
       itemId: string;
       isStatic: boolean;
+      select: number;
       options: {
         name: string;
         time: number;
