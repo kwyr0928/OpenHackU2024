@@ -124,7 +124,7 @@ export default function NewTask({ handleTaskGet }: NewTaskProps) {
             <TabsTrigger value="pulldown">プルダウン</TabsTrigger>
             <TabsTrigger value="static">固定値</TabsTrigger>
           </TabsList>
-          <TabsContent value="pulldown" className="h-[150px]">
+          <TabsContent value="pulldown" className="h-[160px]">
             <div className="mb-3 flex items-center justify-center">
               <Input
                 type="text"
