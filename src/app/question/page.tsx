@@ -1,8 +1,9 @@
 "use client";
 
 import axios from "axios";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Checkbox } from "~/components/ui/checkbox";
@@ -17,10 +18,11 @@ export default function Question() {
   const [selectedItems, setSelectedItems] = useState<number[]>([]); // チェックされた選択肢を保存
   const [timePresetValue, setTimePresetValue] = useState<string>("00:00");  // 時間プリセットの時刻
   const [taskTime, setTaskTime] = useState<number>(0);
-  const [answerTaskJsonData, setAnswerTaskJsonData] = useState<answerTaskJsonDataPrpos>();
+  const [answerTimeJsonData, setAnswerTimeJsonData] = useState<answerTimeJsonDataPrpos>();  // 時間プリセットの回答
+  const [answerTaskJsonData, setAnswerTaskJsonData] = useState<answerTaskJsonDataPrpos>();  // タスクプリセットの回答
+  const { data: session, status } = useSession();
 
   const initialQuestionChoices: string[] = [
-    "ランニング",
     "朝食",
     "着替え",
     "お風呂",
@@ -30,14 +32,6 @@ export default function Question() {
   ];
   const questionContext = {
     member: [
-      {
-        title: "ランニングの所要時間は？",
-        choice: [
-          { text: "10分", id: "10min" },
-          { text: "20分", id: "20min" },
-          { text: "30分", id: "30min" },
-        ],
-      },
       {
         title: "朝食の所要時間は？",
         choice: [
@@ -124,26 +118,82 @@ export default function Question() {
     setStep(step + 1);
     setSelectedValue(""); // 選択をリセット
     setInputValue(""); // 入力欄をリセット
-    
-    ////////////////////////////////////////////
-    // 要検討
-    if(answerTaskJsonData)
-      handleNextQuestion(answerTaskJsonData);
-    ////////////////////////////////////////////
+
+    //  stepによって呼び出すAPIを変更
+    switch (step) {
+      case GOAL_TIME_QUESTION:
+        handleSendTime();
+      case INITIAL_QUESTION:
+        console.log("choice question");
+        return;
+      case selectedItems.length + 2:
+        //  全体プリセット生成のAPI
+        console.log("end");
+        handleSendTask();
+        callWholePresetAPI();
+        return;
+      default:
+        handleSendTask();
+    }
   };
 
-  const handleNextQuestion = (answerTaskJsonData:answerTaskJsonDataPrpos) => {
-    useEffect(() => {
-      const sendData = async () => {
-        try {
-          await axios.post("/api/presets/task/new", answerTaskJsonData);
-        } catch (error) {
-          console.error("データの送信に失敗しました。", error);
-        }
-      };
-      sendData();
-    }, []);
+  const handleSendTime = async () => {
+    if(!session?.user.id){
+      return;
+    }
+
+    const json: answerTimeJsonDataPrpos = {
+      userId: session?.user.id!,
+      timeSet: {
+        "name": "default time",
+        "time": timePresetValue
+      }
+    };
+    try {
+      const res = await axios.post("/api/presets/time/new", json);
+      console.log(res.data);
+      console.log(json);
+    } catch (error) {
+      console.log("failed");
+    }
+  }
+
+  const handleSendTask = async () => {
+    if(!session?.user.id){
+      return;
+    }
+
+    const json: answerTaskJsonDataPrpos = {
+      userId: session?.user.id!,
+      taskSet: {
+        "name": initialQuestionChoices[selectedItems[step - 3]!]!,
+        "isStatic": true,
+        "select": 0,
+        "options": [{
+          "time": taskTime
+        }]
+      }
+    };
+    try {
+      const res = await axios.post("/api/presets/task/new", json);
+      console.log(res.data);
+      console.log(json);
+    } catch (error) {
+      console.log("failed");
+    }
   };
+
+  const callWholePresetAPI = async () => {
+    if(!session?.user.id){
+      return;
+    }
+
+    try {
+      console.log("generated whole preset");
+    } catch (error) {
+      console.log("failed");
+    }
+  }
 
   //  stepの値に応じて質問と「次へ」ボタンを設定
   switch (step) {
@@ -176,7 +226,7 @@ export default function Question() {
       const selectedItem = selectedItems[step - 3];
       const questionData = selectedItem !== undefined ? questionContext.member[selectedItem] : undefined;
 
-      if (questionData !== undefined) {
+      if ((questionData !== undefined)) {
         questionContent = (
           <QuestionComponent
             questionData={questionData} //  生成に用いるjsonを渡す
@@ -186,6 +236,7 @@ export default function Question() {
             setInputValue={setInputValue}
             taskTime={taskTime}
             setTaskTime={setTaskTime}
+            setAnswerTaskJsonData={setAnswerTaskJsonData}
           />
         );
       }
@@ -198,7 +249,7 @@ export default function Question() {
         );
       } else {
         nextButtonContent = (
-          <Button disabled={!selectedValue} className="bg-darkBlue">
+          <Button onClick={handleNextStep} disabled={!selectedValue} className="bg-darkBlue">
             <Link href="/home">次へ</Link>
           </Button>
         );
@@ -240,11 +291,19 @@ type goalTimeQuestionProps = {
   setTimePresetValue: (timePresetValue: string) => void;
 }
 
+type answerTimeJsonDataPrpos = {
+  "userId": string;
+  "timeSet": {
+    "name": string;
+    "time": string;
+  }
+};
+
 /**
  * 設問コンポーネント：達成時刻を入力
  * @returns HTMLオブジェクト
  */
-function GoalTimeQuestionComponent({timePresetValue, setTimePresetValue }: goalTimeQuestionProps) {
+function GoalTimeQuestionComponent({ timePresetValue, setTimePresetValue }: goalTimeQuestionProps) {
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTimePresetValue(e.target.value); // 入力された時刻を更新
   };
@@ -322,6 +381,7 @@ type questionComponentProps = {
   setInputValue: (inputValue: string) => void;
   taskTime: number;
   setTaskTime: (taskTime: number) => void;
+  setAnswerTaskJsonData: (answerTaskJsonData: answerTaskJsonDataPrpos) => void;
 }
 
 type choiceProps = {
@@ -359,7 +419,8 @@ function QuestionComponent({
   inputValue,
   setInputValue,
   taskTime,
-  setTaskTime
+  setTaskTime,
+  setAnswerTaskJsonData
 }: questionComponentProps) {
   return (
     <div className="space-y-4">
@@ -392,12 +453,12 @@ function QuestionComponent({
             onChange={(e) => {
               setInputValue(e.target.value);
               setSelectedValue("other");
-              if (e.target.value == null) {
+              if (Number.isNaN(parseInt(e.target.value))) {
                 setTaskTime(parseInt("0"));
+                console.log(e.target.value);
               }
               else {
                 setTaskTime(parseInt(e.target.value));
-                // console.log(parseInt(e.target.value) + 1);
               }
             }}
             disabled={selectedValue !== "other"}
