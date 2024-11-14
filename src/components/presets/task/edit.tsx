@@ -1,6 +1,11 @@
 "use client";
+
 import { ScrollArea } from "@radix-ui/react-scroll-area";
+import axios from "axios";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { boolean } from "zod";
+import Description from "~/components/svgs/description";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -14,19 +19,38 @@ import { Input } from "~/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 interface EditTaskProps {
+  id: string;
   children: string;
+  task: Task;
+  handleTaskGet: () => void;
 }
 
-export default function EditTask({ children }: EditTaskProps) {
+type Task = {
+  // タスクプリセット　中身
+  name: string;
+  itemId: string;
+  isStatic: boolean;
+  options: {
+    name: string;
+    time: number;
+  }[];
+};
+
+export default function EditTask({
+  id,
+  children,
+  task,
+  handleTaskGet,
+}: EditTaskProps) {
   const [name, setName] = useState<string>(children); // 表示される名前
   const [newName, setNewName] = useState<string>(children); // 入力用の一時的な名前
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false); // 削除確認ダイアログの状態
   const [isDialogOpen, setDialogOpen] = useState(false); // ダイアログの状態
   const [isEditing, setIsEditing] = useState(false); // 編集状態
 
-  const [number, setNumber] = useState<number>(0);
+  const [activeTab, setActiveTab] = useState("pulldown");
 
-  const [options1, setOptions1] = useState("デフォルト"); // プルダウン
+  const [options1, setOptions1] = useState(""); // プルダウン
   const [options2, setOptions2] = useState("");
   const [options3, setOptions3] = useState("");
   const [minutes1, setMinutes1] = useState(0); // 分
@@ -34,16 +58,89 @@ export default function EditTask({ children }: EditTaskProps) {
   const [minutes3, setMinutes3] = useState(0); // 分
   const [minutes, setMinutes] = useState(0);
 
-  const handleSave = () => {
-    // データベースに保存
+  const { data: session, status } = useSession();
+
+  const handleSave = async () => {
     setName(newName);
+    const taskData1 = {
+      userId: session?.user.id,
+      taskSet: {
+        name: name,
+        isStatic: false,
+        select: 0,
+        options: [
+          {
+            name: options1,
+            time: minutes1,
+          },
+          {
+            name: options2,
+            time: minutes2,
+          },
+          {
+            name: options3,
+            time: minutes3,
+          },
+        ],
+      },
+    };
+    const taskData2 = {
+      userId: session?.user.id,
+      taskSet: {
+        name: name,
+        isStatic: true,
+        select: 0,
+        options: [
+          {
+            time: minutes,
+          },
+        ],
+      },
+    };
+    if (!session?.user?.id) {
+      return;
+    }
+    try {
+
+      if (activeTab === "pulldown") {
+        const res = await axios.put(`/api/presets/task/${id}?userId=${session.user.id}`, taskData1);
+      } else {
+        const res = await axios.put(`/api/presets/task/${id}?userId=${session.user.id}`, taskData2);
+      }
+    } catch (error) {}
     setDialogOpen(false);
+    handleTaskGet();
   };
 
   const handleDelete = async () => {
-    //データベースから削除
+    if (!session?.user?.id) {
+      return;
+    }
+    try {
+      const response = await axios.delete(
+        `/api/presets/task/${id}?userId=${session.user.id}`,
+      );
+      console.log(response);
+    } catch (error) {}
     setDialogOpen(false);
     setIsDeleteDialogOpen(false);
+    handleTaskGet();
+  };
+
+  const handleDialogOpen = () => {
+    if(task.isStatic){
+      setActiveTab("static");
+    }
+    if (activeTab === "pulldown") {
+      setMinutes(task.options[0]?.time ?? 0);
+    } else {
+      setMinutes1(task.options[0]?.time ?? 0);
+      setMinutes2(task.options[1]?.time ?? 0);
+      setMinutes3(task.options[2]?.time ?? 0);
+      setOptions1(task.options[0]?.name ?? "デフォルト");
+      setOptions2(task.options[1]?.name ?? "");
+      setOptions3(task.options[2]?.name ?? "");
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -73,11 +170,15 @@ export default function EditTask({ children }: EditTaskProps) {
         }
       }}
     >
-      <DialogTrigger asChild>
-        {/* children を表示 */}
-        <Button className="w-full bg-lime-100 text-gray-700 hover:bg-lime-200 py-6 text-xl">
-          {name}
-        </Button>
+      <DialogTrigger
+        className="flex w-full items-center justify-start text-xl text-black"
+        onClick={handleDialogOpen}
+      >
+        <Description
+          color="#FFA660"
+          style={{ width: "35px", height: "35px" }}
+        />
+        【{name}】
       </DialogTrigger>
       <DialogContent className="w-[90%] rounded-xl">
         <DialogHeader>
@@ -96,7 +197,7 @@ export default function EditTask({ children }: EditTaskProps) {
             ) : (
               <Button
                 variant="ghost"
-                className="mt-4 w-full bg-lime-100 text-left text-gray-700"
+                className="mt-4 w-full bg-color-task text-left text-black"
                 onClick={() => setIsEditing(true)}
               >
                 {newName || "新しい名前を入力"}
@@ -105,19 +206,19 @@ export default function EditTask({ children }: EditTaskProps) {
           </DialogTitle>
           <DialogDescription></DialogDescription>
         </DialogHeader>
-        <Tabs defaultValue="pulldown" className="">
+        <Tabs defaultValue={activeTab} onValueChange={(value) => setActiveTab(value)} className="">
           <TabsList className="mb-4 grid w-full grid-cols-2">
             <TabsTrigger value="pulldown">プルダウン</TabsTrigger>
             <TabsTrigger value="static">固定値</TabsTrigger>
           </TabsList>
           <TabsContent value="pulldown" className="h-[150px]">
             <ScrollArea>
-              <div className="flex items-center justify-center mb-3">
+              <div className="mb-3 flex items-center justify-center">
                 <Input
                   type="text"
                   value={options1}
                   onChange={(e) => setOptions1(e.target.value)}
-                  className="w-36 text-center mr-7"
+                  className="mr-7 w-36 text-center"
                 />
                 <Input
                   type="number"
@@ -127,12 +228,12 @@ export default function EditTask({ children }: EditTaskProps) {
                 />
                 <p>min</p>
               </div>
-              <div className="flex items-center justify-center mb-3">
+              <div className="mb-3 flex items-center justify-center">
                 <Input
                   type="text"
                   value={options2}
                   onChange={(e) => setOptions2(e.target.value)}
-                  className="w-36 text-center mr-7"
+                  className="mr-7 w-36 text-center"
                 />
                 <Input
                   type="number"
@@ -142,17 +243,17 @@ export default function EditTask({ children }: EditTaskProps) {
                 />
                 <p>min</p>
               </div>
-              <div className="flex items-center justify-center mb-3">
+              <div className="mb-3 flex items-center justify-center">
                 <Input
                   type="text"
                   value={options3}
                   onChange={(e) => setOptions3(e.target.value)}
-                  className="w-36 text-center mr-7"
+                  className="mr-7 w-36 text-center"
                 />
                 <Input
                   type="number"
-                  value={minutes}
-                  onChange={(e) => setMinutes(Number(e.target.value))}
+                  value={minutes3}
+                  onChange={(e) => setMinutes3(Number(e.target.value))}
                   className="w-16 text-center"
                 />
                 <p>min</p>

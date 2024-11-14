@@ -126,7 +126,11 @@ export default function Question() {
   switch (step) {
     case GOAL_TIME_QUESTION:
       questionContent = <GoalTimeQuestionComponent></GoalTimeQuestionComponent>;
-      nextButtonContent = <Button onClick={handleNextStep} className="bg-darkBlue">次へ</Button>;
+      nextButtonContent = (
+        <Button onClick={handleNextStep} className="bg-darkBlue">
+          次へ
+        </Button>
+      );
       break;
 
     case INITIAL_QUESTION:
@@ -138,7 +142,11 @@ export default function Question() {
         />
       );
       nextButtonContent = (
-        <Button onClick={handleNextStep} disabled={selectedItems.length == 0} className="bg-darkBlue">
+        <Button
+          onClick={handleNextStep}
+          disabled={selectedItems.length == 0}
+          className="bg-darkBlue"
+        >
           次へ
         </Button>
       );
@@ -156,7 +164,11 @@ export default function Question() {
       );
       if (step < selectedItems.length + 2) {
         nextButtonContent = (
-          <Button onClick={handleNextStep} disabled={!selectedValue} className="bg-darkBlue">
+          <Button
+            onClick={handleNextStep}
+            disabled={!selectedValue}
+            className="bg-darkBlue"
+          >
             次へ
           </Button>
         );

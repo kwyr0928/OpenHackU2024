@@ -7,6 +7,38 @@ type masterStruct = {
 
 /////////////////
 
+// 同じmasterを持つid一覧をget
+export async function getSameMasterItem(masterId: string) {
+  try {
+    if (masterId == null) throw new Error("require masterId");
+    const sameMasterItems = await db.items.findMany({
+      select: { id: true },
+      where: { masterId: masterId },
+    });
+    if (!sameMasterItems) throw new Error("not found sameMasterItems");
+    return sameMasterItems;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+// masterの命名を更新
+export async function updateMaster(masterId: string, name: string) {
+  try {
+    if (masterId == null) throw new Error("require masterId");
+    const updateMaster = await db.master.update({
+      data: { name: name },
+      where: { id: masterId },
+    });
+    if (!updateMaster) throw new Error("not found updateMaster");
+    return updateMaster;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
 // Itemにmaster生成
 export async function createMasterItem(item: itemStruct) {
   try {
@@ -17,7 +49,6 @@ export async function createMasterItem(item: itemStruct) {
     const createMaster = await db.master.create({
       data: masterData,
     });
-
     return createMaster;
   } catch (error) {
     console.error(error);

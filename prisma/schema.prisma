@@ -66,12 +66,12 @@ model Master {
 model WholeSets {
   id         String   @id @default(cuid())
   itemId     String   @unique
-  timeSetId  String
+  timeSetId  String?
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
   item    Items    @relation(fields: [itemId], references: [id], onDelete: Cascade)
-  timeSet TimeSets @relation(fields: [timeSetId], references: [id], onDelete: Cascade)
+  timeSet TimeSets? @relation(fields: [timeSetId], references: [id])
   @@index([itemId])
 }
 
@@ -103,12 +103,11 @@ model FolderSets {
 model TaskSets {
   id         String   @id @default(cuid())
   itemId     String   @unique
-  optionId   String? // フォルダ,全体プリセットに設定中のオプション
+  optionIndex   Int // フォルダ,全体プリセットに設定中のオプション //indexのがいい
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
   item       Items         @relation(fields: [itemId], references: [id], onDelete: Cascade)
-  taskOption TaskOptions?  @relation(name: "select", fields: [optionId], references: [id])
   TaskOption TaskOptions[]
   @@index([itemId])
 }
@@ -124,7 +123,6 @@ model TaskOptions {
   updated_at DateTime @updatedAt
 
   task    TaskSets   @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  TaskSet TaskSets[] @relation(name: "select")
   @@index([taskId])
 }
 

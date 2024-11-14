@@ -1,7 +1,4 @@
-import {
-  getUniqueMasterItem,
-  getUniqueMasterTimeset,
-} from "@prisma/client/sql";
+import { getUniqueMasterTimeset } from "@prisma/client/sql";
 import { db } from "../db";
 import { presetType } from "./constants";
 
@@ -20,7 +17,6 @@ export async function getUserName(userId: string) {
 }
 
 // isSetting な wholeItem
-
 
 // itemId to itemName
 export async function getItemName(itemId: string) {
@@ -46,6 +42,62 @@ export async function getItemName(itemId: string) {
 // id to object
 //
 
+// itemId to masterId
+export async function getMasterIdByItemId(itemId: string) {
+  try {
+    const masterId = await db.items.findFirst({
+      select: {
+        masterId: true,
+      },
+      where: {
+        id: itemId,
+      },
+    });
+
+    if (masterId == null) throw new Error("not found masterId");
+    return masterId.masterId;
+  } catch (error) {
+    console.error("Error in getMasterByItemId:", error);
+    return null;
+  }
+}
+// timeId to masterId
+export async function getMasterIdByTimeId(timeId: string) {
+  try {
+    const masterId = await db.timeSets.findFirst({
+      select: {
+        masterId: true,
+      },
+      where: {
+        id: timeId,
+      },
+    });
+
+    if (!masterId) throw new Error("not found masterId");
+    return masterId.masterId;
+  } catch (error) {
+    console.error("Error in getMasterByTimeId:", error);
+    return null;
+  }
+}
+
+// masterId to all items
+export async function getAllItemsByMasterId(masterId: string) {
+  try {
+    const items = await db.items.findMany({
+      where: {
+        masterId: masterId,
+      },
+    });
+
+    if (!items) throw new Error("not found items");
+    return items;
+  } catch (error) {
+    console.error("Error in getMasterByTimeId:", error);
+    return null;
+  }
+}
+
 // wholeItem
 export async function getSettingWhole(userId: string) {
   try {
@@ -53,7 +105,7 @@ export async function getSettingWhole(userId: string) {
       where: {
         userId: userId,
         isSetting: true,
-        itemType: presetType.whole
+        itemType: presetType.whole,
       },
     });
 
@@ -65,8 +117,25 @@ export async function getSettingWhole(userId: string) {
   }
 }
 
+// timeId to wholeItem
+export async function hasWholeTimeId(timeId: string) {
+  try {
+    const wholeItem = await db.wholeSets.findFirst({
+      where: {
+        timeSetId: timeId,
+      },
+    });
+
+    if (!wholeItem) throw new Error("not found hasWholeByTimeId");
+    return wholeItem;
+  } catch (error) {
+    console.error("Error in hasWholeByTimeId:", error);
+    return null;
+  }
+}
+
 // timeSetId to time
-export async function getTimeInfoBytimeId(timeSetId: string) {
+export async function getTimeInfoByTimeId(timeSetId: string) {
   try {
     const timeSet = await db.timeSets.findUnique({
       where: {
@@ -77,7 +146,7 @@ export async function getTimeInfoBytimeId(timeSetId: string) {
     if (!timeSet) throw new Error("not found timeSet");
     return timeSet;
   } catch (error) {
-    console.error("Error in getTimeInfoBytimeId:", error);
+    console.error("Error in getTimeInfoByTimeId:", error);
     return null;
   }
 }
@@ -125,7 +194,7 @@ export async function getItemInfoByItemId(itemId: string) {
       },
     });
 
-    if (!item) throw new Error("not found item");
+    if (item == null) throw new Error("not found item");
     return item;
   } catch (error) {
     console.error("Error in getItemName:", error);
@@ -208,7 +277,7 @@ export async function getTaskInfoByItemId(itemId: string) {
       },
     });
 
-    if (!task) throw new Error("not found taskSet");
+    if (task == null) throw new Error("not found taskSet");
     return task;
   } catch (error) {
     console.error("Error in getTaskInfoByItemId:", error);
@@ -235,9 +304,23 @@ export async function getOptionInfo(optionId: string) {
 
 // userId to 任意タイプのitem配列
 export async function getKindItems(userId: string, type: number) {
-  const items = await db.$queryRawTyped(getUniqueMasterItem(userId, type));
-  if (items == null) return null;
-  return items;
+  try {
+    const res = await db.items.findMany({
+      where: {
+        parentId: null,
+        itemType: type,
+      },
+      orderBy: {
+        created_at: "asc",
+      },
+    });
+
+    if (res.length === 0) return null;
+    return res;
+  } catch (error) {
+    console.error("Error in getKindItems:", error);
+    return null;
+  }
 }
 
 // userId to TimeSets一覧
@@ -268,7 +351,7 @@ export async function getItemsInWhole(wholeItemId: string) {
     if (res.length === 0) return null;
     return res;
   } catch (error) {
-    console.error("Error in getTasksInFolder:", error);
+    console.error("Error in getItemsInWhole:", error);
     return null;
   }
 }
@@ -290,6 +373,26 @@ export async function getTaskItemsInFolder(folderItemId: string) {
     return taskItems;
   } catch (error) {
     console.error("Error in getTasksInFolder:", error);
+    return null;
+  }
+}
+
+// itemIdを親に持つ item一覧 順序ソート済
+export async function getItemsInParentSortOrder(parentItemId: string) {
+  try {
+    const items = await db.items.findMany({
+      where: {
+        parentId: parentItemId,
+      },
+      orderBy: {
+        order: "asc",
+      },
+    });
+
+    if (items.length === 0) return null;
+    return items;
+  } catch (error) {
+    console.error("Error in getItemsInParentSortOrder:", error);
     return null;
   }
 }

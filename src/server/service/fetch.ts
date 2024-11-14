@@ -14,7 +14,7 @@ import {
   getOptionsInTask,
   getTaskInfoByItemId,
   getTaskItemsInFolder,
-  getTimeInfoBytimeId,
+  getTimeInfoByTimeId,
   getWholeInfoByItemId,
 } from "../repositry/getdata";
 
@@ -27,8 +27,12 @@ export async function fetchWhole(itemId: string) {
     // timeSet
     const whole = await getWholeInfoByItemId(itemId);
     if (!whole) throw new Error("not found contentsInWhole");
-    const time = await fetchTime(whole.timeSetId);
-    if (!time) throw new Error("not found timeSet");
+    let time;
+    if (!whole.timeSetId) {
+      time = null;
+    } else {
+      time = await fetchTime(whole.timeSetId);
+    }
     // 中身のtask or folder
     const itemsInWhole = await getItemsInWhole(itemId);
     if (!itemsInWhole) throw new Error("not found contentsInWhole");
@@ -71,7 +75,7 @@ export async function fetchWhole(itemId: string) {
 export async function fetchTime(timeSetId: string) {
   try {
     if (!timeSetId) throw new Error("timeSetId is required");
-    const timeSet = await getTimeInfoBytimeId(timeSetId);
+    const timeSet = await getTimeInfoByTimeId(timeSetId);
     if (!timeSet) throw new Error("not found timeSet");
 
     const retTimes: timeResponse = {
@@ -94,13 +98,13 @@ export async function fetchFolder(itemId: string, name: string) {
   try {
     if (!itemId || !name) throw new Error("itemId and name are required");
     const taskItemsInFolder = await getTaskItemsInFolder(itemId);
-    if (!taskItemsInFolder) throw new Error("not found taskItemsInFolder");
-
     const retTasks: taskResponse[] = [];
-    for (const taskItem of taskItemsInFolder) {
-      const taskRes = await fetchTask(taskItem.id, taskItem.name);
-      if (!taskRes) throw new Error("not found taskResPonse");
-      retTasks.push(taskRes);
+    if (taskItemsInFolder != null) {
+      for (const taskItem of taskItemsInFolder) {
+        const taskRes = await fetchTask(taskItem.id, taskItem.name);
+        if (!taskRes) throw new Error("not found taskResPonse");
+        retTasks.push(taskRes);
+      }
     }
     const getFolder: folderResponse = {
       folder: {
@@ -131,6 +135,7 @@ export async function fetchTask(itemId: string, name: string) {
         name: name,
         itemId: itemId,
         isStatic: options.isStatic,
+        select: task.optionIndex as number,
         options: options.options,
       },
     };
