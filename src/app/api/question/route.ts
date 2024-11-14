@@ -1,88 +1,96 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createNewWhole } from "~/server/service/create";
-import { presetType, timeSetPostBody } from "~/server/repositry/constants";
-import { getKindItems, getAllTaskByUserId, getTimeFirstByUserId } from "~/server/repositry/getdata";
+import { getAllTaskByUserId, getTimeFirst } from "~/server/repositry/getdata";
+import { setNextSchedule } from "~/server/repositry/updatedata";
+import { deleteItemFirstSetting, deleteTimeSetFirstSetting, deleteALlForlder } from "~/server/repositry/deletedata";
 
-export default async function POST(req: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
     //ユーザーidの取得
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get("userId");
     if (!userId) {
       return NextResponse.json(
-        { error: "Invalid input userId is required" },
+        { error: "Invalid input userId is required for createNewWhole" },
         { status: 400 },
       );
     }
-
+    
     //時間セットの取得
-    const defaultTimeName = "デフォルトタイム";
-    const { timeSet }: timeSetPostBody = (await req.json()) as timeSetPostBody;
-    if (!timeSet) {
-      return NextResponse.json(
-        { error: "Invalid input timeSet is required" },
-        { status: 400 },
-      );
-    }
-    const time = timeSet.time;
-    if (!time) {
-      return NextResponse.json(
-        { error: "Invalid input time is required" },
-        { status: 400 },
-      );
-    }
-    const timeData = await getTimeFirstByUserId();
+    const timeData = await getTimeFirst();
     if(!timeData){
       return NextResponse.json(
-        { error: "Invalid input timeData is required" },
+        { error: "Invalid input timeData is required for createNewWhole" },
         { status: 400 },
       );
     }
     const timeId = timeData.id
     if (!timeId) {
       return NextResponse.json(
-        { error: "Invalid input: timeId is required" },
+        { error: "Invalid input: timeId is required for createNewWhole" },
         { status: 400 },
       );
     }
 
-    //タスクの取得
-    const taskItems = await getKindItems(userId, presetType.task);
-    if (!taskItems) {
-      return NextResponse.json(
-        { error: "Invalid input: userId is required" },
-        { status: 400 },
-      );
-    } else if (taskItems?.length === 0) {
-      return NextResponse.json({ error: "Not found tasks" }, { status: 404 });
-    }
-
-    //全体セットの生成
-    const defaultWholeName = "デフォルトセット";
+    //タスクのitemIdの取得
     const prefabItemIds: string[] = [];
     const taskData = await getAllTaskByUserId(userId);
     if (!taskData) {
       return NextResponse.json(
-        { error: "Invalid input: taskData is required" },
+        { error: "Invalid input: taskData is required for createNewWhole" },
         { status: 400 },
       );
     }
     for (const task of taskData) {
-      if (!task?.id) {
+      if (!task?.itemId) {
         return NextResponse.json(
-          { error: "Invalid input: taskId is required" },
+          { error: "Invalid input: taskId is required for createNewWhole" },
           { status: 400 },
         );
       }
-      prefabItemIds.push(task?.id);
+      if (task?.itemId) {
+        prefabItemIds.push(String(task.itemId)); // 文字列として処理
+      }
     }
 
+    //全体セットの生成
+    const defaultWholeName = "デフォルトセット";
+    console.log('userId:', userId);
+    console.log('timeId:', timeId);
+    console.log('prefabItemIds', prefabItemIds)
     const createdWholeSet = await createNewWhole(
       userId,
       defaultWholeName,
       timeId,
       prefabItemIds,
     );
+
+    //生成した全体セットを予定に設定
+    const targetItemId = createdWholeSet?.item.id;
+    if(!targetItemId){
+      return NextResponse.json(
+        { error: "Invalid input: wholeItemId is required for setNextSchedule" },
+        { status: 400 }
+      );
+    }
+    await setNextSchedule(userId, targetItemId);
+
+    //ここから後処理
+    //取得元の時間セットを削除
+    await deleteTimeSetFirstSetting(userId, timeId);
+    //取得元のタスクセットを削除
+    for(const deleteTargetId of prefabItemIds){
+      await deleteItemFirstSetting(userId, deleteTargetId);
+    }
+    //謎のフォルダを削除
+    const deleteFolderItemId = createdWholeSet.whole?.itemId
+    if(!deleteFolderItemId){
+      return NextResponse.json(
+        { error: "Invalid input: deleteFolderItemId is required for deleteFolder" },
+        { status: 400 }
+      );
+    }
+    await deleteALlForlder(userId, deleteFolderItemId);
 
     return NextResponse.json({
       message: "first wholeSet created successfully",

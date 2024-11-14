@@ -94,3 +94,60 @@ export async function deleteMaster(masterId: string) {
     return null;
   }
 }
+
+//初期設定のときのタスク削除処理
+export async function deleteItemFirstSetting(userId: string, itemId: string) {
+  try {
+    const deleteItemFirstSetting = await db.items.deleteMany({
+      where: {
+        userId: userId,
+        id: itemId,
+        parentId: null,
+      },
+    });
+    return deleteItemFirstSetting;
+  } catch (error) {
+    console.error("Error deleting item:", error);
+    return null;
+  }
+}
+
+//初期設定のときの時間セット削除処理
+export async function deleteTimeSetFirstSetting(userId: string, timeId: string){
+  try {
+    const oldTimeObj = await db.timeSets.findFirst({
+      orderBy: {
+        created_at: "asc",
+      },
+    });
+    if(!oldTimeObj){
+      console.error("faild to delete old timeSet");
+      return null;
+    }
+    const deleteTimeSetFirstSetting = await db.timeSets.delete({
+      where: {
+        userId: userId,
+        id: timeId,
+        created_at: oldTimeObj.created_at,
+      },
+    });
+    return deleteTimeSetFirstSetting
+  } catch (error) {
+    console.error("Error deleting timeSet:", error);
+    return null;
+  }
+}
+
+//初期設定時の謎のフォルダ削除処理
+export async function deleteALlForlder(userId: string, itemId: string){
+  try {
+    const deleteTargetFolder = await db.folderSets.delete({
+      where: {
+        itemId: itemId,
+      }
+    });
+  } catch (error) {
+    console.error("Error deleting allFolder:", error);
+    return null;
+  }
+}

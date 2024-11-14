@@ -383,7 +383,7 @@ export async function getAllTaskByUserId(userId: string) {
   }
 }
 
-export async function getTimeFirstByUserId(){
+export async function getTimeFirst(){
   const timeData = await db.timeSets.findFirst();
   return timeData;
 }
