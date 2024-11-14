@@ -18,8 +18,6 @@ export default function Question() {
   const [selectedItems, setSelectedItems] = useState<number[]>([]); // チェックされた選択肢を保存
   const [timePresetValue, setTimePresetValue] = useState<string>("00:00");  // 時間プリセットの時刻
   const [taskTime, setTaskTime] = useState<number>(0);
-  const [answerTimeJsonData, setAnswerTimeJsonData] = useState<answerTimeJsonDataPrpos>();  // 時間プリセットの回答
-  const [answerTaskJsonData, setAnswerTaskJsonData] = useState<answerTaskJsonDataPrpos>();  // タスクプリセットの回答
   const { data: session, status } = useSession();
 
   const initialQuestionChoices: string[] = [
@@ -103,19 +101,7 @@ export default function Question() {
    */
   let nextButtonContent = null;
 
-  // type questionTime = {
-  //   title: string;
-  //   choice: { text: string; id: string }[];
-  // };
-
-  // type questionTimeArray = {
-  //   running: questionTime;
-  //   breakfast: questionTime;
-  //   dressing: questionTime;
-  // };
-
   const handleNextStep = () => {
-    setStep(step + 1);
     setSelectedValue(""); // 選択をリセット
     setInputValue(""); // 入力欄をリセット
 
@@ -123,17 +109,18 @@ export default function Question() {
     switch (step) {
       case GOAL_TIME_QUESTION:
         handleSendTime();
+        setStep(step + 1);
       case INITIAL_QUESTION:
         console.log("choice question");
+        setStep(step + 1);
         return;
       case selectedItems.length + 2:
-        //  全体プリセット生成のAPI
-        console.log("end");
         handleSendTask();
         callWholePresetAPI();
         return;
       default:
         handleSendTask();
+        setStep(step + 1);
     }
   };
 
@@ -189,6 +176,7 @@ export default function Question() {
     }
 
     try {
+      // const res = await axios.post("全体プリセット生成API");
       console.log("generated whole preset");
     } catch (error) {
       console.log("failed");
@@ -204,7 +192,7 @@ export default function Question() {
           setTimePresetValue={setTimePresetValue}
         />
       );
-      nextButtonContent = <Button onClick={handleNextStep} className="bg-darkBlue">次へ</Button>;
+      nextButtonContent = <Button onClick={handleNextStep} className="bg-color-all">次へ</Button>;
       break;
 
     case INITIAL_QUESTION:
@@ -219,7 +207,7 @@ export default function Question() {
         <Button
           onClick={handleNextStep}
           disabled={selectedItems.length == 0}
-          className="bg-darkBlue"
+          className="bg-color-all"
         >
           次へ
         </Button>
@@ -240,7 +228,6 @@ export default function Question() {
             setInputValue={setInputValue}
             taskTime={taskTime}
             setTaskTime={setTaskTime}
-            setAnswerTaskJsonData={setAnswerTaskJsonData}
           />
         );
       }
@@ -250,14 +237,14 @@ export default function Question() {
           <Button
             onClick={handleNextStep}
             disabled={!selectedValue}
-            className="bg-darkBlue"
+            className="bg-color-all"
           >
             次へ
           </Button>
         );
       } else {
         nextButtonContent = (
-          <Button onClick={handleNextStep} disabled={!selectedValue} className="bg-darkBlue">
+          <Button onClick={handleNextStep} disabled={!selectedValue} className="bg-color-all">
             <Link href="/home">次へ</Link>
           </Button>
         );
@@ -267,14 +254,14 @@ export default function Question() {
   return (
     <div className="flex-col items-center justify-center bg-slate-50 text-center font-mPlus max-w-md, mx-auto">
       <div className="pb-20 pt-20">
-        <h1 className="m-2 text-5xl text-darkBlue">アンケート</h1>
-        <h2 className="pt-2 text-xl text-darkBlue">
+        <h1 className="m-2 text-5xl ">アンケート</h1>
+        <h2 className="pt-2 text-xl ">
           回答結果に基づき<br></br>アプリがカスタマイズされます。
         </h2>
       </div>
 
       <div className="flex h-screen flex-col items-center text-center">
-        <Card className="w-3/4 max-w-md border-2 border-darkBlue">
+        <Card className="w-3/4 max-w-md border-2 border-color-all">
           <CardHeader>
             <CardTitle>
               ( {step} / {selectedItems.length + 2} )
@@ -389,7 +376,6 @@ type questionComponentProps = {
   setInputValue: (inputValue: string) => void;
   taskTime: number;
   setTaskTime: (taskTime: number) => void;
-  setAnswerTaskJsonData: (answerTaskJsonData: answerTaskJsonDataPrpos) => void;
 }
 
 type choiceProps = {
@@ -428,7 +414,6 @@ function QuestionComponent({
   setInputValue,
   taskTime,
   setTaskTime,
-  setAnswerTaskJsonData
 }: questionComponentProps) {
   return (
     <div className="space-y-4">
@@ -495,7 +480,7 @@ function StepIndicator({
       {Array.from({ length: totalSteps }).map((_, index) => (
         <div
           key={index}
-          className={`h-2 w-2 rounded-full transition-all ${currentStep === index + 1 ? "scale-125 bg-darkBlue" : "bg-gray-300"}`}
+          className={`h-2 w-2 rounded-full transition-all ${currentStep === index + 1 ? "scale-125 bg-color-all" : "bg-gray-300"}`}
         />
       ))}
     </div>
