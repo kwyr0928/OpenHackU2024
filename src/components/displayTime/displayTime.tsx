@@ -23,5 +23,5 @@ export default function DisplayTime() {
     return () => clearInterval(intervalId); // クリーンアップ
   });
 
-  return <div className="font-mPlus text-7xl text-darkBlue">{time}</div>;
+  return <div className="font-mPlus text-7xl text-color-all">{time}</div>;
 }
