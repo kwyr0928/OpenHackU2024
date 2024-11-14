@@ -45,34 +45,6 @@ export async function setTaskParent(myItemId: string, parentItemId: string) {
   }
 }
 
-export async function setNextSchedule(wholeItemId: string) {
-  try {
-    if (wholeItemId == null) throw new Error("Invalid args data");
-
-    //すでにセットされている予定のisSettingをfalseに
-    await db.items.updateMany({
-      where: {
-        isSetting: true,
-      },
-      data: {
-        isSetting: false,
-      },
-    });
-
-    //指定idのデータのisSettingをtrueに
-    await db.items.update({
-      where: {
-        id: wholeItemId,
-      },
-      data: {
-        isSetting: true,
-      },
-    });
-  }catch(error){
-    console.error("Error in setNextSchedule: ", error);
-    return null;
-  }
-}
 // itemのorderを再設定
 export async function setItemOrder(myItemId: string, order: number) {
   try {
