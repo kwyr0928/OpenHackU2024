@@ -66,7 +66,6 @@ type DetailWhole = {
   whole: {
     name: string; // 全体プリセット　名前
     itemId: string; // 全体プリセット　ID
-    updateTime?: Date; // 最終更新時間
     timeSet: {
       time: {
         name: string; // 時間プリセット　名前
@@ -202,8 +201,18 @@ export default function Schedule() {
 
   const handleScheduleCreate = async () => {
     // スケジュール　作成
-    const scheduleNew = JSON.parse(JSON.stringify(detailWholePreset));
-    delete scheduleNew.whole.updateTime; // updateTimeプロパティを削除
+  
+
+   const scheduleNew = {
+    userId: session?.user.id,
+    wholeSet: {
+      name: selectedWholePreset?.name,
+      itemId: selectedWholePreset?.itemId,
+      timeId: selectedTimePreset?.time.timeId,
+        items: detailWholePreset?.whole.itemSet.map((item) => ({
+          itemId: item.task ? item.task.itemId : item.folder?.itemId,
+          select: 0,
+        })),},};
     try {
       const res = await axios.post("/api/schedule/new", scheduleNew);
       console.log(res.data);
@@ -401,7 +410,7 @@ export default function Schedule() {
             axios.get<TaskApiResponse>(
               `/api/presets/task?userId=${session.user.id}`, // タスクプリセット一覧 get
             ),
-            axios.get<DetailWholeApiResponse>(`/api/schedule?userId=${session.user.id}`)
+            axios.get(`/api/schedule?userId=${session.user.id}`)
           ]);
         console.log(scheduleResponse);
 
@@ -511,13 +520,17 @@ export default function Schedule() {
   return (
     <div className="mx-auto h-svh max-w-md bg-slate-50 pt-5 text-center font-mPlus">
       <div className="mx-5 h-[660px] rounded-xl border-2 border-teal-400 bg-white">
-        <p className="rounded-t-lg bg-teal-400 py-3 text-xl">
+        <div className="rounded-t-lg bg-teal-400 py-3 text-xl">
           <Link href="/home">
             <Image
               src="/image/back.svg"
               alt="Backicon"
               width={25}
               height={25}
+              style={{
+                width: '25px',
+                height: 'auto',
+            }}
               className="fixed left-3 top-10 mx-5 mt-0.5"
             />
           </Link>
@@ -575,13 +588,17 @@ export default function Schedule() {
               </Command>
             </PopoverContent>
           </Popover>
-        </p>
-        <p className="bg-pink-300 pb-0.5 pt-3 text-xl">
+        </div>
+        <div className="bg-pink-300 pb-0.5 pt-3 text-xl">
           <Image
             src="/image/Timeicon.svg"
             alt="Time"
             width={27}
             height={27}
+            style={{
+              width: '27px',
+              height: 'auto',
+          }}
             className="fixed left-16 top-24 ml-2 mt-3"
           />
           <Popover open={openTime} onOpenChange={setOpenTime}>
@@ -633,10 +650,10 @@ export default function Schedule() {
             </PopoverContent>
           </Popover>
 
-          <p className="mx-2 mb-2 mt-3 bg-white py-3 text-3xl font-extrabold">
+          <div className="mx-2 mb-2 mt-3 bg-white py-3 text-3xl font-extrabold">
             {selectedTimePreset?.time.time}
-          </p>
-        </p>
+          </div>
+        </div>
         <ScrollArea className="h-[380px]">
           {detailWholePreset ? (
             detailWholePreset.whole?.itemSet?.map((item, index) => (
