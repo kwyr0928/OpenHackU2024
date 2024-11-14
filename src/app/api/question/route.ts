@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createNewWhole } from "~/server/service/create";
+import { prefabItemStruct } from "~/server/repositry/constants";
+import { deleteAllForlder } from "~/server/repositry/deletedata";
 import { getAllTaskByUserId, getTimeFirst } from "~/server/repositry/getdata";
 import { setNextSchedule } from "~/server/repositry/updatedata";
-import { deleteItemFirstSetting, deleteTimeSetFirstSetting, deleteALlForlder } from "~/server/repositry/deletedata";
-import { prefabItemStruct } from "~/server/repositry/constants";
+import { createNewWhole } from "~/server/service/create";
 
 export async function POST(req: NextRequest) {
   try {
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     }
     
     //時間セットの取得
-    const timeData = await getTimeFirst();
+    const timeData = await getTimeFirst(userId);
     if(!timeData){
       return NextResponse.json(
         { error: "Invalid input timeData is required for createNewWhole" },
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
       }
       prefabItems.push({
         itemId: task.itemId,
-        select:task.optionIndex
+        select: task.optionIndex
       });
       prefabItemIds.push(task.itemId);
     }
@@ -84,12 +84,6 @@ export async function POST(req: NextRequest) {
     await setNextSchedule(userId, targetItemId);
 
     //ここから後処理
-    //取得元の時間セットを削除
-    await deleteTimeSetFirstSetting(userId, timeId);
-    //取得元のタスクセットを削除
-    for(const deleteTargetId of prefabItemIds){
-      await deleteItemFirstSetting(userId, deleteTargetId);
-    }
     //謎のフォルダを削除
     const deleteFolderItemId = createdWholeSet.whole?.itemId
     if(!deleteFolderItemId){
@@ -98,7 +92,7 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    await deleteALlForlder(userId, deleteFolderItemId);
+    await deleteAllForlder(userId, deleteFolderItemId);
 
     return NextResponse.json({
       message: "first wholeSet created successfully",

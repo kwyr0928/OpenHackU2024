@@ -32,6 +32,7 @@ type FolderSet = {
         name: string;
         itemId: string;
         isStatic: boolean;
+        select:number;
         options: {
           name: string;
           time: number;
@@ -60,9 +61,10 @@ type TaskSet = {
   };
 };
 
+
 export default function TabFolder() {
   const [folderResponse, setFolderResponse] = useState<FolderApiResponse>();
-  const [taskResponse, setTaskResponse] = useState<TaskApiResponse>({
+  const [taskApiResponse, setTaskResponse] = useState<TaskApiResponse>({
     message: "",
     taskSets: [],
   });
@@ -73,7 +75,7 @@ export default function TabFolder() {
       return;
     }
     try {
-      const [folderResponse, taskResponse] = await Promise.all([
+      const [folderResponse, taskApiResponse] = await Promise.all([
         axios.get<FolderApiResponse>(
           `/api/presets/folder?userId=${session.user.id}`, // フォルダプリセット一覧 get
         ),
@@ -82,12 +84,12 @@ export default function TabFolder() {
         ),
       ]);
       setFolderResponse(folderResponse.data);
-      setTaskResponse(taskResponse.data);
+      setTaskResponse(taskApiResponse.data);
     } catch (error) {}
   };
 
   useEffect(() => {
-    void handleFolderGet();
+ void  handleFolderGet();
   }, [session]);
 
   return (
@@ -105,20 +107,19 @@ export default function TabFolder() {
                 <CommandEmpty>見つかりません</CommandEmpty>
                 <CommandGroup className="">
                   {folderResponse?.folderSets?.map((item) => (
-                    <>
-                      <CommandItem key={item.folder.itemId}>
+                    <div key={item.folder.itemId}>
+                      <CommandItem >
                         <EditFolder
-                          id={item.folder.itemId}
+                        id={item.folder.itemId}
                           item={item}
-                          tasks={item.folder.tasks}
-                          taskApiResponse={taskResponse}
+                          taskApiResponse={taskApiResponse}
                           handleFolderGet={handleFolderGet}
                         >
                           {item.folder.name}
                         </EditFolder>
                       </CommandItem>
                       <hr className="mt-2 w-full border-gray-500" />
-                    </>
+                    </div>
                   ))}
                 </CommandGroup>
                 <NewFolder handleFolderGet={handleFolderGet}></NewFolder>

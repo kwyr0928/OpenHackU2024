@@ -77,6 +77,7 @@ type DetailWhole = {
         name: string; // タスクプリセット　名前
         itemId: string; // タスクプリセット　ID
         isStatic: boolean; // 固定値かどうか
+        select: number;
         options: {
           // プルダウン
           name: string; // 名前
@@ -87,15 +88,18 @@ type DetailWhole = {
         name: string; // フォルダプリセット　名前
         itemId: string; // フォルダプリセット　ID
         tasks: {
-          name: string; // タスクプリセット　名前
-          itemId: string; // タスクプリセット　ID
-          isStatic: boolean; // 固定値かどうか
-          options: {
-            // プルダウン
-            name: string; // 名前
-            time: number; // 時間
+          task: {
+            name: string; // タスクプリセット　名前
+            itemId: string; // タスクプリセット　ID
+            isStatic: boolean; // 固定値かどうか
+            select: number;
+            options: {
+              // プルダウン
+              name: string; // 名前
+              time: number; // 時間
+            }[];
           }[];
-        }[];
+        };
       };
     }[];
   };
@@ -132,6 +136,7 @@ type FolderSet = {
         name: string;
         itemId: string;
         isStatic: boolean;
+        select: number;
         options: {
           name: string;
           time: number;
@@ -521,7 +526,7 @@ export default function Schedule() {
                 <div className="ml-5">
                   {selectedWholePreset
                     ? selectedWholePreset.name
-                    : "プリセットを選択"}
+                    : "未設定"}
                 </div>
                 <ChevronsUpDown className="ml-3 h-4 w-4 shrink-0 opacity-50" />
               </Button>
@@ -574,7 +579,7 @@ export default function Schedule() {
                 <div className="ml-5">
                   {selectedTimePreset
                     ? selectedTimePreset.time.name
-                    : "プリセットを選択"}
+                    : "未設定"}
                 </div>
                 <ChevronsUpDown className="ml-3 h-4 w-4 shrink-0 opacity-50" />
               </Button>
@@ -642,7 +647,8 @@ export default function Schedule() {
               </div>
             ))
           ) : (
-            <p>Loading tasks and folders...</p>
+            <p className="mt-28 text-gray-500">
+              下の＋ボタンから<br/>タスクかフォルダを追加してください</p>
           )}
         </ScrollArea>
 
@@ -661,18 +667,12 @@ export default function Schedule() {
                 <DropdownMenuItem onClick={handleTaskAdd}>
                   既存プリセットから
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleTaskAdd2}>
-                  新規作成
-                </DropdownMenuItem>
               </div>
               <div>
                 <DropdownMenuLabel>フォルダの作成</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleFolderAdd}>
                   既存プリセットから
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleFolderAdd2}>
-                  新規作成
                 </DropdownMenuItem>
               </div>
             </DropdownMenuContent>

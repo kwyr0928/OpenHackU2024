@@ -44,6 +44,7 @@ type FolderSet = {
       name: string;
       itemId: string;
       isStatic: boolean;
+      select: number;
       options: {
         name: string;
         time: number;
@@ -115,7 +116,7 @@ export default function FolderPreset({
                 <div className="ml-5">
                   {selectedFolderPreset
                     ? selectedFolderPreset.folder.name
-                    : "プリセットを選択"}
+                    : "未設定"}
                 </div>
                 <ChevronsUpDown className="ml-3 h-4 w-4 shrink-0 opacity-50" />
               </Button>
