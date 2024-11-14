@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import DisplayTime from "~/components/displayTime/displayTime";
 import { Button } from "~/components/ui/button";
@@ -5,286 +7,130 @@ import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import FolderIconSvg from "~/components/svgs/folderClose";
 import SettingIconSvg from "~/components/svgs/setting";
-import { Separator } from "~/components/ui/separator";
 import DescriptionSvg from "~/components/svgs/description";
+import FolderOpenSvg from "~/components/svgs/folderOpen"
+import { useSession } from "next-auth/react";
+import axios from "axios";
+import { useState } from "react";
+import { useEffect } from "react";
+import { format } from "date-fns";
 
-type TaskSets = {
-  task: {
-    name: string;
-    itemId: string;
-    isStatic: boolean;
-    options: {
-      name: string;
-      time: number;
-    }[];
-  }[];
-};
 
-async function fetchTaskSets() {
-  try {
-    const response = await fetch("/api/schedule");
-    if (!response.ok) {
-      throw new Error(`Error: ${response.statusText}`);
-    }
-    const data = await response.json(); // JSON データを `data` に格納
-    return data;
-  } catch (error) {
-    console.error("Failed to fetch data:", error);
-    throw error;
-  }
-}
-
-const data = {
-  member: [
-    {
-      name: "sasaki",
-      itemId: "itemId",
-      updateTime: "2024/11/14 22:33",
-      timeSet: {
-        time: {
-          naem: "1限電車",
-          time: "11:10"
-        }
-      },
-      items: [
-        {
-          task: {
-            name: "駅まで歩く",
-            isStatic: true,
-            select: 0,
-            options: [
-              {
-                name: "",
-                time: 15
-              }
-            ]
-          },
-        },
-        {
-          task: {
-            name: "自転車移動",
-            isStatic: true,
-            select: 0,
-            options: [
-              {
-                name: "",
-                time: 15
-              }
-            ]
-          },
-        },
-        {
-          task: {
-            name: "英単語暗記",
-            isStatic: true,
-            select: 0,
-            options: [
-              {
-                name: "",
-                time: 15
-              }
-            ]
-          },
-        },
-        {
-          folder: {
-            name: "おしゃれ",
-            tasks: [
-              {
-                task: {
-                  name: "着替え",
-                  isStatic: true,
-                  select: 0,
-                  options: [
-                    {
-                      name: "",
-                      time: 15
-                    }
-                  ]
-                }
-              },
-              {
-                task: {
-                  name: "メイク",
-                  isStatic: false,
-                  select: 1,
-                  options: [
-                    {
-                      name: "簡単に",
-                      time: 5
-                    },
-                    {
-                      name: "真面目に",
-                      time: 10
-                    }
-                  ]
-                }
-              },
-            ],
-          },
-        },
-        {
-          task: {
-            name: "朝ごはん",
-            isStatic: true,
-            select: 0,
-            options: [
-              {
-                name: "",
-                time: 15
-              }
-            ]
-          },
-        },
-      ],
-    },
-  ],
+type TaskOption = {
+  name: string;
+  time: number; // time in minutes
 };
 
 type Task = {
   name: string;
+  itemId: string;
   isStatic: boolean;
-  select: number
-  options: [{ name: string, time: number }]
+  select: number;
+  options: TaskOption[];
 };
+
 type Folder = {
   name: string;
-  tasks: Task[];
+  itemId: string;
+  tasks: { task: Task }[]; // Tasks inside the folder
 };
-type Item = {
-  tasks?: Task[];
-  folders?: Folder[];
+
+type ItemSet = {
+  folder?: Folder;
+  task?: Task;
 };
-type Member = {
+
+type Time = {
+  name: string;
+  timeId: string;
+  time: string; // time in "HH:mm" format
+};
+
+type TimeSet = {
+  time: Time;
+};
+
+type Whole = {
   name: string;
   itemId: string;
-  updateTime: string;
-  timeSet: {
-    time: {
-      naem: string;
-      time: string; // e.g., "11:10"
-    };
-  };
-  items: Array<{
-    task?: {
-      name: string;
-      isStatic: boolean;
-      select: number;
-      options: Array<{ name: string; time: number }>;
-    };
-    folder?: {
-      name: string;
-      tasks: Array<{
-        task: {
-          name: string;
-          isStatic: boolean;
-          select: number;
-          options: Array<{ name: string; time: number }>;
-        };
-      }>;
-    };
-  }>;
+  updateTime: Date; // ISO string format for update time
+  timeSet: TimeSet;
+  itemSet: ItemSet[]; // Can contain both folders and tasks
 };
 
-//個人を識別するための仮の番号、データベースが完成したらidになるのかな？
-const memberNumber = 0;
+type WholeSet = {
+  whole: Whole;
+};
 
-// // タスクの合計時間を求める関数
-// const calculateTotalTime = (items: Item[]) => {
-//   return items.reduce((totalTime: number, item: Item) => {
-//     if (item.tasks) {
-//       totalTime += item.tasks.reduce(
-//         (sum: number, task: Task) => sum + task.options[0].time,
-//         0,
-//       );
-//     }
-//     if (item.folders) {
-//       item.folders.forEach((folder: Folder) => {
-//         totalTime += folder.tasks.reduce(
-//           (sum: number, task: Task) => sum + task.options[0].time,
-//           0,
-//         );
-//       });
-//     }
-//     return totalTime;
-//   }, 0);
-// };
-
-// // 起床時刻の計算
-// const calculateWakeUpTime = (goalTime: string, totalTime: number) => {
-//   const [goalHour, goalMinute] = goalTime
-//     ? goalTime.split(":").map(Number)
-//     : [0, 0];
-
-//   let goalInMinutes = 0;
-//   if (goalHour !== undefined && goalMinute !== undefined) {
-//     goalInMinutes = goalHour * 60 + goalMinute;
-//   }
-
-//   let wakeUpTimeInMinutes = goalInMinutes - totalTime;
-
-// if (wakeUpTimeInMinutes < 0) {
-//   wakeUpTimeInMinutes += 1440;
-// }
-
-// const wakeUpHour = Math.floor(wakeUpTimeInMinutes / 60);
-// const wakeUpMinute = wakeUpTimeInMinutes % 60;
-
-// return `${wakeUpHour < 10 ? "0" : ""}${wakeUpHour}:${wakeUpMinute < 10 ? "0" : ""}${wakeUpMinute}`;
-// };
-
-function calculateRemainingTime(data: { member: Member[] }) {
-  const member = data.member[0];
-
-  // Parse timeSet.time.time (e.g., "11:10") to minutes
-  const [hours, minutes] = member.timeSet.time.time.split(":").map(Number);
-  const totalTimeInMinutes = hours * 60 + minutes;
-
-  // Calculate the total time of all tasks in items
-  let taskTimeTotal = 0;
-  member.items.forEach(item => {
-    if (item.task) {
-      // For individual tasks
-      taskTimeTotal += item.task.options[item.task.select].time;
-    } else if (item.folder) {
-      // For tasks inside folders
-      item.folder.tasks.forEach(folderTask => {
-        taskTimeTotal += folderTask.task.options[folderTask.task.select].time;
-      });
-    }
-  });
-
-  // Calculate remaining time
-  let wakeUpTimeInMinutes = totalTimeInMinutes - taskTimeTotal;
-
-  if (wakeUpTimeInMinutes < 0) {
-    wakeUpTimeInMinutes += 1440;
-  }
-
-  const wakeUpHour = Math.floor(wakeUpTimeInMinutes / 60);
-  const wakeUpMinute = wakeUpTimeInMinutes % 60;
-
-  return `${wakeUpHour < 10 ? "0" : ""}${wakeUpHour}:${wakeUpMinute < 10 ? "0" : ""}${wakeUpMinute}`;
-}
-const remainingTime = calculateRemainingTime(data);
+type ResponseData = {
+  message: string;
+  wholeSet: WholeSet;
+};
 
 
 export default function Home() {
-  const member = data.member[memberNumber];
+  const { data: session } = useSession();
+  const [dataFromDb, setDataFromDb] = useState<ResponseData | null>(null);
 
-  if (!member) {
+  const handleScheduleGet = async () => {
+    if (!session?.user?.id) return;
+    try {
+      const res = await axios.get(`/api/schedule?userId=${session.user.id}`);
+      setDataFromDb(res.data);
+      console.log(res.data);  // データが正しく取得できているか確認
+    } catch (error) {
+      console.error(error + "なんで");
+    }
+  };
+
+  useEffect(() => {
+    handleScheduleGet();
+  }, [session?.user?.id]);
+
+  const whole = dataFromDb ? dataFromDb.wholeSet.whole : null;
+
+  if (!whole) {
+    handleScheduleGet();
     return <div>Loading...</div>;
+  } else {
+    console.log(dataFromDb);
   }
 
-  // const goleTimePreset = member.timeSet.find(
-  //   (preset) => 'goleTime' in preset && 'name' in preset
-  // ) as { goleTime: string; name: string } | undefined;
+  function calculateRemainingTime(data: Whole) {
+    const [hours = 0, minutes = 0] = data.timeSet.time.time.split(":").map(Number);
+    const totalTimeInMinutes = hours * 60 + minutes;
 
+    // アイテム内のタスクの合計時間を計算
+    let taskTimeTotal = 0;
+    data.itemSet.forEach(item => {
+      if (item.task) {
+        // 単一タスクの場合
+        taskTimeTotal += item.task.options[item.task.select]?.time;
+      }
+      else if (item.folder) {
+        // フォルダ内のタスクの場合
+        item.folder.tasks.forEach(folderTask => {
+          taskTimeTotal += folderTask.task.options[folderTask.task.select].time;
+        });
+      }
+    });
 
-  // const totalTime = calculateTotalTime(member.items);
-  // const wakeUpTime = goleTimePreset
-  //   ? calculateWakeUpTime(goleTimePreset.goleTime, totalTime)
-  //   : "N/A"; // goleTimeがない場合は "N/A"などのデフォルト値を設定
+    // 残り時間を計算
+    let wakeUpTimeInMinutes = totalTimeInMinutes - taskTimeTotal;
+
+    if (wakeUpTimeInMinutes < 0) {
+      wakeUpTimeInMinutes += 1440; // 残り時間が負の数になる場合、24時間を足す
+    }
+
+    const wakeUpHour = Math.floor(wakeUpTimeInMinutes / 60);
+    const wakeUpMinute = wakeUpTimeInMinutes % 60;
+
+    return `${wakeUpHour < 10 ? "0" : ""}${wakeUpHour}:${wakeUpMinute < 10 ? "0" : ""}${wakeUpMinute}`;
+  }
+  const remainingTime = calculateRemainingTime(whole);
+
+  // 日付フォーマット
+  const dateString: string = format(whole.updateTime, "yyyy/MM/dd HH:mm");
 
   return (
     <div className="flex h-screen flex-col items-center justify-center bg-slate-50 text-center font-mPlus text-color-all max-w-md mx-auto">
@@ -293,35 +139,40 @@ export default function Home() {
         <DisplayTime />
       </h1>
       <Card className="mt-4 w-3/4 max-w-md border-4 border-color-all text-gray-700">
-        <h5 className="pb-1 pt-1">最終更新時刻：{member?.updateTime}</h5>
+        <h5 className="pb-1 pt-1">最終更新時刻：{dateString}</h5>
         <CardHeader className="pb-2 pt-0">
           <div className="bg-slate-0 mb-1 rounded-lg border-4 border-pink-300 p-4 text-3xl shadow-sm">
-            <p className="mb-1 text-lg leading-none">{member.timeSet.time.naem || "-"}</p>
-            <p className="font-bold">{member.timeSet.time.time || "N/A"}</p>
+            <p className="mb-1 text-lg leading-none">{whole.timeSet.time.name || "-"}</p>
+            <p className="font-bold">{whole.timeSet.time.time || "N/A"}</p>
           </div>
         </CardHeader>
         <CardContent>
-          <ScrollArea className="h-64 w-full rounded-md border p-0">
-            <div className="divide-y divide-black">
-              {member.items.map((item, index) => (
+          <ScrollArea className="h-64 w-full rounded-md border-2 border-color-all p-0">
+            <div className="divide-y divide-slate-300">
+              {whole.itemSet.map((item, index) => (
                 <div key={index} className="">
                   {/* 単一のタスク */}
                   {item.task && (
-                      <div className="flex items-center justify-between mb-2 mt-2">
-                        <div className="flex items-center">
-                          <DescriptionSvg style={{ width: "30px", height: "30px" }} color={"#FFA660"} />
-                          <p className="ml-3 text-lg">{item.task.name}</p>
-                        </div>
-                        <p className="text-sm mr-3">
-                          {item.task.options[item.task.select].time}分
-                        </p>
+                    <div className="flex items-center justify-between mb-2 mt-2">
+                      <div className="flex items-center">
+                        <DescriptionSvg style={{ width: "30px", height: "30px" }} color={"#FFA660"} />
+                        <p className="ml-3 text-lg">{item.task.name}</p>
                       </div>
+                      <p className="text-sm mr-3">
+                        {item.task.options[item.task.select].time}min
+                      </p>
+                    </div>
                   )}
                   {/* フォルダとその内部タスク */}
                   {item.folder && (
                     <div className="border border-gray-300 bg-color-folder p-2">
-                      <h4 className="mb-2 text-lg font-bold">{item.folder.name}</h4>
-                      <div className="divide-y divide-darkBlue">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center">
+                          <FolderOpenSvg style={{ width: "30px", height: "30px" }} color={""} />
+                          <h4 className="ml-11 text-lg font-bold">{item.folder.name}</h4>
+                        </div>
+                      </div>
+                      <div className="divide-y divide-slate-300">
                         {item.folder.tasks.map((folderTask, taskIndex) => (
                           <div key={taskIndex}>
                             <div className="flex items-center justify-between bg-white p-2">
@@ -330,7 +181,7 @@ export default function Home() {
                                 <p className="ml-3 text-lg">{folderTask.task.name}</p>
                               </div>
                               <p className="text-sm mr-3">
-                                {folderTask.task.options[folderTask.task.select].time}分
+                                {folderTask.task.options[folderTask.task.select].time}min
                               </p>
                             </div>
                           </div>
