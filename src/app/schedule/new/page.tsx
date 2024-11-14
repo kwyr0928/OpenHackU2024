@@ -77,6 +77,7 @@ type DetailWhole = {
         name: string; // タスクプリセット　名前
         itemId: string; // タスクプリセット　ID
         isStatic: boolean; // 固定値かどうか
+        select: number;
         options: {
           // プルダウン
           name: string; // 名前
@@ -87,15 +88,18 @@ type DetailWhole = {
         name: string; // フォルダプリセット　名前
         itemId: string; // フォルダプリセット　ID
         tasks: {
-          name: string; // タスクプリセット　名前
-          itemId: string; // タスクプリセット　ID
-          isStatic: boolean; // 固定値かどうか
-          options: {
-            // プルダウン
-            name: string; // 名前
-            time: number; // 時間
+          task: {
+            name: string; // タスクプリセット　名前
+            itemId: string; // タスクプリセット　ID
+            isStatic: boolean; // 固定値かどうか
+            select: number;
+            options: {
+              // プルダウン
+              name: string; // 名前
+              time: number; // 時間
+            }[];
           }[];
-        }[];
+        };
       };
     }[];
   };
@@ -132,6 +136,7 @@ type FolderSet = {
         name: string;
         itemId: string;
         isStatic: boolean;
+        select: number;
         options: {
           name: string;
           time: number;
