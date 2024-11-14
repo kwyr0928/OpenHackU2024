@@ -1,8 +1,6 @@
 import { getUniqueMasterTimeset } from "@prisma/client/sql";
 import { db } from "../db";
 import { presetType } from "./constants";
-import { strict } from "assert";
-import { string } from "zod";
 
 // userId to ユーザー名
 export async function getUserName(userId: string) {
@@ -439,7 +437,9 @@ export async function getAllTaskByUserId(userId: string) {
   }
 }
 
-export async function getTimeFirst(){
-  const timeData = await db.timeSets.findFirst();
+export async function getTimeFirst(userId: string){
+  const timeData = await db.timeSets.findFirst({
+    where: { userId: userId }
+  });
   return timeData;
 }

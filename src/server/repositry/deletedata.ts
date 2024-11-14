@@ -154,7 +154,7 @@ export async function deleteTimeSetFirstSetting(userId: string, timeId: string){
 }
 
 //初期設定時の謎のフォルダ削除処理
-export async function deleteALlForlder(userId: string, itemId: string){
+export async function deleteAllForlder(userId: string, itemId: string){
   try {
     const deleteTargetFolder = await db.folderSets.delete({
       where: {
