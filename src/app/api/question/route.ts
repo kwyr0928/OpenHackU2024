@@ -3,6 +3,7 @@ import { createNewWhole } from "~/server/service/create";
 import { getAllTaskByUserId, getTimeFirst } from "~/server/repositry/getdata";
 import { setNextSchedule } from "~/server/repositry/updatedata";
 import { deleteItemFirstSetting, deleteTimeSetFirstSetting, deleteALlForlder } from "~/server/repositry/deletedata";
+import { prefabItemStruct } from "~/server/repositry/constants";
 
 export async function POST(req: NextRequest) {
   try {
@@ -33,6 +34,7 @@ export async function POST(req: NextRequest) {
     }
 
     //タスクのitemIdの取得
+    const prefabItems: prefabItemStruct[] = [];
     const prefabItemIds: string[] = [];
     const taskData = await getAllTaskByUserId(userId);
     if (!taskData) {
@@ -42,27 +44,33 @@ export async function POST(req: NextRequest) {
       );
     }
     for (const task of taskData) {
-      if (!task?.itemId) {
+      const taskId = task?.id;
+      if (!taskId) {
         return NextResponse.json(
           { error: "Invalid input: taskId is required for createNewWhole" },
           { status: 400 },
         );
       }
-      if (task?.itemId) {
-        prefabItemIds.push(String(task.itemId)); // 文字列として処理
+      if(task.optionIndex === null){
+        return NextResponse.json(
+          { error: "Invalid input: optionIndex of task is required for createNewWhole" },
+          { status: 400 },
+        );
       }
+      prefabItems.push({
+        itemId: task.itemId,
+        select:task.optionIndex
+      });
+      prefabItemIds.push(task.itemId);
     }
 
     //全体セットの生成
     const defaultWholeName = "デフォルトセット";
-    console.log('userId:', userId);
-    console.log('timeId:', timeId);
-    console.log('prefabItemIds', prefabItemIds)
     const createdWholeSet = await createNewWhole(
       userId,
       defaultWholeName,
       timeId,
-      prefabItemIds,
+      prefabItems,
     );
 
     //生成した全体セットを予定に設定
