@@ -52,6 +52,7 @@ export default function NewTask({ handleTaskGet }: NewTaskProps) {
       taskSet: {
         name: name,
         isStatic: false,
+        select:0,
         options: [
           {
             name: options1,
@@ -73,6 +74,7 @@ export default function NewTask({ handleTaskGet }: NewTaskProps) {
       taskSet: {
         name: name,
         isStatic: true,
+        select:0,
         options: [
           {
             time: minutes,
@@ -124,7 +126,7 @@ export default function NewTask({ handleTaskGet }: NewTaskProps) {
             <TabsTrigger value="pulldown">プルダウン</TabsTrigger>
             <TabsTrigger value="static">固定値</TabsTrigger>
           </TabsList>
-          <TabsContent value="pulldown" className="h-[150px]">
+          <TabsContent value="pulldown" className="h-[160px]">
             <div className="mb-3 flex items-center justify-center">
               <Input
                 type="text"
@@ -181,7 +183,7 @@ export default function NewTask({ handleTaskGet }: NewTaskProps) {
             </div>
           </TabsContent>
           <TabsContent value="static" className="h-[150px]">
-            <div className="flex h-40 items-center justify-center">
+            <div className="flex h-20 items-center justify-center">
               <Input
                 type="number"
                 value={minutes}
@@ -201,15 +203,6 @@ export default function NewTask({ handleTaskGet }: NewTaskProps) {
             </div>
           </TabsContent>
         </Tabs>
-        <div className="mt-auto flex justify-around">
-          <Button
-            className="bg-darkBlue hover:bg-blue-900"
-            onClick={handleTaskCreate}
-            disabled={!name || !options1} // newNameが空の場合はボタンを無効化
-          >
-            作成
-          </Button>
-        </div>
       </DialogContent>
     </Dialog>
   );
