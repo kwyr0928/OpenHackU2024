@@ -52,6 +52,7 @@ export default function NewTask({ handleTaskGet }: NewTaskProps) {
       taskSet: {
         name: name,
         isStatic: false,
+        select:0,
         options: [
           {
             name: options1,
@@ -73,6 +74,7 @@ export default function NewTask({ handleTaskGet }: NewTaskProps) {
       taskSet: {
         name: name,
         isStatic: true,
+        select:0,
         options: [
           {
             time: minutes,
