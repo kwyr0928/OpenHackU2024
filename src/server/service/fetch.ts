@@ -24,7 +24,7 @@ export async function fetchWhole(itemId: string) {
     // name取得
     const name = await getItemName(itemId);
     if (!name) throw new Error("not found itemName");
-    // timeSet
+    // wholeSet
     const whole = await getWholeInfoByItemId(itemId);
     if (!whole) throw new Error("not found contentsInWhole");
     let time;
@@ -59,6 +59,7 @@ export async function fetchWhole(itemId: string) {
       whole: {
         name: name,
         itemId: itemId,
+        updateTime: whole.updated_at,
         timeSet: time,
         itemSet: retItems,
       },
@@ -135,7 +136,7 @@ export async function fetchTask(itemId: string, name: string) {
         name: name,
         itemId: itemId,
         isStatic: options.isStatic,
-        select: task.optionIndex as number,
+        select: task.optionIndex,
         options: options.options,
       },
     };

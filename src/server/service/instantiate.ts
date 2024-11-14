@@ -18,24 +18,22 @@ export async function instanciateFolder(prefabItemId: string, order: number) {
       throw new Error("Not found item");
     }
     const taskItems = await getItemsInParentSortOrder(prefabItemId);
-    if (taskItems == null) {
-      throw new Error("Failed getTaskItemsInFolder");
-    }
     const taskItemIds: {
       itemId: string;
       select: number;
     }[] = [];
-    for (const taskItem of taskItems) {
-      const task = await getTaskInfoByItemId(taskItem.id);
-      if (task == null) {
-        throw new Error("Failed getTaskInfoByItemId");
+    if (taskItems != null) {
+      for (const taskItem of taskItems) {
+        const task = await getTaskInfoByItemId(taskItem.id);
+        if (task == null) {
+          throw new Error("Failed getTaskInfoByItemId");
+        }
+        taskItemIds.push({
+          itemId: taskItem.id,
+          select: task.optionIndex,
+        });
       }
-      taskItemIds.push({
-        itemId: taskItem.id,
-        select: task.optionIndex,
-      });
     }
-
     const folderInstanciate = await createFolder(
       item.userId,
       item.name,

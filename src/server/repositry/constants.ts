@@ -62,6 +62,11 @@ export type optionStruct = {
   updated_at?: Date;
 };
 
+export type prefabItemStruct = {
+  itemId: string,
+  select: number,
+}
+
 //
 // POSTのリクエストボディ
 //
@@ -171,6 +176,7 @@ export type wholeResponse = {
   whole: {
     name: string;
     itemId: string;
+    updateTime: Date;
     timeSet: timeResponse;
     itemSet: contentResponse[];
   };
