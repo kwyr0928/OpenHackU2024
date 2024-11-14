@@ -445,6 +445,10 @@ export default function Schedule() {
               alt="Backicon"
               width={25}
               height={25}
+              style={{
+                width: '25px',
+                height: 'auto',
+            }}
               className="fixed left-3 top-10 mx-5 mt-0.5"
             />
           </Link>

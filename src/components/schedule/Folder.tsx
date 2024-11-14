@@ -94,12 +94,14 @@ export default function FolderPreset({
                 alt="Folder"
                 width={28}
                 height={28}
+                style={{
+                  width: '28px',
+                  height: 'auto',
+              }}
                 className="mb-4 ml-8 mr-3"
               />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem>保存</DropdownMenuItem>
-              <DropdownMenuSeparator />
               <DropdownMenuItem onSelect={() => handleDelete(folder)}>
                 削除
               </DropdownMenuItem>
@@ -161,6 +163,10 @@ export default function FolderPreset({
                 alt="Task"
                 width={30}
                 height={30}
+                style={{
+                  width: '30px',
+                  height: 'auto',
+              }}
                 className="mb-3 ml-8"
               />
             </DropdownMenuTrigger>

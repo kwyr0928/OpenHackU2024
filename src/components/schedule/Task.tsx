@@ -45,12 +45,14 @@ export default function TaskPreset({
               alt="Task"
               width={20}
               height={20}
+              style={{
+                width: '20px',
+                height: 'auto',
+            }}
               className="mx-5 cursor-pointer"
             />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem>保存</DropdownMenuItem>
-            <DropdownMenuSeparator />
             <DropdownMenuItem onSelect={() => handleDelete(task)}>
               削除
             </DropdownMenuItem>
