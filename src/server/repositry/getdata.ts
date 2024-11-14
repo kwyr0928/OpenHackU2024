@@ -1,6 +1,8 @@
 import { getUniqueMasterTimeset } from "@prisma/client/sql";
 import { db } from "../db";
 import { presetType } from "./constants";
+import { strict } from "assert";
+import { string } from "zod";
 
 // userId to ユーザー名
 export async function getUserName(userId: string) {
@@ -41,6 +43,62 @@ export async function getItemName(itemId: string) {
 //
 // id to object
 //
+
+// itemId to masterId
+export async function getMasterIdByItemId(itemId: string) {
+  try {
+    const masterId = await db.items.findFirst({
+      select: {
+        masterId: true,
+      },
+      where: {
+        id: itemId,
+      },
+    });
+
+    if (masterId == null) throw new Error("not found masterId");
+    return masterId.masterId;
+  } catch (error) {
+    console.error("Error in getMasterByItemId:", error);
+    return null;
+  }
+}
+// timeId to masterId
+export async function getMasterIdByTimeId(timeId: string) {
+  try {
+    const masterId = await db.timeSets.findFirst({
+      select: {
+        masterId: true,
+      },
+      where: {
+        id: timeId,
+      },
+    });
+
+    if (!masterId) throw new Error("not found masterId");
+    return masterId.masterId;
+  } catch (error) {
+    console.error("Error in getMasterByTimeId:", error);
+    return null;
+  }
+}
+
+// masterId to all items
+export async function getAllItemsByMasterId(masterId: string) {
+  try {
+    const items = await db.items.findMany({
+      where: {
+        masterId: masterId,
+      },
+    });
+
+    if (!items) throw new Error("not found items");
+    return items;
+  } catch (error) {
+    console.error("Error in getMasterByTimeId:", error);
+    return null;
+  }
+}
 
 // wholeItem
 export async function getSettingWhole(userId: string) {
@@ -138,7 +196,7 @@ export async function getItemInfoByItemId(itemId: string) {
       },
     });
 
-    if (!item) throw new Error("not found item");
+    if (item == null) throw new Error("not found item");
     return item;
   } catch (error) {
     console.error("Error in getItemName:", error);
@@ -221,7 +279,7 @@ export async function getTaskInfoByItemId(itemId: string) {
       },
     });
 
-    if (!task) throw new Error("not found taskSet");
+    if (task == null) throw new Error("not found taskSet");
     return task;
   } catch (error) {
     console.error("Error in getTaskInfoByItemId:", error);
@@ -262,7 +320,7 @@ export async function getKindItems(userId: string, type: number) {
     if (res.length === 0) return null;
     return res;
   } catch (error) {
-    console.error("Error in getTasksInFolder:", error);
+    console.error("Error in getKindItems:", error);
     return null;
   }
 }
@@ -295,7 +353,7 @@ export async function getItemsInWhole(wholeItemId: string) {
     if (res.length === 0) return null;
     return res;
   } catch (error) {
-    console.error("Error in getTasksInFolder:", error);
+    console.error("Error in getItemsInWhole:", error);
     return null;
   }
 }
@@ -356,4 +414,32 @@ export async function getOptionsInTask(taskId: string) {
     console.error("Error in getOptionsInTask:", error);
     return null;
   }
+}
+
+//from userId to taskData
+export async function getAllTaskByUserId(userId: string) {
+  try {
+    const taskItems = await db.items.findMany({
+      where: {
+        userId: userId,
+      },
+    });
+
+    const taskData = [];
+    for (const item of taskItems) {
+      const task = await db.taskSets.findUnique({
+        where: { itemId: item.id },
+      });
+      taskData.push(task);
+    }
+    return taskData;
+  } catch (error) {
+    console.error("Error in getAllTask:", error);
+    return null;
+  }
+}
+
+export async function getTimeFirst(){
+  const timeData = await db.timeSets.findFirst();
+  return timeData;
 }

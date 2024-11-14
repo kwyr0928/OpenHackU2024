@@ -3,18 +3,18 @@ import DisplayTime from "~/components/displayTime/displayTime";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { ScrollArea } from "~/components/ui/scroll-area";
-import FolderIconSvg from "~/components/svgs/folderClose"
-import SettingIconSvg from "~/components/svgs/setting"
-import { Separator } from "~/components/ui/separator"
+import FolderIconSvg from "~/components/svgs/folderClose";
+import SettingIconSvg from "~/components/svgs/setting";
+import { Separator } from "~/components/ui/separator";
 import DescriptionSvg from "~/components/svgs/description";
 
 type TaskSets = {
   task: {
-    name: string,
-    itemId: string,
-    isStatic: boolean,
+    name: string;
+    itemId: string;
+    isStatic: boolean;
     options: {
-      name: string,
+      name: string;
       time: number;
     }[];
   }[];
@@ -22,19 +22,17 @@ type TaskSets = {
 
 async function fetchTaskSets() {
   try {
-    const response = await fetch('/api/schedule');
+    const response = await fetch("/api/schedule");
     if (!response.ok) {
       throw new Error(`Error: ${response.statusText}`);
     }
-    const data = await response.json();  // JSON データを `data` に格納
+    const data = await response.json(); // JSON データを `data` に格納
     return data;
   } catch (error) {
     console.error("Failed to fetch data:", error);
     throw error;
   }
 }
-
-
 
 const data = {
   member: [
@@ -139,11 +137,9 @@ const data = {
           },
         },
       ],
-    }
-  ]
+    },
+  ],
 };
-
-
 
 type Task = {
   name: string;
@@ -273,7 +269,6 @@ function calculateRemainingTime(data: { member: Member[] }) {
 const remainingTime = calculateRemainingTime(data);
 
 
-
 export default function Home() {
   const member = data.member[memberNumber];
 
@@ -284,6 +279,7 @@ export default function Home() {
   // const goleTimePreset = member.timeSet.find(
   //   (preset) => 'goleTime' in preset && 'name' in preset
   // ) as { goleTime: string; name: string } | undefined;
+
 
   // const totalTime = calculateTotalTime(member.items);
   // const wakeUpTime = goleTimePreset
@@ -321,7 +317,6 @@ export default function Home() {
                         </p>
                       </div>
                   )}
-
                   {/* フォルダとその内部タスク */}
                   {item.folder && (
                     <div className="border border-gray-300 bg-color-folder p-2">
@@ -374,8 +369,6 @@ export default function Home() {
           </Link>
           <h1>プリセット</h1>
         </div>
-
-
 
         <div className="mt-4 flex-col">
           <Link href="/settings">

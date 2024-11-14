@@ -1,9 +1,14 @@
 import { NextResponse } from "next/server";
-import { optionStruct, presetType, taskSetPostBody } from "~/server/repositry/constants";
+import { presetType, type taskSetPostBody } from "~/server/repositry/constants";
 import { deleteItem } from "~/server/repositry/deletedata";
-import { getItemName } from "~/server/repositry/getdata";
+import {
+  getAllItemsByMasterId,
+  getItemName,
+  getMasterIdByItemId,
+} from "~/server/repositry/getdata";
+import { updateMaster } from "~/server/repositry/manageMaster";
 import { fetchTask } from "~/server/service/fetch";
-import { setItemParentReOrder } from "~/server/service/update";
+import { setItemParentReOrder, updateTask } from "~/server/service/update";
 
 export async function GET(req: Request) {
   try {
@@ -42,64 +47,40 @@ export async function GET(req: Request) {
   }
 }
 
-export async function PUT(  req: Request,
+export async function PUT(
+  req: Request,
   { params }: { params: { id: string } },
 ) {
   try {
     const itemId = params.id;
     const { userId, taskSet }: taskSetPostBody =
       (await req.json()) as taskSetPostBody;
-      if (!userId || !taskSet) {
-        return NextResponse.json(
-          { error: "Invalid input: userId and task are required" },
-          { status: 400 },
-        );
-      }
-    
-      const options: optionStruct[] = [];
-      if (taskSet.isStatic) {
-        const opst: optionStruct = {
-          optionTime: taskSet.options[0]!.time,
-          order: 0,
-          isStatic: true,
-          taskId: "",
-        };
-        options.push(opst);
-      } else {
-        let order = 0;
-        for (const op of taskSet.options) {
-          const opst: optionStruct = {
-            name: op.name,
-            optionTime: op.time,
-            order: order,
-            isStatic: false,
-            taskId: "",
-          };
-          options.push(opst);
-          order++;
-        }
-      }
-  
-      const taskObj = await updateTask(
-        userId,
-        taskSet.name,
-        options,
-        taskSet.select,
+    if (!userId || !taskSet) {
+      return NextResponse.json(
+        { error: "Invalid input: userId and task are required" },
+        { status: 400 },
       );
-      
-      const deleted = await deleteItem(itemId, presetType.task);
-      if (deleted == null) {
-        return NextResponse.json(
-          { error: "Invalid input: userId is required" },
-          { status: 400 },
-        );
-      }
-      // フォルダ(deleted.item.parentId)と同じmasterを持つフォルダもこれをもとに更新
-      // @here
+    }
+
+    const masterId = await getMasterIdByItemId(itemId);
+    if (masterId == null) {
+      throw new Error("not found masterId");
+    }
+    // master更新
+    await updateMaster(masterId, taskSet.name);
+    // masterIdが同じitemを
+    const allItems = await getAllItemsByMasterId(masterId);
+    if (allItems == null) {
+      throw new Error("not found allItems");
+    }
+    let updatedTask;
+    for (const items of allItems) {
+      updatedTask = await updateTask(items.id, { userId, taskSet });
+    }
 
     return NextResponse.json({
       message: "update task successfully",
-      task: taskObj,
+      task: updatedTask,
     });
   } catch (error) {
     console.error("Error in UPDATE task request:", error);
@@ -124,7 +105,7 @@ export async function DELETE(
       );
     }
     // タスクの入ってたフォルダ or 全体プリセットの再順序付け
-    if(deleted.item.parentId!=null) {
+    if (deleted.item.parentId != null) {
       const res = await setItemParentReOrder(deleted.item.parentId);
       if (res == null) {
         return NextResponse.json(

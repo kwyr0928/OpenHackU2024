@@ -38,18 +38,18 @@ type FolderProps = {
 
 type FolderSet = {
   folder: {
-  name: string;
-        itemId: string;
-        tasks: {
-            name: string;
-            itemId: string;
-            isStatic: boolean;
-            options: {
-                name: string;
-                time: number;
-            }[];
-        }[];
-      }
+    name: string;
+    itemId: string;
+    tasks: {
+      name: string;
+      itemId: string;
+      isStatic: boolean;
+      options: {
+        name: string;
+        time: number;
+      }[];
+    }[];
+  };
 };
 
 export default function FolderPreset({
@@ -58,14 +58,14 @@ export default function FolderPreset({
   folderPresets,
   handleDelete,
   handleSortUp,
-  handleSortDown
+  handleSortDown,
 }: FolderProps) {
-
   const [selectedFolderPreset, setSelectedFolderPreset] = useState<FolderSet>(); // 選択中のフォルダプリセット
   const [openFolder, setOpenFolder] = useState(false); // フォルダ　プルダウン
   const [valueFolder, setValueFolder] = useState(""); // フォルダ　プルダウン
 
-  const handleFolderPresetSelect = (id: string) => { // 選択中のフォルダが変更されたら
+  const handleFolderPresetSelect = (id: string) => {
+    // 選択中のフォルダが変更されたら
     const selectedPreset = folderPresets.find(
       (preset) => preset.folder.itemId === id,
     );
@@ -80,28 +80,30 @@ export default function FolderPreset({
     setSelectedFolderPreset(folder);
     setValueFolder(folder.folder.itemId);
     setOpenFolder(false);
-  },[folder]);
+  }, [folder]);
 
   return (
     <p className="bg-lime-300 px-2 pb-3 pt-3">
       <p className="text-xl">
-      <div className="flex justify-center">
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Image
-              src="/image/Foldericon.svg"
-              alt="Folder"
-              width={28}
-              height={28}
-              className="mb-4 mr-3 ml-8"
-            />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem>保存</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem  onSelect={() => handleDelete(folder)}>削除</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex justify-center">
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Image
+                src="/image/Foldericon.svg"
+                alt="Folder"
+                width={28}
+                height={28}
+                className="mb-4 ml-8 mr-3"
+              />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>保存</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onSelect={() => handleDelete(folder)}>
+                削除
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Popover open={openFolder} onOpenChange={setOpenFolder}>
             <PopoverTrigger asChild>
               <Button
@@ -160,9 +162,13 @@ export default function FolderPreset({
               />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem onSelect={() => handleSortUp(index)}>上に移動</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => handleSortUp(index)}>
+                上に移動
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onSelect={() => handleSortDown(index)}>下に移動</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => handleSortDown(index)}>
+                下に移動
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

@@ -3,20 +3,23 @@ import { signIn } from "next-auth/react";
 
 export default function Login() {
   return (
-    <div className="flex h-screen flex-col justify-center text-center font-mPlus bg-slate-50 max-w-md mx-auto">
-
+    <div className="mx-auto flex h-screen max-w-md flex-col justify-center bg-slate-50 text-center font-mPlus">
       {/* 新規登録 */}
       <div className="items-center">
-        <h1 className="text-darkBlue text-4xl">新規登録</h1>
-        <h2 className="text-darkBlue m-3 pb-7 text-base">初めての方は<br></br>こちらからGoogleアカウントを使用して<br></br>新規登録してください</h2>
-        {
-          /*
+        <h1 className="text-4xl text-darkBlue">新規登録</h1>
+        <h2 className="m-3 pb-7 text-base text-darkBlue">
+          初めての方は<br></br>こちらからGoogleアカウントを使用して<br></br>
+          新規登録してください
+        </h2>
+        {/*
               「Sign up with Google」ボタン
               https://developers.google.com/identity/branding-guidelines?hl=ja#font のHTMLコードを
               https://transform.tools/html-to-jsx で変換した。
-          */
-        }
-        <button className="gsi-material-button" onClick={() => signIn("google", { callbackUrl: "/question" })}>
+          */}
+        <button
+          className="gsi-material-button"
+          onClick={() => signIn("google", { callbackUrl: "/question" })}
+        >
           <div className="gsi-material-button-state" />
           <div className="gsi-material-button-content-wrapper">
             <div className="gsi-material-button-icon">
@@ -46,26 +49,32 @@ export default function Login() {
                 <path fill="none" d="M0 0h48v48H0z" />
               </svg>
             </div>
-            <span className="gsi-material-button-contents">Sign up with Google</span>
+            <span className="gsi-material-button-contents">
+              Sign up with Google
+            </span>
             <span style={{ display: "none" }}>Sign up with Google</span>
           </div>
         </button>
       </div>
 
-      <hr className="w-10/12 h-1 mx-auto m-16 bg-darkBlue border-0 rounded md:my-10 dark:bg-gray-700"></hr>
+      <hr className="m-16 mx-auto h-1 w-10/12 rounded border-0 bg-darkBlue dark:bg-gray-700 md:my-10"></hr>
 
       {/* ログイン */}
       <div className="items-center">
-        <h1 className="text-darkBlue text-4xl pt-4">ログイン</h1>
-        <h2 className="text-darkBlue m-3 pb-7">既に登録済みの方は、<br></br>こちらからGoogleアカウントを使用して<br></br>ログインしてください</h2>
-        {
-          /*
+        <h1 className="pt-4 text-4xl text-darkBlue">ログイン</h1>
+        <h2 className="m-3 pb-7 text-darkBlue">
+          既に登録済みの方は、<br></br>こちらからGoogleアカウントを使用して
+          <br></br>ログインしてください
+        </h2>
+        {/*
               「Sign in with Google」ボタン
               https://developers.google.com/identity/branding-guidelines?hl=ja#font のHTMLコードを
               https://transform.tools/html-to-jsx で変換した。
-          */
-        }
-        <button className="gsi-material-button" onClick={() => signIn("google", { callbackUrl: "/home" })}>
+          */}
+        <button
+          className="gsi-material-button"
+          onClick={() => signIn("google", { callbackUrl: "/home" })}
+        >
           <div className="gsi-material-button-state" />
           <div className="gsi-material-button-content-wrapper">
             <div className="gsi-material-button-icon">
@@ -95,11 +104,12 @@ export default function Login() {
                 <path fill="none" d="M0 0h48v48H0z" />
               </svg>
             </div>
-            <span className="gsi-material-button-contents">Sign in with Google</span>
+            <span className="gsi-material-button-contents">
+              Sign in with Google
+            </span>
             <span style={{ display: "none" }}>Sign in with Google</span>
           </div>
         </button>
-
       </div>
     </div>
   );

@@ -20,10 +20,10 @@ type TaskProps = {
 };
 
 type Item = {
-    name: string;
-    itemId: string;
-    isStatic: boolean;
-    options: { name: string; time: number }[];
+  name: string;
+  itemId: string;
+  isStatic: boolean;
+  options: { name: string; time: number }[];
 };
 
 export default function TaskPreset({
@@ -33,7 +33,7 @@ export default function TaskPreset({
   task,
   handleDelete,
   handleSortUp,
-  handleSortDown
+  handleSortDown,
 }: TaskProps) {
   return (
     <p className="flex justify-between border bg-white py-3">
@@ -62,16 +62,18 @@ export default function TaskPreset({
         <span>{options[0]?.time}min</span>
         <DropdownMenu>
           <DropdownMenuTrigger>
-          <Image
-          src="/image/arrow.png"
-          alt="Task"
-          width={30}
-          height={30}
-          className="mx-5"
-        />
+            <Image
+              src="/image/arrow.png"
+              alt="Task"
+              width={30}
+              height={30}
+              className="mx-5"
+            />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem  onSelect={() => handleSortUp(index)}>上に移動</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => handleSortUp(index)}>
+              上に移動
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onSelect={() => handleSortDown(index)}>
               下に移動

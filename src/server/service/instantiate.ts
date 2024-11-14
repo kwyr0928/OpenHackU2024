@@ -1,30 +1,39 @@
 import {
   getItemInfoByItemId,
   getItemsInParentSortOrder,
-  getOptionInfo,
   getOptionsInTask,
   getTaskInfoByItemId,
   getTimeInfoByTimeId,
 } from "../repositry/getdata";
 import { createFolder, createTask, createTime } from "./create";
 
-export async function instanciateFolder(prehabItemId: string, order: number) {
+export async function instanciateFolder(prefabItemId: string, order: number) {
   try {
-    if (!prehabItemId) {
-      throw new Error("Invalid input: prehabItemId is missing.");
+    if (!prefabItemId) {
+      throw new Error("Invalid input: prefabItemId is missing.");
     }
     // itemStruct取得
-    const item = await getItemInfoByItemId(prehabItemId);
+    const item = await getItemInfoByItemId(prefabItemId);
     if (item == null) {
       throw new Error("Not found item");
     }
-    const taskItems = await getItemsInParentSortOrder(prehabItemId);
+    const taskItems = await getItemsInParentSortOrder(prefabItemId);
     if (taskItems == null) {
       throw new Error("Failed getTaskItemsInFolder");
     }
-    const taskItemIds: string[] = [];
+    const taskItemIds: {
+      itemId: string;
+      select: number;
+    }[] = [];
     for (const taskItem of taskItems) {
-      taskItemIds.push(taskItem.id);
+      const task = await getTaskInfoByItemId(taskItem.id);
+      if (task == null) {
+        throw new Error("Failed getTaskInfoByItemId");
+      }
+      taskItemIds.push({
+        itemId: taskItem.id,
+        select: task.optionIndex,
+      });
     }
 
     const folderInstanciate = await createFolder(
@@ -44,7 +53,11 @@ export async function instanciateFolder(prehabItemId: string, order: number) {
   }
 }
 
-export async function instanciateTask(itemId: string, order: number) {
+export async function instanciateTask(
+  itemId: string,
+  order: number,
+  optionIdx?: number,
+) {
   try {
     if (!itemId) {
       throw new Error("Invalid input: itemId is missing.");
@@ -53,8 +66,8 @@ export async function instanciateTask(itemId: string, order: number) {
     const task = await getTaskInfoByItemId(itemId);
     if (task == null) {
       throw new Error("Not found getTaskInfoByItemId");
-    } else if (task.optionId == null) {
-      throw new Error("Not found task optionId");
+    } else if (task.optionIndex == null) {
+      throw new Error("Not found task optionIndex");
     }
     // itemStruct取得
     const item = await getItemInfoByItemId(itemId);
@@ -66,18 +79,11 @@ export async function instanciateTask(itemId: string, order: number) {
     if (options == null) {
       throw new Error("Failed find options");
     }
-    // 設定中のタスクを取得
-    const selectedOption = await getOptionInfo(task.optionId);
-    if (selectedOption == null) {
-      throw new Error("Failed find order");
-    } else if (selectedOption.order == null) {
-      throw new Error("Not found option order");
-    }
     const taskInstanciate = await createTask(
       item.userId,
       item.name,
       options,
-      selectedOption.order,
+      optionIdx ?? (task.optionIndex),
       order,
       item,
     );

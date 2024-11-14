@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import React, { useState } from "react";
+import FolderClose from "~/components/svgs/folderClose";
+import FolderOpen from "~/components/svgs/folderOpen";
 import {
   Accordion,
   AccordionContent,
@@ -17,36 +19,131 @@ import {
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import EditTask from "../task/edit";
-import NewTask from "../task/new";
-import FolderClose from "~/components/svgs/folderClose";
-import FolderOpen from "~/components/svgs/folderOpen";
+import NewFolderTask from "./taskNew";
+import axios from "axios";
+import { useSession } from "next-auth/react";
 
 interface EditFolderProps {
+  id: string;
+  item: FolderSet;
+  tasks: TaskSet[];
+  taskApiResponse: TaskApiResponse;
   children: string;
+  handleFolderGet:() => void;
 }
 
-export default function EditFolder({ children }: EditFolderProps) {
-  const [time, setTime] = useState<string>("10:00"); // 初期値を設定
+type FolderSet = {
+  // フォルダプリセット　中身
+  folder: {
+    name: string;
+    itemId: string;
+    tasks: {
+      task: {
+        name: string;
+        itemId: string;
+        isStatic: boolean;
+        options: {
+          name: string;
+          time: number;
+        }[];
+      };
+    }[];
+  };
+};
+
+type TaskSet = {
+  // タスクプリセット　中身
+  task: {
+    name: string;
+    itemId: string;
+    isStatic: boolean;
+    options: {
+      name: string;
+      time: number;
+    }[];
+  };
+};
+
+type TaskApiResponse = {
+  // タスクプリセットの取得
+  message: string;
+  taskSets: TaskSet[];
+};
+
+export default function EditFolder({
+  id,
+  item,
+  tasks,
+  taskApiResponse,
+  children,
+  handleFolderGet,
+}: EditFolderProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false); // ダイアログの開閉状態
   const [name, setName] = useState<string>(children); // 表示される名前
   const [newName, setNewName] = useState<string>(children); // 新しい名前
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false); // 削除確認ダイアログの状態
   const [isOpen, setIsOpen] = useState(false); // アコーディオンの開閉状態を管理
 
-  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTime(e.target.value); // 入力された時刻を更新
-  };
+  const { data: session, status } = useSession();
 
-  const handleSave = () => {
-    // 名前を変更
+  const handleSave = async () => {
     setName(newName);
+    const folderData = {
+      userId: session?.user.id,
+      FolderSets : {
+        folder: {
+          name: name,
+          items:tasks.map((task) => task.task.itemId),
+        },
+      },
+    };
+    if (!session?.user?.id) {
+      return;
+    }
+    try {
+      const res = await axios.put(
+        `/api/presets/time/${id}?userId=${session.user.id}`,
+        folderData,
+      );
+      console.log(res.data);
+    } catch (error) {}
+    // 名前を変更
     setIsDialogOpen(false);
+    handleFolderGet();
   };
 
-  const handleDelete = () => {
-    // 削除処理
+  const handleDelete = async () => {
+    if (!session?.user?.id) {
+      return;
+    }
+    try {
+      const response = await axios.delete(
+        `/api/presets/folder/${id}?userId=${session.user.id}`,
+      );
+      console.log(response);
+    } catch (error) {}
     setIsDeleteDialogOpen(false);
     setIsDialogOpen(false);
+    handleFolderGet();
+  };
+
+  type FolderSet = {
+    // フォルダプリセット　中身
+    folder: {
+      name: string;
+      itemId: string;
+      tasks: {
+        task: {
+          name: string;
+          itemId: string;
+          isStatic: boolean;
+          options: {
+            name: string;
+            time: number;
+          }[];
+        };
+      }[];
+    };
   };
 
   return (
@@ -72,25 +169,18 @@ export default function EditFolder({ children }: EditFolderProps) {
           【{name}】
         </AccordionTrigger>
         <AccordionContent className="w-full">
-          <hr className="mt-2 mb-1 border-gray-500" />
+          <hr className="mb-1 mt-2 border-gray-500" />
           <div className="mx-auto w-[90%]">
-            <EditTask>駅まで徒歩</EditTask>
-            <hr className="mb-1 mt-1 w-full border-gray-500" />
-
-            <EditTask>ごはん</EditTask>
-            <hr className="mb-1 mt-1 w-full border-gray-500" />
-
-            <EditTask>着替え</EditTask>
-            <hr className="mb-1 mt-1 w-full border-gray-500" />
-
-            <EditTask>メイク</EditTask>
-            <hr className="mb-1 mt-1 w-full border-gray-500" />
-
-            <EditTask>ヘアメイク</EditTask>
-            <hr className="mb-1 mt-1 w-full border-gray-500" />
-
+            {tasks.map((task, index) => (
+              <div key={index}>
+                <EditTask task={task.task} id={task.task.itemId} handleTaskGet={handleFolderGet}>
+                  {task.task.name}
+                </EditTask>
+                <hr className="mb-1 mt-1 w-full border-gray-500" />
+              </div>
+            ))}
             <div className="flex items-center justify-around">
-              <NewTask />
+              <NewFolderTask item={item} taskResponse={taskApiResponse} />
               <Button
                 className="ml-2 rounded-full bg-gray-500 p-2"
                 onClick={() => setIsDialogOpen(true)}

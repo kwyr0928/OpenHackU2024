@@ -5,9 +5,9 @@ import { useState } from "react";
 import { Button } from "~/components/ui/button";
 
 const taskData = {
-  userId: "cm390e361000010avus2xru9v",
+  userId: "cm3fyfn9j007hou5zce6no5uo",
   taskSet: {
-    name: "a",
+    name: "筋トレ",
     isStatic: false,
     select: 0,
     options: [
@@ -24,35 +24,37 @@ const taskData = {
 };
 
 const folderData = {
-    userId: "cm390e361000010avus2xru9v",
-    folderSet: {
-        name: "毎日やること",
-        itemIds: [
-            "cm3enk1aw00047w54u7a10yec",
-        ]
-    }
+  userId: "cm3fwxjau0000ou5zhszjrvrd",
+  folderSet: {
+    name: "運動する日",
+    itemIds: [
+      "cm3fx0bdx002dou5zlz6vbkbg",
+      "cm3fwznem000vou5zhvy4y3d7",
+      "cm3fx0s2e002mou5zej3hkbor",
+    ],
+  },
 };
 
 const timeData = {
-    userId: "cm390e361000010avus2xru9v",
-    timeSet: {
-        name: "unnri",
-        time: "17:55"
-    }
+  userId: "cm3fwxjau0000ou5zhszjrvrd",
+  timeSet: {
+    name: "4限電車",
+    time: "14:40",
+  },
 };
 
 const wholeData = {
-    userId: "cm3e6uw3200001p4l3jfecqvq",
-    wholeSet: {
-        name: "きちんと4限",
-        timeId: "cm3ecth65004eyflr95t67osv",
-        itemIds: [
-            "cm3ecnjtf0001yflre7z8lc2n", // 駅まで徒歩
-            "cm3ecnqyl000ayflrksba7ncd", // ごはん
-            "cm3ecs1x5003cyflrq6nhbf3c", // おしゃれする
-        ]
-    }
-}
+  userId: "cm390e361000010avus2xru9v",
+  wholeSet: {
+    name: "筋トレ1限",
+    timeId: "cm3enfbbj00017w54gmm0cp50",
+    itemIds: [
+      "cm3enk1aw00047w54u7a10yec", // 駅まで徒歩
+      "cm3eo2x5f000d7w54zliuha8n", // ごはん
+      "cm3es0sj6001w7w54ap22rfa5", // おしゃれする
+    ],
+  },
+};
 
 export default function Page() {
   const [taskResponse, setTaskResponse] = useState(null);
