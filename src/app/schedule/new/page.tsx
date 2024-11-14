@@ -42,6 +42,7 @@ import { ScrollArea } from "~/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { cn } from "~/lib/utils";
 
+
 type WholeApiResponse = {
   // 全体プリセットの取得
   message: string;
@@ -215,7 +216,7 @@ export default function Schedule() {
     try {
       const res = await axios.post("/api/schedule/new", scheduleNew);
       console.log(res.data);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const handleSortUp = (index: number) => {
@@ -411,28 +412,28 @@ export default function Schedule() {
             ),
             axios.get(`/api/schedule?userId=${session.user.id}`)
           ]);
-          console.log(scheduleResponse);
+        console.log(scheduleResponse);
 
-          if (scheduleResponse.data.wholeSet) {
-            setDetailWholePreset(scheduleResponse.data.wholeSet); // 全体プリセット[id] 登録
-          }
+        if (scheduleResponse.data.wholeSet) {
+          setDetailWholePreset(scheduleResponse.data.wholeSet); // 全体プリセット[id] 登録
+        }
 
         if (wholeResponse.data?.wholeSets) {
           setWholePresets(wholeResponse.data.wholeSets); // 全体プリセット一覧　登録
           if (wholeResponse.data.wholeSets.length > 0) {
-              setSelectedWholePreset({
-                // 選択中
-                name: scheduleResponse.data.wholeSet.whole.name,
-                itemId: scheduleResponse.data.wholeSet.whole.itemId,
-              });
-              setValueWhole(scheduleResponse.data.wholeSet.whole.itemId); // 選択中
+            setSelectedWholePreset({
+              // 選択中
+              name: scheduleResponse.data.wholeSet.whole.name,
+              itemId: scheduleResponse.data.wholeSet.whole.itemId,
+            });
+            setValueWhole(scheduleResponse.data.wholeSet.whole.itemId); // 選択中
           }
         }
         if (timeResponse.data?.timeSets) {
           setTimePresets(timeResponse.data.timeSets); // 時間プリセット[id]　登録
           if (timeResponse.data.timeSets.length > 0) {
-              setSelectedTimePreset(scheduleResponse.data.wholeSet.whole.timeSet); // 選択中
-              setValueTime(scheduleResponse.data.wholeSet.whole.timeSet.time.timeId); // 選択中
+            setSelectedTimePreset(scheduleResponse.data.wholeSet.whole.timeSet); // 選択中
+            setValueTime(scheduleResponse.data.wholeSet.whole.timeSet.time.timeId); // 選択中
           }
         }
 
@@ -464,7 +465,7 @@ export default function Schedule() {
   useEffect(() => {
     // 全体プリセットが変更されたら1回実行
     const fetchPresets = async () => {
-      if (!session?.user?.id || isFirst ) {
+      if (!session?.user?.id || isFirst) {
         setIsFirst(false);
         setIsLoading(false); // セッションが無ければ何も表示しない
         return;
@@ -522,7 +523,7 @@ export default function Schedule() {
         <div className="rounded-t-lg bg-teal-400 py-3 text-xl">
           <Link href="/home">
             <Image
-              src="/image/Backicon.svg"
+              src="/image/back.svg"
               alt="Backicon"
               width={25}
               height={25}
@@ -534,16 +535,13 @@ export default function Schedule() {
             />
           </Link>
           <Image
-            src="/image/Allicon.svg"
-            alt="All"
-            width={27}
-            height={27}
-            style={{
-              width: '27px',
-              height: 'auto',
-          }}
+            src="/image/inventory.svg"
+            alt="Backicon"
+            width={25}
+            height={25}
             className="fixed left-16 top-10 ml-2"
           />
+
           <Popover open={openWhole} onOpenChange={setOpenWhole}>
             <PopoverTrigger asChild>
               <Button
@@ -581,7 +579,7 @@ export default function Schedule() {
                           )}
                         />
                         <div className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
-                        {preset.name}
+                          {preset.name}
                         </div>
                       </CommandItem>
                     ))}
@@ -611,7 +609,7 @@ export default function Schedule() {
                 aria-expanded={openTime}
                 className="w-[170px] py-5 text-lg"
               >
-                 <div className="ml-5 max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
+                <div className="ml-5 max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
                   {selectedTimePreset
                     ? selectedTimePreset.time.name
                     : "未設定"}
@@ -641,8 +639,8 @@ export default function Schedule() {
                               : "opacity-0",
                           )}
                         />
-                       <div className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
-                        {preset.time.name}
+                        <div className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
+                          {preset.time.name}
                         </div>
                       </CommandItem>
                     ))}
@@ -685,7 +683,7 @@ export default function Schedule() {
             ))
           ) : (
             <p className="mt-28 text-gray-500">
-              下の＋ボタンから<br/>タスクかフォルダを追加してください</p>
+              下の＋ボタンから<br />タスクかフォルダを追加してください</p>
           )}
         </ScrollArea>
 
