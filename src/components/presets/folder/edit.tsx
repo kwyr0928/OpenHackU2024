@@ -37,17 +37,7 @@ type FolderSet = {
   folder: {
     name: string;
     itemId: string;
-    tasks: {
-      task: {
-        name: string;
-        itemId: string;
-        isStatic: boolean;
-        options: {
-          name: string;
-          time: number;
-        }[];
-      };
-    }[];
+    tasks: TaskSet[];
   };
 };
 
@@ -57,6 +47,7 @@ type TaskSet = {
     name: string;
     itemId: string;
     isStatic: boolean;
+    select:number;
     options: {
       name: string;
       time: number;
@@ -102,7 +93,7 @@ export default function EditFolder({
     }
     try {
       const res = await axios.put(
-        `/api/presets/time/${id}?userId=${session.user.id}`,
+        `/api/presets/folder/${id}?userId=${session.user.id}`,
         folderData,
       );
       console.log(res.data);
@@ -125,25 +116,6 @@ export default function EditFolder({
     setIsDeleteDialogOpen(false);
     setIsDialogOpen(false);
     handleFolderGet();
-  };
-
-  type FolderSet = {
-    // フォルダプリセット　中身
-    folder: {
-      name: string;
-      itemId: string;
-      tasks: {
-        task: {
-          name: string;
-          itemId: string;
-          isStatic: boolean;
-          options: {
-            name: string;
-            time: number;
-          }[];
-        };
-      }[];
-    };
   };
 
   return (
@@ -180,7 +152,7 @@ export default function EditFolder({
               </div>
             ))}
             <div className="flex items-center justify-around">
-              <NewFolderTask item={item} taskResponse={taskApiResponse} />
+              <NewFolderTask item={item} taskApiResponse={taskApiResponse} />
               <Button
                 className="ml-2 rounded-full bg-gray-500 p-2"
                 onClick={() => setIsDialogOpen(true)}

@@ -27,17 +27,7 @@ type FolderSet = {
   folder: {
     name: string;
     itemId: string;
-    tasks: {
-      task: {
-        name: string;
-        itemId: string;
-        isStatic: boolean;
-        options: {
-          name: string;
-          time: number;
-        }[];
-      };
-    }[];
+    tasks: TaskSet[];
   };
 };
 
@@ -53,6 +43,7 @@ type TaskSet = {
     name: string;
     itemId: string;
     isStatic: boolean;
+    select : number
     options: {
       name: string;
       time: number;

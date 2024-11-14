@@ -36,24 +36,18 @@ type TimeSet = {
 export default function TabTime() {
   const { data: session, status } = useSession();
   const [timeResponse, setTimeResponse] = useState<TimeApiResponse>();
-  const [loading, setLoading] = useState(true);
 
   const handleTimeGet = async () => {
-    let isMounted = true; // マウント状態を追跡
     if (!session?.user?.id) {
-      setLoading(false);
       return;
     }
     try {
       const res = await axios.get<TimeApiResponse>(
         `/api/presets/time?userId=${session.user.id}`,
       );
-      if (isMounted) {
-        setTimeResponse(res.data);
-        console.log(res.data);
-      }
+      setTimeResponse(res.data);
+      console.log(res.data);
     } catch (error) {}
-    isMounted = false; // クリーンアップ
   };
 
   useEffect(() => {

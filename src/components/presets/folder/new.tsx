@@ -20,7 +20,6 @@ interface NewFolderProps {
 export default function NewFolder({ handleFolderGet }: NewFolderProps) {
   const [name, setName] = useState<string>(); // 表示される名前
   const [tempName, setTempName] = useState<string>(); // 入力用の一時的な名前
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false); // 削除確認ダイアログの状態
   const [isDialogOpen, setDialogOpen] = useState(false); // ダイアログの状態
   const { data: session, status } = useSession(); // セッション情報
 
