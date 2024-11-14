@@ -309,6 +309,7 @@ export async function getKindItems(userId: string, type: number) {
       where: {
         parentId: null,
         itemType: type,
+        isSetting: false
       },
       orderBy: {
         created_at: "asc",
