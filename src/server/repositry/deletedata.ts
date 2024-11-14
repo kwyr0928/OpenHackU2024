@@ -1,4 +1,5 @@
 import { db } from "../db";
+import { presetType } from "./constants";
 import {
   getItemInfoByItemId,
   getTimeInfoByTimeId,
@@ -111,6 +112,20 @@ export async function deleteItemFirstSetting(userId: string, itemId: string) {
     return null;
   }
 }
+// taskId同じものを削除
+export async function deleteOptionsInTask(taskId: string) {
+  try {
+    const deleteOptions = await db.taskOptions.deleteMany({
+      where: {
+        taskId: taskId,
+      },
+    });
+    return deleteOptions;
+  } catch (error) {
+    console.error("Error deleting options:", error);
+    return null;
+  }
+}
 
 //初期設定のときの時間セット削除処理
 export async function deleteTimeSetFirstSetting(userId: string, timeId: string){
@@ -148,6 +163,27 @@ export async function deleteALlForlder(userId: string, itemId: string){
     });
   } catch (error) {
     console.error("Error deleting allFolder:", error);
+    return null;
+  }
+}
+// folderId to 中にあるtask一覧のうち消していいものを全削除
+export async function deleteTaskItemsCanDeleteInFolder(
+  folderItemId: string,
+  existIds: string[],
+) {
+  try {
+    const deleteResult = await db.items.deleteMany({
+      where: {
+        parentId: folderItemId,
+        itemType: presetType.task,
+        id: {
+          notIn: existIds,
+        },
+      },
+    });
+    return deleteResult.count;
+  } catch (error) {
+    console.error("Error in getTasksInFolder:", error);
     return null;
   }
 }

@@ -20,29 +20,34 @@ import {
 import { Input } from "~/components/ui/input";
 import EditTask from "../task/edit";
 import NewFolderTask from "./taskNew";
+import axios from "axios";
+import { useSession } from "next-auth/react";
 
 interface EditFolderProps {
   id: string;
   item: FolderSet;
   tasks: TaskSet[];
-  taskResponse: TaskApiResponse;
+  taskApiResponse: TaskApiResponse;
   children: string;
+  handleFolderGet:() => void;
 }
 
-type FolderSet = { // フォルダプリセット　中身
+type FolderSet = {
+  // フォルダプリセット　中身
   folder: {
     name: string;
     itemId: string;
     tasks: {
       task: {
-      name: string;
-      itemId: string;
-      isStatic: boolean;
-      options: {
         name: string;
-        time: number;
-      }[];
-    }}[];
+        itemId: string;
+        isStatic: boolean;
+        options: {
+          name: string;
+          time: number;
+        }[];
+      };
+    }[];
   };
 };
 
@@ -59,52 +64,87 @@ type TaskSet = {
   };
 };
 
-type TaskApiResponse = { // タスクプリセットの取得
+type TaskApiResponse = {
+  // タスクプリセットの取得
   message: string;
   taskSets: TaskSet[];
 };
 
-export default function EditFolder({ id, item, tasks, taskResponse, children }: EditFolderProps) {
-  const [time, setTime] = useState<string>("10:00"); // 初期値を設定
+export default function EditFolder({
+  id,
+  item,
+  tasks,
+  taskApiResponse,
+  children,
+  handleFolderGet,
+}: EditFolderProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false); // ダイアログの開閉状態
   const [name, setName] = useState<string>(children); // 表示される名前
   const [newName, setNewName] = useState<string>(children); // 新しい名前
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false); // 削除確認ダイアログの状態
   const [isOpen, setIsOpen] = useState(false); // アコーディオンの開閉状態を管理
 
-  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTime(e.target.value); // 入力された時刻を更新
-  };
+  const { data: session, status } = useSession();
 
-  const handleSave = () => {
-    // 名前を変更
+  const handleSave = async () => {
     setName(newName);
+    const folderData = {
+      userId: session?.user.id,
+      FolderSets : {
+        folder: {
+          name: name,
+          items:tasks.map((task) => task.task.itemId),
+        },
+      },
+    };
+    if (!session?.user?.id) {
+      return;
+    }
+    try {
+      const res = await axios.put(
+        `/api/presets/time/${id}?userId=${session.user.id}`,
+        folderData,
+      );
+      console.log(res.data);
+    } catch (error) {}
+    // 名前を変更
     setIsDialogOpen(false);
+    handleFolderGet();
   };
 
-  const handleDelete = () => {
-    // 削除処理
+  const handleDelete = async () => {
+    if (!session?.user?.id) {
+      return;
+    }
+    try {
+      const response = await axios.delete(
+        `/api/presets/folder/${id}?userId=${session.user.id}`,
+      );
+      console.log(response);
+    } catch (error) {}
     setIsDeleteDialogOpen(false);
     setIsDialogOpen(false);
+    handleFolderGet();
   };
 
-  type FolderSet = { // フォルダプリセット　中身
+  type FolderSet = {
+    // フォルダプリセット　中身
     folder: {
       name: string;
       itemId: string;
       tasks: {
         task: {
-        name: string;
-        itemId: string;
-        isStatic: boolean;
-        options: {
           name: string;
-          time: number;
-        }[];
-      }}[];
+          itemId: string;
+          isStatic: boolean;
+          options: {
+            name: string;
+            time: number;
+          }[];
+        };
+      }[];
     };
   };
-
 
   return (
     <Accordion type="single" collapsible className="w-full">
@@ -133,12 +173,14 @@ export default function EditFolder({ id, item, tasks, taskResponse, children }: 
           <div className="mx-auto w-[90%]">
             {tasks.map((task, index) => (
               <div key={index}>
-                <EditTask id={task.task.itemId}>{task.task.name}</EditTask>
+                <EditTask task={task.task} id={task.task.itemId} handleTaskGet={handleFolderGet}>
+                  {task.task.name}
+                </EditTask>
                 <hr className="mb-1 mt-1 w-full border-gray-500" />
               </div>
             ))}
             <div className="flex items-center justify-around">
-              <NewFolderTask item={item} taskResponse={taskResponse}/>
+              <NewFolderTask item={item} taskResponse={taskApiResponse} />
               <Button
                 className="ml-2 rounded-full bg-gray-500 p-2"
                 onClick={() => setIsDialogOpen(true)}

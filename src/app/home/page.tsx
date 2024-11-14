@@ -3,18 +3,18 @@ import DisplayTime from "~/components/displayTime/displayTime";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { ScrollArea } from "~/components/ui/scroll-area";
-import FolderIconSvg from "~/components/svgs/folderClose"
-import SettingIconSvg from "~/components/svgs/setting"
-import { Separator } from "~/components/ui/separator"
+import FolderIconSvg from "~/components/svgs/folderClose";
+import SettingIconSvg from "~/components/svgs/setting";
+import { Separator } from "~/components/ui/separator";
 import DescriptionSvg from "~/components/svgs/description";
 
 type TaskSets = {
   task: {
-    name: string,
-    itemId: string,
-    isStatic: boolean,
+    name: string;
+    itemId: string;
+    isStatic: boolean;
     options: {
-      name: string,
+      name: string;
       time: number;
     }[];
   }[];
@@ -22,11 +22,11 @@ type TaskSets = {
 
 async function fetchTaskSets() {
   try {
-    const response = await fetch('/api/schedule');
+    const response = await fetch("/api/schedule");
     if (!response.ok) {
       throw new Error(`Error: ${response.statusText}`);
     }
-    const data = await response.json();  // JSON データを `data` に格納
+    const data = await response.json(); // JSON データを `data` に格納
     return data;
   } catch (error) {
     console.error("Failed to fetch data:", error);
@@ -34,16 +34,12 @@ async function fetchTaskSets() {
   }
 }
 
-
-
 const data = {
   member: [
     {
       name: "sasaki",
       itemId: "itemId",
-      timeSet: [
-        { name: "1限電車", goleTime: "11:10" },
-      ],
+      timeSet: [{ name: "1限電車", goleTime: "11:10" }],
       lastEditedTime: "2024/11/14 22:33",
       items: [
         {
@@ -81,11 +77,9 @@ const data = {
           ],
         },
       ],
-    }
-  ]
+    },
+  ],
 };
-
-
 
 type Task = {
   name: string;
@@ -147,7 +141,6 @@ const calculateWakeUpTime = (goalTime: string, totalTime: number) => {
   return `${wakeUpHour < 10 ? "0" : ""}${wakeUpHour}:${wakeUpMinute < 10 ? "0" : ""}${wakeUpMinute}`;
 };
 
-
 export default function Home() {
   const member = data.member[memberNumber];
 
@@ -156,7 +149,7 @@ export default function Home() {
   }
 
   const goleTimePreset = member.timeSet.find(
-    (preset) => 'goleTime' in preset && 'name' in preset
+    (preset) => "goleTime" in preset && "name" in preset,
   ) as { goleTime: string; name: string } | undefined;
 
   const totalTime = calculateTotalTime(member.items);
@@ -165,7 +158,7 @@ export default function Home() {
     : "N/A"; // goleTimeがない場合は "N/A"などのデフォルト値を設定
 
   return (
-    <div className="flex h-screen flex-col items-center justify-center bg-slate-50 text-center font-mPlus text-darkBlue max-w-md mx-auto">
+    <div className="mx-auto flex h-screen max-w-md flex-col items-center justify-center bg-slate-50 text-center font-mPlus text-darkBlue">
       {/* 現在時刻の表示 */}
       <h1 className="mb-1">
         <DisplayTime />
@@ -174,7 +167,9 @@ export default function Home() {
         <h5 className="pb-1 pt-1">最終更新時刻：{member?.lastEditedTime}</h5>
         <CardHeader className="pb-2 pt-0">
           <div className="bg-slate-0 mb-1 rounded-lg border border-pink-300 p-4 text-3xl shadow-sm">
-            <p className="mb-1 text-lg leading-none">{goleTimePreset?.name || "-"}</p>
+            <p className="mb-1 text-lg leading-none">
+              {goleTimePreset?.name || "-"}
+            </p>
             <p className="font-bold">{goleTimePreset?.goleTime || "N/A"}</p>
           </div>
         </CardHeader>
@@ -188,12 +183,19 @@ export default function Home() {
                     <div>
                       {item.tasks.map((task, taskIndex) => (
                         <div key={taskIndex}>
-                          <div className="flex items-center justify-between mt-2">
+                          <div className="mt-2 flex items-center justify-between">
                             <div className="flex items-center">
-                              <DescriptionSvg style={{ width: "30px", height: "30px" }} color={"#FFA660"} />
-                              <p className="ml-3 text-lg font-medium">{task.name}</p>
+                              <DescriptionSvg
+                                style={{ width: "30px", height: "30px" }}
+                                color={"#FFA660"}
+                              />
+                              <p className="ml-3 text-lg font-medium">
+                                {task.name}
+                              </p>
                             </div>
-                            <p className="text-sm mr-3">{task.timeRequired}分</p>
+                            <p className="mr-3 text-sm">
+                              {task.timeRequired}分
+                            </p>
                           </div>
                           <Separator className="my-2" />
                         </div>
@@ -209,16 +211,25 @@ export default function Home() {
                           key={folderIndex}
                           className="rounded-lg border border-gray-300 bg-color-folder p-4"
                         >
-                          <h4 className="mb-2 text-lg font-bold">{folder.name}</h4>
+                          <h4 className="mb-2 text-lg font-bold">
+                            {folder.name}
+                          </h4>
                           <div className="space-y-2">
                             {folder.tasks.map((task, taskIndex) => (
                               <div key={taskIndex}>
                                 <div className="flex items-center justify-between bg-white">
                                   <div className="flex items-center">
-                                    <DescriptionSvg style={{ width: "30px", height: "30px" }} color={"#FFA660"} />
-                                    <p className="ml-3 text-lg font-medium">{task.name}</p>
+                                    <DescriptionSvg
+                                      style={{ width: "30px", height: "30px" }}
+                                      color={"#FFA660"}
+                                    />
+                                    <p className="ml-3 text-lg font-medium">
+                                      {task.name}
+                                    </p>
                                   </div>
-                                  <p className="text-sm mr-3">{task.timeRequired}分</p>
+                                  <p className="mr-3 text-sm">
+                                    {task.timeRequired}分
+                                  </p>
                                 </div>
                                 <Separator className="my-2 bg-white" />
                               </div>
@@ -254,18 +265,22 @@ export default function Home() {
         <div className="mt-4 flex-col">
           <Link href="/presets">
             <Button className="bg-darkBlue shadow-lg hover:bg-blue-950">
-              <FolderIconSvg style={{ width: "30px", height: "30px" }} color={""} />
+              <FolderIconSvg
+                style={{ width: "30px", height: "30px" }}
+                color={""}
+              />
             </Button>
           </Link>
           <h1>プリセット</h1>
         </div>
 
-
-
         <div className="mt-4 flex-col">
           <Link href="/settings">
             <Button className="bg-darkBlue shadow-lg hover:bg-blue-950">
-              <SettingIconSvg style={{ width: "30px", height: "30px" }} color={""} />
+              <SettingIconSvg
+                style={{ width: "30px", height: "30px" }}
+                color={""}
+              />
             </Button>
           </Link>
           <h1>設定</h1>

@@ -7,18 +7,18 @@ import Description from "~/components/svgs/description";
 import PlusCircle from "~/components/svgs/plusCircle";
 import { Button } from "~/components/ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
 } from "~/components/ui/dialog";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Input } from "~/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
@@ -26,7 +26,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 type taskNewProps = {
   item: FolderSet;
   taskResponse: TaskApiResponse;
-}
+};
 
 type FolderSet = {
   folder: {
@@ -64,9 +64,9 @@ type TaskApiResponse = {
 };
 
 export default function NewFolderTask({ item, taskResponse }: taskNewProps) {
-  const [name, setName] = useState<string>(""); 
+  const [name, setName] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isDialogOpen2, setIsDialogOpen2] = useState(false); 
+  const [isDialogOpen2, setIsDialogOpen2] = useState(false);
   const [options1, setOptions1] = useState("デフォルト");
   const [options2, setOptions2] = useState("");
   const [options3, setOptions3] = useState("");
@@ -76,7 +76,6 @@ export default function NewFolderTask({ item, taskResponse }: taskNewProps) {
   const [minutes, setMinutes] = useState(0);
   const [folderPreset, setFolderPreset] = useState<FolderSet>(item);
 
-  
   const handleCancel = () => {
     setIsDialogOpen(false);
     setName("");
@@ -118,10 +117,10 @@ export default function NewFolderTask({ item, taskResponse }: taskNewProps) {
 
   const handleTaskSelect = (target: TaskSet) => {
     // PUT // TODO
-    console.log(target)
+    console.log(target);
     setFolderPreset((prev) => {
       if (!prev) return undefined;
-  
+
       return {
         ...prev,
         folder: {
@@ -139,14 +138,21 @@ export default function NewFolderTask({ item, taskResponse }: taskNewProps) {
       <div className="mt-3 flex justify-center">
         <DropdownMenu>
           <DropdownMenuTrigger>
-            <PlusCircle color="#FFA660" style={{ width: "50px", height: "50px" }} />
+            <PlusCircle
+              color="#FFA660"
+              style={{ width: "50px", height: "50px" }}
+            />
           </DropdownMenuTrigger>
           <DropdownMenuContent className="flex space-x-4 p-4">
             <div>
               <DropdownMenuLabel>タスクの作成</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleTaskAdd}>新規作成</DropdownMenuItem>
-              <DropdownMenuItem onClick={handleTaskAdd2}>既存プリセットから</DropdownMenuItem>
+              <DropdownMenuItem onClick={handleTaskAdd}>
+                新規作成
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleTaskAdd2}>
+                既存プリセットから
+              </DropdownMenuItem>
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -169,13 +175,42 @@ export default function NewFolderTask({ item, taskResponse }: taskNewProps) {
             </TabsList>
             <TabsContent value="pulldown" className="h-[150px]">
               <ScrollArea>
-                {[{ options: options1, minutes: minutes1, setOptions: setOptions1, setMinutes: setMinutes1 },
-                  { options: options2, minutes: minutes2, setOptions: setOptions2, setMinutes: setMinutes2 },
-                  { options: options3, minutes: minutes3, setOptions: setOptions3, setMinutes: setMinutes3 }]
-                  .map((opt, index) => (
-                  <div key={index} className="mb-3 flex items-center justify-center">
-                    <Input type="text" value={opt.options} onChange={(e) => opt.setOptions(e.target.value)} className="mr-7 w-36 text-center" />
-                    <Input type="number" value={opt.minutes} onChange={(e) => opt.setMinutes(Number(e.target.value))} className="w-16 text-center" />
+                {[
+                  {
+                    options: options1,
+                    minutes: minutes1,
+                    setOptions: setOptions1,
+                    setMinutes: setMinutes1,
+                  },
+                  {
+                    options: options2,
+                    minutes: minutes2,
+                    setOptions: setOptions2,
+                    setMinutes: setMinutes2,
+                  },
+                  {
+                    options: options3,
+                    minutes: minutes3,
+                    setOptions: setOptions3,
+                    setMinutes: setMinutes3,
+                  },
+                ].map((opt, index) => (
+                  <div
+                    key={index}
+                    className="mb-3 flex items-center justify-center"
+                  >
+                    <Input
+                      type="text"
+                      value={opt.options}
+                      onChange={(e) => opt.setOptions(e.target.value)}
+                      className="mr-7 w-36 text-center"
+                    />
+                    <Input
+                      type="number"
+                      value={opt.minutes}
+                      onChange={(e) => opt.setMinutes(Number(e.target.value))}
+                      className="w-16 text-center"
+                    />
                     <p>min</p>
                   </div>
                 ))}
@@ -183,13 +218,22 @@ export default function NewFolderTask({ item, taskResponse }: taskNewProps) {
             </TabsContent>
             <TabsContent value="static" className="h-[150px]">
               <div className="flex h-40 items-center justify-center">
-                <Input type="number" value={minutes} onChange={(e) => setMinutes(Number(e.target.value))} className="w-24 text-center" />
+                <Input
+                  type="number"
+                  value={minutes}
+                  onChange={(e) => setMinutes(Number(e.target.value))}
+                  className="w-24 text-center"
+                />
                 <p>min</p>
               </div>
             </TabsContent>
           </Tabs>
           <div className="mt-auto flex justify-around">
-            <Button className="bg-darkBlue hover:bg-blue-900" onClick={handlePullDownTaskCreate} disabled={!name}>
+            <Button
+              className="bg-darkBlue hover:bg-blue-900"
+              onClick={handlePullDownTaskCreate}
+              disabled={!name}
+            >
               作成
             </Button>
           </div>
@@ -202,8 +246,15 @@ export default function NewFolderTask({ item, taskResponse }: taskNewProps) {
           </DialogHeader>
           <div className="grid gap-2 py-4">
             {taskResponse.taskSets.map((taskSet, index) => (
-              <div key={index} className="flex w-full items-center justify-start text-xl text-black" onClick={() => handleTaskSelect(taskSet)}>
-                <Description color="#FFA660" style={{ width: "35px", height: "35px" }} />
+              <div
+                key={index}
+                className="flex w-full items-center justify-start text-xl text-black"
+                onClick={() => handleTaskSelect(taskSet)}
+              >
+                <Description
+                  color="#FFA660"
+                  style={{ width: "35px", height: "35px" }}
+                />
                 【{taskSet.task.name}】
               </div>
             ))}

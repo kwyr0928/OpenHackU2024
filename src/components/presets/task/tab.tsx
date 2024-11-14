@@ -16,12 +16,14 @@ import { ScrollArea } from "~/components/ui/scroll-area";
 import EditTask from "./edit";
 import NewTask from "./new";
 
-type TaskApiResponse = { // タスクプリセットの取得
+type TaskApiResponse = {
+  // タスクプリセットの取得
   message: string;
   taskSets: TaskSet[];
 };
 
-type TaskSet = { // タスクプリセット　中身
+type TaskSet = {
+  // タスクプリセット　中身
   task: {
     name: string;
     itemId: string;
@@ -51,7 +53,7 @@ export default function TabTask() {
   };
 
   useEffect(() => {
-    handleTaskGet();
+    void handleTaskGet();
   }, [session]);
 
   return (
@@ -64,22 +66,28 @@ export default function TabTask() {
               <CommandInput placeholder="検索" />
             </div>
             <ScrollArea className="h-[640px]">
+              <hr className="w-full border-gray-500" />
               <CommandList className="">
                 <CommandEmpty>見つかりません</CommandEmpty>
-                <CommandGroup className="">
-                  <hr className="w-full border-gray-500" />
-
+                <CommandGroup>
                   {taskResponse?.taskSets.map((item) => (
                     <>
                       <CommandItem key={item.task.itemId}>
-                        <EditTask id={item.task.itemId}>{item.task.name}</EditTask>
+                        <EditTask
+                          task={item.task}
+                          id={item.task.itemId}
+                          handleTaskGet={handleTaskGet}
+                        >
+                          {item.task.name}
+                        </EditTask>
                       </CommandItem>
                       <hr className="mt-2 w-full border-gray-500" />
                     </>
                   ))}
-
                 </CommandGroup>
-                <NewTask></NewTask>
+                <NewTask
+                  handleTaskGet={handleTaskGet}
+                ></NewTask>
               </CommandList>
             </ScrollArea>
           </Command>

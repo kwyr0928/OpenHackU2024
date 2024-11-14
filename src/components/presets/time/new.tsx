@@ -12,34 +12,40 @@ import {
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import PlusCircle from "~/components/svgs/plusCircle";
+import { useSession } from "next-auth/react";
 
-export default function NewTime() {
+interface NewTimeProps {
+  handleTimeGet: () => void;
+}
+
+export default function NewTime({handleTimeGet}: NewTimeProps) {
   const [name, setName] = useState<string>(""); // 表示される名前
   const [isDialogOpen, setDialogOpen] = useState(false); // ダイアログの状態
   const [time, setTime] = useState<string>("00:00"); // 初期値を設定
   const [timeResponse, setTimeResponse] = useState(null);
 
+  const { data: session, status } = useSession(); // セッション情報
+
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTime(e.target.value); // 入力された時刻を更新
   };
 
-
   const handleTimeCreate = async () => {
     const timeData = {
-      userId: "cm390e361000010avus2xru9v",
+      userId:  session?.user.id,
       timeSet: {
         name: name,
-        time: time
-      }
+        time: time,
+      },
     };
     try {
       const res = await axios.post("/api/presets/time/new", timeData);
-      setTimeResponse(res.data);
       console.log(res.data);
     } catch (error) {}
     setDialogOpen(false);
     setName("");
     setTime("00:00");
+    handleTimeGet();
   };
 
   return (
