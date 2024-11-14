@@ -8,9 +8,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 export default function Presets() {
   return (
-    <div className="flex h-screen flex-col items-center justify-start text-center max-w-md mx-auto font-mPlus bg-slate-50">
+    <div className="mx-auto flex h-screen max-w-md flex-col items-center justify-start bg-slate-50 text-center font-mPlus">
       {/*タブ*/}
-      <Tabs defaultValue="all" className="mt-8 w-[90%]">
+      <Tabs defaultValue="all" className="mt-8 w-[80%]">
         <TabsList className="mb-4 grid w-full grid-cols-4">
           <TabsTrigger value="all">全体</TabsTrigger>
           <TabsTrigger value="time">時間</TabsTrigger>

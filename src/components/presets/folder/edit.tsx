@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import React, { useState } from "react";
+import FolderClose from "~/components/svgs/folderClose";
+import FolderOpen from "~/components/svgs/folderOpen";
 import {
   Accordion,
   AccordionContent,
@@ -17,68 +19,174 @@ import {
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import EditTask from "../task/edit";
-import NewTask from "../task/new";
+import NewFolderTask from "./taskNew";
+import axios from "axios";
+import { useSession } from "next-auth/react";
 
 interface EditFolderProps {
+  id: string;
+  item: FolderSet;
+  tasks: TaskSet[];
+  taskApiResponse: TaskApiResponse;
   children: string;
+  handleFolderGet:() => void;
 }
 
-export default function EditFolder({ children }: EditFolderProps) {
-  const [time, setTime] = useState<string>("10:00"); // 初期値を設定
+type FolderSet = {
+  // フォルダプリセット　中身
+  folder: {
+    name: string;
+    itemId: string;
+    tasks: {
+      task: {
+        name: string;
+        itemId: string;
+        isStatic: boolean;
+        options: {
+          name: string;
+          time: number;
+        }[];
+      };
+    }[];
+  };
+};
+
+type TaskSet = {
+  // タスクプリセット　中身
+  task: {
+    name: string;
+    itemId: string;
+    isStatic: boolean;
+    options: {
+      name: string;
+      time: number;
+    }[];
+  };
+};
+
+type TaskApiResponse = {
+  // タスクプリセットの取得
+  message: string;
+  taskSets: TaskSet[];
+};
+
+export default function EditFolder({
+  id,
+  item,
+  tasks,
+  taskApiResponse,
+  children,
+  handleFolderGet,
+}: EditFolderProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false); // ダイアログの開閉状態
   const [name, setName] = useState<string>(children); // 表示される名前
   const [newName, setNewName] = useState<string>(children); // 新しい名前
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false); // 削除確認ダイアログの状態
+  const [isOpen, setIsOpen] = useState(false); // アコーディオンの開閉状態を管理
 
-  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTime(e.target.value); // 入力された時刻を更新
-  };
+  const { data: session, status } = useSession();
 
-  const handleSave = () => {
-    // 名前を変更
+  const handleSave = async () => {
     setName(newName);
+    const folderData = {
+      userId: session?.user.id,
+      FolderSets : {
+        folder: {
+          name: name,
+          items:tasks.map((task) => task.task.itemId),
+        },
+      },
+    };
+    if (!session?.user?.id) {
+      return;
+    }
+    try {
+      const res = await axios.put(
+        `/api/presets/time/${id}?userId=${session.user.id}`,
+        folderData,
+      );
+      console.log(res.data);
+    } catch (error) {}
+    // 名前を変更
     setIsDialogOpen(false);
+    handleFolderGet();
   };
 
-  const handleDelete = () => {
-    // 削除処理
+  const handleDelete = async () => {
+    if (!session?.user?.id) {
+      return;
+    }
+    try {
+      const response = await axios.delete(
+        `/api/presets/folder/${id}?userId=${session.user.id}`,
+      );
+      console.log(response);
+    } catch (error) {}
     setIsDeleteDialogOpen(false);
     setIsDialogOpen(false);
+    handleFolderGet();
+  };
+
+  type FolderSet = {
+    // フォルダプリセット　中身
+    folder: {
+      name: string;
+      itemId: string;
+      tasks: {
+        task: {
+          name: string;
+          itemId: string;
+          isStatic: boolean;
+          options: {
+            name: string;
+            time: number;
+          }[];
+        };
+      }[];
+    };
   };
 
   return (
     <Accordion type="single" collapsible className="w-full">
       <AccordionItem value="item-1">
-        <AccordionTrigger className="flex w-full items-center justify-center rounded-t-md bg-violet-200 p-2 text-xl text-gray-700 hover:bg-violet-300">
-          {name}
+        <AccordionTrigger
+          onClick={() => setIsOpen(!isOpen)} // 開閉をトグル
+          className="w-full items-center justify-between p-1 text-xl text-black"
+        >
+          <div>
+            {isOpen ? (
+              <FolderOpen
+                color="#A5EC44"
+                style={{ width: "35px", height: "35px" }}
+              />
+            ) : (
+              <FolderClose
+                color="#A5EC44"
+                style={{ width: "35px", height: "35px" }}
+              />
+            )}
+          </div>
+          【{name}】
         </AccordionTrigger>
-        <AccordionContent className="items-center rounded-b-md bg-gray-200 text-xl">
-          <div className="mx-auto flex w-[80%] items-center justify-center">
-            <div className="mt-5">
-              <div className="mt-3">
-                <EditTask>駅まで徒歩</EditTask>
+        <AccordionContent className="w-full">
+          <hr className="mb-1 mt-2 border-gray-500" />
+          <div className="mx-auto w-[90%]">
+            {tasks.map((task, index) => (
+              <div key={index}>
+                <EditTask task={task.task} id={task.task.itemId} handleTaskGet={handleFolderGet}>
+                  {task.task.name}
+                </EditTask>
+                <hr className="mb-1 mt-1 w-full border-gray-500" />
               </div>
-              <div className="mt-3">
-                <EditTask>ごはん</EditTask>
-              </div>
-              <div className="mt-3">
-                <EditTask>着替え</EditTask>
-              </div>
-              <div className="mt-3">
-                <EditTask>メイク</EditTask>
-              </div>
-              <div className="mt-3">
-                <EditTask>ヘアメイク</EditTask>
-              </div>
-              <div className="mt-3 flex items-center justify-between">
-                <NewTask />
-                <Button
-                  className="rounded-full bg-gray-500 ml-2 p-2"
-                  onClick={() => setIsDialogOpen(true)}
-                >
-                  <Image src="/image/edit.svg" alt="" width={20} height={20} className="" />
-                </Button>
-              </div>
+            ))}
+            <div className="flex items-center justify-around">
+              <NewFolderTask item={item} taskResponse={taskApiResponse} />
+              <Button
+                className="ml-2 rounded-full bg-gray-500 p-2"
+                onClick={() => setIsDialogOpen(true)}
+              >
+                <Image src="/image/edit.svg" alt="" width={20} height={20} />
+              </Button>
             </div>
           </div>
 
@@ -97,7 +205,7 @@ export default function EditFolder({ children }: EditFolderProps) {
               />
 
               {/* 削除ボタン（名前変更ダイアログ内） */}
-              <div className="flex justify-around mt-4">
+              <div className="mt-4 flex justify-around">
                 <Button
                   className="bg-red-600 bg-red-700 text-white"
                   onClick={() => setIsDeleteDialogOpen(true)} // 削除確認ダイアログを開く
@@ -124,7 +232,9 @@ export default function EditFolder({ children }: EditFolderProps) {
               <DialogHeader>
                 <DialogTitle>確認</DialogTitle>
               </DialogHeader>
-              <p className="text-center mt-4 text-gray-700">この項目を削除しますか？</p>
+              <p className="mt-4 text-center text-gray-700">
+                このフォルダを削除しますか？
+              </p>
               <div className="mt-4 flex justify-end">
                 <Button
                   className="mr-4 bg-gray-600"
@@ -133,7 +243,7 @@ export default function EditFolder({ children }: EditFolderProps) {
                   キャンセル
                 </Button>
                 <Button
-                  className="bg-red-600 hover:bg-red-700 text-white"
+                  className="bg-red-600 text-white hover:bg-red-700"
                   onClick={handleDelete} // 削除処理を実行
                 >
                   削除
