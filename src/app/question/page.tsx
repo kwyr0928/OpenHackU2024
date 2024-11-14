@@ -115,7 +115,7 @@ export default function Question() {
         setStep(step + 1);
         return;
       case selectedItems.length + 2:
-        handleSendTask();
+        //handleSendTask();
         callWholePresetAPI();
         return;
       default:
@@ -176,7 +176,7 @@ export default function Question() {
     }
 
     try {
-      // const res = await axios.post("全体プリセット生成API");
+      const res = await axios.post(`/api/question?userId=${session.user.id}`);
       console.log("generated whole preset");
     } catch (error) {
       console.log("failed");
