@@ -93,6 +93,35 @@ export async function setItemOrder(myItemId: string, order: number) {
   }
 }
 
+export async function setNextSchedule(userId: string, wholeItemId: string){
+  try {
+    if(wholeItemId === null) throw new Error("Invalid wholeItemId for setNextSchedule");
+
+    //すでにセットされている予定のisSettingをfalseに
+    await db.items.updateMany({
+      where: {
+        userId: userId,
+        isSetting: true,
+      },
+      data: {
+        isSetting: false,
+      },
+    });
+
+    await db.items.update({
+      where:{
+        userId: userId,
+        id: wholeItemId,
+      },
+      data: {
+        isSetting: true,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
 ///////////////////////////////////////////////////////////////
 
 // itemの更新
