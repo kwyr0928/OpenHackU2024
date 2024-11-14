@@ -439,7 +439,23 @@ export async function getAllTaskByUserId(userId: string) {
   }
 }
 
+//初期アンケート時の時間セット取得
 export async function getTimeFirst(){
   const timeData = await db.timeSets.findFirst();
   return timeData;
+}
+
+//from wholeSetId to itemId
+export async function getItemIdByWholeId(wholeId: string) {
+  try {
+    const targetItemId = await db.wholeSets.findUnique({
+      where: {
+        id: wholeId,
+      },
+    });
+    return targetItemId
+  } catch (error) {
+    console.error("Error getItemByWholeId:", error);
+    return null;
+  }
 }
