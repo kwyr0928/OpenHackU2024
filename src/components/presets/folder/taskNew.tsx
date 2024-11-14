@@ -27,6 +27,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 type taskNewProps = {
   item: FolderSet;
   taskApiResponse: TaskApiResponse;
+  select:number;
 };
 
 type FolderSet = {
@@ -35,14 +36,16 @@ type FolderSet = {
     name: string;
     itemId: string;
     tasks: {
-      name: string;
-      itemId: string;
-      isStatic: boolean;
-      select: number;
-      options: {
+      task: {
         name: string;
-        time: number;
-      }[];
+        itemId: string;
+        isStatic: boolean;
+        select:number;
+        options: {
+          name: string;
+          time: number;
+        }[];
+      };
     }[];
   };
 };
@@ -65,7 +68,7 @@ type TaskApiResponse = {
   taskSets: TaskSet[];
 };
 
-export default function NewFolderTask({ item, taskApiResponse }: taskNewProps) {
+export default function NewFolderTask({select, item, taskApiResponse }: taskNewProps) {
   const [name, setName] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDialogOpen2, setIsDialogOpen2] = useState(false);
@@ -103,7 +106,7 @@ export default function NewFolderTask({ item, taskApiResponse }: taskNewProps) {
             taskSet: {
               name: name,
               isStatic: false,
-              select: 0,
+              select: select,
               options: [
                 {
                   name: options1,
@@ -132,7 +135,7 @@ export default function NewFolderTask({ item, taskApiResponse }: taskNewProps) {
             taskSet: {
               name: name,
               isStatic: true,
-              select: 0,
+              select: select,
               options: [
                 {
                   name: options1,

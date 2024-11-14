@@ -22,7 +22,6 @@ type TimeApiResponse = {
   timeSets: TimeSet[];
 };
 
-
 type TimeSet = {
   // 時間プリセット　中身
   time: {
@@ -31,7 +30,6 @@ type TimeSet = {
     time: string;
   };
 };
-
 
 export default function TabTime() {
   const { data: session, status } = useSession();
@@ -51,7 +49,7 @@ export default function TabTime() {
   };
 
   useEffect(() => {
-  void  handleTimeGet();
+    void handleTimeGet();
   }, [session]);
 
   return (
@@ -69,8 +67,8 @@ export default function TabTime() {
                 <CommandEmpty>見つかりません</CommandEmpty>
                 <CommandGroup>
                   {timeResponse?.timeSets?.map((item) => (
-                    <>
-                      <CommandItem key={item.time.timeId}>
+                    <div key={item.time.timeId}>
+                      <CommandItem>
                         <EditTime
                           id={item.time.timeId}
                           time={item.time.time}
@@ -80,7 +78,7 @@ export default function TabTime() {
                         </EditTime>
                       </CommandItem>
                       <hr className="w-full border-gray-500" />
-                    </>
+                    </div>
                   ))}
                 </CommandGroup>
                 <NewTime handleTimeGet={handleTimeGet}></NewTime>

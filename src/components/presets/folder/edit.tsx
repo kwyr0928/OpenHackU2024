@@ -18,8 +18,8 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
-import EditTask from "../task/edit";
 import NewFolderTask from "./taskNew";
+import EditFolderTask from "./taskEdit";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 
@@ -37,14 +37,16 @@ type FolderSet = {
     name: string;
     itemId: string;
     tasks: {
-      name: string;
-      itemId: string;
-      isStatic: boolean;
-      select: number;
-      options: {
+      task: {
         name: string;
-        time: number;
-      }[];
+        itemId: string;
+        isStatic: boolean;
+        select: number;
+        options: {
+          name: string;
+          time: number;
+        }[];
+      };
     }[];
   };
 };
@@ -89,16 +91,13 @@ export default function EditFolder({
     const folderData = {
       userId: session?.user.id,
       folderSet: {
-        name: item.folder.name,
+        name:name,
         item: [
           {
-            folder: {
-              name: name,
-              items: item.folder.tasks.map((task) => ({
-                itemId: task.itemId,
-                select: task.select,
-              })),
-            },
+            items: item.folder.tasks.map((task) => ({
+              itemId: task.task.itemId,
+              select: task.task.select,
+            })),
           },
         ],
       },
@@ -119,6 +118,7 @@ export default function EditFolder({
   };
 
   const handleDelete = async () => {
+    //削除
     if (!session?.user?.id) {
       return;
     }
@@ -158,20 +158,26 @@ export default function EditFolder({
         <AccordionContent className="w-full">
           <hr className="mb-1 mt-2 border-gray-500" />
           <div className="mx-auto w-[90%]">
+            {/* おそらくここ */}
             {item.folder.tasks.map((task, index) => (
               <div key={index}>
-                <EditTask
-                  task={task}
-                  id={task.itemId}
-                  handleTaskGet={handleFolderGet}
+                <EditFolderTask
+                  task={task.task}
+                  id={task.task.itemId}
+                  select={index}
                 >
-                  {task.name}
-                </EditTask>
+                  {task.task.name}
+                </EditFolderTask>
                 <hr className="mb-1 mt-1 w-full border-gray-500" />
               </div>
             ))}
+
             <div className="flex items-center justify-around">
-              <NewFolderTask item={item} taskApiResponse={taskApiResponse} />
+              <NewFolderTask
+                select={item.folder.tasks.length}
+                item={item}
+                taskApiResponse={taskApiResponse}
+              />
               <Button
                 className="ml-2 rounded-full bg-gray-500 p-2"
                 onClick={() => setIsDialogOpen(true)}
