@@ -527,11 +527,9 @@ export default function Schedule() {
                 aria-expanded={openTime}
                 className="w-[170px] py-5 text-lg"
               >
-                <div className="ml-5">
-                  {selectedTimePreset
-                    ? selectedTimePreset.time.name
-                    : "未設定"}
-                </div>
+                <div className="ml-5 max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
+  {selectedTimePreset ? selectedTimePreset.time.name : "未設定"}
+</div>
                 <ChevronsUpDown className="ml-3 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
@@ -557,7 +555,9 @@ export default function Schedule() {
                               : "opacity-0",
                           )}
                         />
+                        <span className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
                         {preset.time.name}
+                        </span>
                       </CommandItem>
                     ))}
                   </CommandGroup>

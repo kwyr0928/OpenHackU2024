@@ -480,7 +480,7 @@ export default function Schedule() {
                 aria-expanded={openTime}
                 className="w-[170px] py-5 text-lg"
               >
-                <div className="ml-5">
+                <div className="ml-5 max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
                   {selectedTimePreset
                     ? selectedTimePreset.time.name
                     : "未設定"}
@@ -510,7 +510,9 @@ export default function Schedule() {
                               : "opacity-0",
                           )}
                         />
+                        <div className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
                         {preset.time.name}
+                        </div>
                       </CommandItem>
                     ))}
                   </CommandGroup>
