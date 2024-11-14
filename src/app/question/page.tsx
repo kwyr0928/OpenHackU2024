@@ -115,7 +115,7 @@ export default function Question() {
         setStep(step + 1);
         return;
       case selectedItems.length + 2:
-        //handleSendTask();
+        handleSendTask();
         callWholePresetAPI();
         return;
       default:
@@ -132,7 +132,7 @@ export default function Question() {
     const json: answerTimeJsonDataPrpos = {
       userId: session?.user.id!,
       timeSet: {
-        "name": "default time",
+        "name": "デフォルトタイム",
         "time": timePresetValue
       }
     };
