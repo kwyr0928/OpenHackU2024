@@ -6,8 +6,8 @@ export default function Login() {
     <div className="mx-auto flex h-screen max-w-md flex-col justify-center bg-slate-50 text-center font-mPlus">
       {/* 新規登録 */}
       <div className="items-center">
-        <h1 className="text-4xl text-darkBlue">新規登録</h1>
-        <h2 className="m-3 pb-7 text-base text-darkBlue">
+        <h1 className="text-4xl text-color-all">新規登録</h1>
+        <h2 className="m-3 pb-7 text-base text-gray-700">
           初めての方は<br></br>こちらからGoogleアカウントを使用して<br></br>
           新規登録してください
         </h2>
@@ -57,12 +57,12 @@ export default function Login() {
         </button>
       </div>
 
-      <hr className="m-16 mx-auto h-1 w-10/12 rounded border-0 bg-darkBlue dark:bg-gray-700 md:my-10"></hr>
+      <hr className="m-16 mx-auto h-1 w-10/12 rounded border-0 bg-color-all dark:bg-gray-700 md:my-10"></hr>
 
       {/* ログイン */}
       <div className="items-center">
-        <h1 className="pt-4 text-4xl text-darkBlue">ログイン</h1>
-        <h2 className="m-3 pb-7 text-darkBlue">
+        <h1 className="pt-4 text-4xl text-color-all">ログイン</h1>
+        <h2 className="m-3 pb-7 text-text-gray-700">
           既に登録済みの方は、<br></br>こちらからGoogleアカウントを使用して
           <br></br>ログインしてください
         </h2>

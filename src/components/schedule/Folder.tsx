@@ -113,7 +113,7 @@ export default function FolderPreset({
                 aria-expanded={openFolder}
                 className="mb-3 w-[170px] py-5 text-lg"
               >
-                <div className="ml-5">
+                 <div className="ml-5 max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
                   {selectedFolderPreset
                     ? selectedFolderPreset.folder.name
                     : "未設定"}
@@ -143,7 +143,9 @@ export default function FolderPreset({
                               : "opacity-0",
                           )}
                         />
+                         <div className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
                         {preset.folder.name}
+                        </div>
                       </CommandItem>
                     ))}
                   </CommandGroup>

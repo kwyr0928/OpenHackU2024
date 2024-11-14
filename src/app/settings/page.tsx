@@ -8,7 +8,7 @@ export default function Settings() {
       <div className="mb-10 w-max items-center">
         <Button
           size="xl"
-          className="h-16 w-48 rounded-3xl border-2 border-darkBlue bg-transparent px-4 py-2 text-2xl text-black hover:border-transparent hover:bg-blue-500 hover:text-white"
+          className="h-16 w-48 rounded-3xl border-2 border-color-all bg-transparent px-4 py-2 text-2xl text-black hover:border-transparent hover:bg-emerald-500 hover:text-white"
         >
           言語設定
         </Button>
@@ -17,7 +17,7 @@ export default function Settings() {
       <div className="mb-10 w-max items-center">
         <Button
           size="xl"
-          className="h-16 w-48 rounded-3xl border-2 border-darkBlue bg-transparent px-4 py-2 text-2xl text-black hover:border-transparent hover:bg-blue-500 hover:text-white"
+          className="h-16 w-48 rounded-3xl border-2 border-color-all bg-transparent px-4 py-2 text-2xl text-black hover:border-transparent hover:bg-emerald-500 hover:text-white"
         >
           テーマカラー
         </Button>
@@ -26,7 +26,7 @@ export default function Settings() {
       <div className="mb-10 w-max items-center">
         <Button
           size="xl"
-          className="h-16 w-48 rounded-3xl border-2 border-darkBlue bg-transparent px-4 py-2 text-2xl text-black hover:border-transparent hover:bg-blue-500 hover:text-white"
+          className="h-16 w-48 rounded-3xl border-2 border-color-all bg-transparent px-4 py-2 text-2xl text-black hover:border-transparent hover:bg-emerald-500 hover:text-white"
         >
           ログアウト
         </Button>

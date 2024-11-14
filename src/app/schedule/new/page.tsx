@@ -65,6 +65,7 @@ type DetailWhole = {
   whole: {
     name: string; // 全体プリセット　名前
     itemId: string; // 全体プリセット　ID
+    updateTime?: Date; // 最終更新時間
     timeSet: {
       time: {
         name: string; // 時間プリセット　名前
@@ -196,6 +197,17 @@ export default function Schedule() {
   const [selectedWholePreset, setSelectedWholePreset] = useState<WholeSet>(); // 選択中の全体プリセット
   const [detailWholePreset, setDetailWholePreset] = useState<DetailWhole>(); // 選択中の全体プリセット[id]
   const [selectedTimePreset, setSelectedTimePreset] = useState<TimeSet>(); // 選択中の時間プリセット
+  const [isFirst, setIsFirst] = useState<boolean>(true);
+
+  const handleScheduleCreate = async () => {
+    // スケジュール　作成
+    const scheduleNew = JSON.parse(JSON.stringify(detailWholePreset));
+    delete scheduleNew.whole.updateTime; // updateTimeプロパティを削除
+    try {
+      const res = await axios.post("/api/schedule/new", scheduleNew);
+      console.log(res.data);
+    } catch (error) {}
+  };
 
   const handleSortUp = (index: number) => {
     // タスクフォルダ並び替え　↑
@@ -374,7 +386,7 @@ export default function Schedule() {
       }
 
       try {
-        const [wholeResponse, timeResponse, folderResponse, taskResponse] =
+        const [wholeResponse, timeResponse, folderResponse, taskResponse, scheduleResponse] =
           await Promise.all([
             axios.get<WholeApiResponse>(
               `/api/presets/whole?userId=${session.user.id}`, // 全体プリセット一覧 get
@@ -388,31 +400,30 @@ export default function Schedule() {
             axios.get<TaskApiResponse>(
               `/api/presets/task?userId=${session.user.id}`, // タスクプリセット一覧 get
             ),
+            axios.get<DetailWholeApiResponse>(`/api/schedule?userId=${session.user.id}`)
           ]);
+          console.log(scheduleResponse);
+
+          if (scheduleResponse.data.wholeSet) {
+            setDetailWholePreset(scheduleResponse.data.wholeSet); // 全体プリセット[id] 登録
+          }
 
         if (wholeResponse.data?.wholeSets) {
           setWholePresets(wholeResponse.data.wholeSets); // 全体プリセット一覧　登録
           if (wholeResponse.data.wholeSets.length > 0) {
-            const firstPreset = wholeResponse.data.wholeSets[0];
-            if (firstPreset !== undefined) {
               setSelectedWholePreset({
                 // 選択中
-                name: firstPreset.name,
-                itemId: firstPreset.itemId,
+                name: scheduleResponse.data.wholeSet.whole.name,
+                itemId: scheduleResponse.data.wholeSet.whole.itemId,
               });
-              setValueWhole(firstPreset.itemId); // 選択中
-            }
+              setValueWhole(scheduleResponse.data.wholeSet.whole.itemId); // 選択中
           }
         }
-
         if (timeResponse.data?.timeSets) {
           setTimePresets(timeResponse.data.timeSets); // 時間プリセット[id]　登録
           if (timeResponse.data.timeSets.length > 0) {
-            const firstTimePreset = timeResponse.data.timeSets[0];
-            if (firstTimePreset !== undefined) {
-              setSelectedTimePreset(firstTimePreset); // 選択中
-              setValueTime(firstTimePreset.time.timeId); // 選択中
-            }
+              setSelectedTimePreset(scheduleResponse.data.wholeSet.whole.timeSet); // 選択中
+              setValueTime(scheduleResponse.data.wholeSet.whole.timeSet.time.timeId); // 選択中
           }
         }
 
@@ -428,7 +439,7 @@ export default function Schedule() {
         }
 
         if (taskResponse.data?.taskSets) {
-          setTaskPresets(taskResponse.data.taskSets); // 時間プリセット　登録
+          setTaskPresets(taskResponse.data.taskSets); // タスクプリセット　登録
         }
       } catch (err) {
         console.error("Error fetching presets:", err);
@@ -444,7 +455,8 @@ export default function Schedule() {
   useEffect(() => {
     // 全体プリセットが変更されたら1回実行
     const fetchPresets = async () => {
-      if (!session?.user?.id) {
+      if (!session?.user?.id || isFirst ) {
+        setIsFirst(false);
         setIsLoading(false); // セッションが無ければ何も表示しない
         return;
       }
@@ -523,7 +535,7 @@ export default function Schedule() {
                 aria-expanded={openWhole}
                 className="w-[170px] py-5 text-lg"
               >
-                <div className="ml-5">
+                <div className="ml-5 max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
                   {selectedWholePreset
                     ? selectedWholePreset.name
                     : "未設定"}
@@ -551,7 +563,9 @@ export default function Schedule() {
                               : "opacity-0",
                           )}
                         />
+                        <div className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
                         {preset.name}
+                        </div>
                       </CommandItem>
                     ))}
                   </CommandGroup>
@@ -576,7 +590,7 @@ export default function Schedule() {
                 aria-expanded={openTime}
                 className="w-[170px] py-5 text-lg"
               >
-                <div className="ml-5">
+                 <div className="ml-5 max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
                   {selectedTimePreset
                     ? selectedTimePreset.time.name
                     : "未設定"}
@@ -606,7 +620,9 @@ export default function Schedule() {
                               : "opacity-0",
                           )}
                         />
+                       <div className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
                         {preset.time.name}
+                        </div>
                       </CommandItem>
                     ))}
                   </CommandGroup>
@@ -821,7 +837,7 @@ export default function Schedule() {
         <p className="mt-3 text-teal-500">間に合う時刻</p>
         <p className="text-3xl font-extrabold text-red-600">７：３０</p>
         <Link href="/home">
-          <Button className="my-2 w-36 bg-teal-400 py-6 text-2xl hover:bg-teal-500">
+          <Button className="my-2 w-36 bg-teal-400 py-6 text-2xl hover:bg-teal-500" onClick={handleScheduleCreate}>
             設定
           </Button>
         </Link>

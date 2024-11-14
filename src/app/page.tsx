@@ -9,7 +9,7 @@ export default function Page() {
       {/* アプリのロゴ */}
       <div className="mt-10 flex w-5/6 flex-col items-center">
         <Image
-          src="/image/rogoPrototype.png" // ロゴのパス
+          src="/image/FitTime_logo.png" // ロゴのパス
           alt="App Logo"
           width={0} // 必須の width 値
           height={0} // 必須の height 値
@@ -19,9 +19,9 @@ export default function Page() {
       </div>
 
       {/* 説明文 */}
-      <div className="text-lg text-darkBlue md:text-xl">
+      <div className="text-lg text-gray-800 md:text-xl">
         <p>
-          このアプリは <br />{" "}
+          このアプリは、 <br />{" "}
           電車の時間やオンライン会議の時間などの目標とする時間と、朝のタスクを設定することで起きなくてはいけない時間を簡単に把握することができるアプリです。
         </p>
         <br />
@@ -35,7 +35,7 @@ export default function Page() {
       {/* はじめるボタン */}
       <div className="mb-10">
         <Link href="/login">
-          <Button className="w-full rounded-2xl bg-darkBlue px-20 py-8 text-4xl shadow-lg hover:bg-blue-950">
+          <Button className="w-full rounded-2xl bg-color-all hover:bg-emerald-500 px-20 py-8 text-4xl shadow-lg">
             はじめる
           </Button>
         </Link>
