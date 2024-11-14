@@ -438,9 +438,25 @@ export async function getAllTaskByUserId(userId: string) {
   }
 }
 
+
 export async function getTimeFirst(userId: string){
   const timeData = await db.timeSets.findFirst({
     where: { userId: userId }
   });
   return timeData;
+}
+
+//from wholeSetId to itemId
+export async function getItemIdByWholeId(wholeId: string) {
+  try {
+    const targetItemId = await db.wholeSets.findUnique({
+      where: {
+        id: wholeId,
+      },
+    });
+    return targetItemId
+  } catch (error) {
+    console.error("Error getItemByWholeId:", error);
+    return null;
+  }
 }
