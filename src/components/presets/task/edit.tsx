@@ -4,7 +4,6 @@ import { ScrollArea } from "@radix-ui/react-scroll-area";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { boolean } from "zod";
 import Description from "~/components/svgs/description";
 import { Button } from "~/components/ui/button";
 import {
@@ -67,7 +66,6 @@ export default function EditTask({
       taskSet: {
         name: name,
         isStatic: false,
-        select: 0,
         options: [
           {
             name: options1,
@@ -89,7 +87,6 @@ export default function EditTask({
       taskSet: {
         name: name,
         isStatic: true,
-        select: 0,
         options: [
           {
             time: minutes,

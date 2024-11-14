@@ -24,12 +24,11 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 
 interface EditFolderProps {
-  id: string;
   item: FolderSet;
-  tasks: TaskSet[];
   taskApiResponse: TaskApiResponse;
   children: string;
-  handleFolderGet:() => void;
+  id: string;
+  handleFolderGet: () => void;
 }
 
 type FolderSet = {
@@ -37,7 +36,16 @@ type FolderSet = {
   folder: {
     name: string;
     itemId: string;
-    tasks: TaskSet[];
+    tasks: {
+      name: string;
+      itemId: string;
+      isStatic: boolean;
+      select: number;
+      options: {
+        name: string;
+        time: number;
+      }[];
+    }[];
   };
 };
 
@@ -47,7 +55,6 @@ type TaskSet = {
     name: string;
     itemId: string;
     isStatic: boolean;
-    select:number;
     options: {
       name: string;
       time: number;
@@ -62,11 +69,10 @@ type TaskApiResponse = {
 };
 
 export default function EditFolder({
-  id,
   item,
-  tasks,
   taskApiResponse,
   children,
+  id,
   handleFolderGet,
 }: EditFolderProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false); // ダイアログの開閉状態
@@ -78,14 +84,23 @@ export default function EditFolder({
   const { data: session, status } = useSession();
 
   const handleSave = async () => {
+    // 名前を変更
     setName(newName);
     const folderData = {
       userId: session?.user.id,
-      FolderSets : {
-        folder: {
-          name: name,
-          items:tasks.map((task) => task.task.itemId),
-        },
+      folderSet: {
+        name: item.folder.name,
+        item: [
+          {
+            folder: {
+              name: name,
+              items: item.folder.tasks.map((task) => ({
+                itemId: task.itemId,
+                select: task.select,
+              })),
+            },
+          },
+        ],
       },
     };
     if (!session?.user?.id) {
@@ -98,7 +113,7 @@ export default function EditFolder({
       );
       console.log(res.data);
     } catch (error) {}
-    // 名前を変更
+
     setIsDialogOpen(false);
     handleFolderGet();
   };
@@ -143,10 +158,14 @@ export default function EditFolder({
         <AccordionContent className="w-full">
           <hr className="mb-1 mt-2 border-gray-500" />
           <div className="mx-auto w-[90%]">
-            {tasks.map((task, index) => (
+            {item.folder.tasks.map((task, index) => (
               <div key={index}>
-                <EditTask task={task.task} id={task.task.itemId} handleTaskGet={handleFolderGet}>
-                  {task.task.name}
+                <EditTask
+                  task={task}
+                  id={task.itemId}
+                  handleTaskGet={handleFolderGet}
+                >
+                  {task.name}
                 </EditTask>
                 <hr className="mb-1 mt-1 w-full border-gray-500" />
               </div>

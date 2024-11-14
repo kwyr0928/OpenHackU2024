@@ -53,7 +53,7 @@ export default function TabTask() {
   };
 
   useEffect(() => {
-    void handleTaskGet();
+ void  handleTaskGet();
   }, [session]);
 
   return (

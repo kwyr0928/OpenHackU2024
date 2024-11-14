@@ -27,9 +27,19 @@ type FolderSet = {
   folder: {
     name: string;
     itemId: string;
-    tasks: TaskSet[];
+    tasks: {
+      name: string;
+      itemId: string;
+      isStatic: boolean;
+      select: number;
+      options: {
+        name: string;
+        time: number;
+      }[];
+    }[];
   };
 };
+
 
 type TaskApiResponse = {
   // タスクプリセットの取得
@@ -43,13 +53,13 @@ type TaskSet = {
     name: string;
     itemId: string;
     isStatic: boolean;
-    select : number
     options: {
       name: string;
       time: number;
     }[];
   };
 };
+
 
 export default function TabFolder() {
   const [folderResponse, setFolderResponse] = useState<FolderApiResponse>();
@@ -78,7 +88,7 @@ export default function TabFolder() {
   };
 
   useEffect(() => {
-    void handleFolderGet();
+ void  handleFolderGet();
   }, [session]);
 
   return (
@@ -99,9 +109,8 @@ export default function TabFolder() {
                     <>
                       <CommandItem key={item.folder.itemId}>
                         <EditFolder
-                          id={item.folder.itemId}
+                        id={item.folder.itemId}
                           item={item}
-                          tasks={item.folder.tasks}
                           taskApiResponse={taskResponse}
                           handleFolderGet={handleFolderGet}
                         >

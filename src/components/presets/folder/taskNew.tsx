@@ -34,16 +34,25 @@ type FolderSet = {
   folder: {
     name: string;
     itemId: string;
-    tasks: TaskSet[];
+    tasks: {
+      name: string;
+      itemId: string;
+      isStatic: boolean;
+      select: number;
+      options: {
+        name: string;
+        time: number;
+      }[];
+    }[];
   };
 };
 
 type TaskSet = {
+  // タスクプリセット　中身
   task: {
     name: string;
     itemId: string;
     isStatic: boolean;
-    select: number;
     options: {
       name: string;
       time: number;
@@ -87,35 +96,50 @@ export default function NewFolderTask({ item, taskApiResponse }: taskNewProps) {
   const handleTaskCreate = async () => {
     const taskData1 = {
       userId: session?.user.id,
-      taskSet: {
-        name: name,
-        isStatic: false,
-        select: 0,
-        options: [
+      folderSet: {
+        name: item.folder.name,
+        items: [
           {
-            name: options1,
-            time: minutes1,
-          },
-          {
-            name: options2,
-            time: minutes2,
-          },
-          {
-            name: options3,
-            time: minutes3,
+            taskSet: {
+              name: name,
+              isStatic: false,
+              select: 0,
+              options: [
+                {
+                  name: options1,
+                  time: minutes1,
+                },
+                {
+                  name: options2,
+                  time: minutes2,
+                },
+                {
+                  name: options3,
+                  time: minutes3,
+                },
+              ],
+            },
           },
         ],
       },
     };
     const taskData2 = {
       userId: session?.user.id,
-      taskSet: {
-        name: name,
-        isStatic: true,
-        select: 0,
-        options: [
+      folderSet: {
+        name: item.folder.name,
+        items: [
           {
-            time: minutes,
+            taskSet: {
+              name: name,
+              isStatic: true,
+              select: 0,
+              options: [
+                {
+                  name: options1,
+                  time: minutes1,
+                },
+              ],
+            },
           },
         ],
       },
@@ -130,7 +154,7 @@ export default function NewFolderTask({ item, taskApiResponse }: taskNewProps) {
           taskData1,
         );
       } else {
-        const res = await axios.post(
+        const res = await axios.put(
           `/api/presets/folder/${item.folder.itemId}?userId=${session.user.id}`,
           taskData2,
         );
@@ -161,7 +185,7 @@ export default function NewFolderTask({ item, taskApiResponse }: taskNewProps) {
     if (!session?.user?.id) {
       return;
     }
-    const res = await axios.post(
+    const res = await axios.put(
       `/api/presets/folder/${item.folder.itemId}?userId=${session.user.id}`,
       data,
     );
@@ -280,7 +304,7 @@ export default function NewFolderTask({ item, taskApiResponse }: taskNewProps) {
         </DialogContent>
       </Dialog>
       <Dialog open={isDialogOpen2} onOpenChange={setIsDialogOpen2}>
-        <DialogContent>
+        <DialogContent className="w-[90%]">
           <DialogHeader>
             <DialogTitle>追加するタスクを選んでください</DialogTitle>
           </DialogHeader>

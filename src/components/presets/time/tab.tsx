@@ -51,7 +51,7 @@ export default function TabTime() {
   };
 
   useEffect(() => {
-   void handleTimeGet();
+  void  handleTimeGet();
   }, [session]);
 
   return (
