@@ -34,7 +34,8 @@ type FolderProps = {
   handleDelete: (task: FolderSet) => void;
   handleSortUp: (index: number) => void;
   handleSortDown: (index: number) => void;
-  isDelete?: boolean;
+  handleSortUp: (folderIndex: number, taskIndex: number) => void;
+  handleSortDown: (folderIndex: number, taskIndex: number) => void;
 };
 
 type FolderSet = {
@@ -61,7 +62,8 @@ export default function FolderPreset({
   handleDelete,
   handleSortUp,
   handleSortDown,
-  isDelete,
+  handleSortUp2,
+  handleSortDown2
 }: FolderProps) {
   const [selectedFolderPreset, setSelectedFolderPreset] = useState<FolderSet>(); // 選択中のフォルダプリセット
   const [openFolder, setOpenFolder] = useState(false); // フォルダ　プルダウン
@@ -86,33 +88,29 @@ export default function FolderPreset({
   }, [folder]);
 
   return (
-    <div className="bg-color-folder px-2 pb-3 pt-3">
-      <div className="text-xl">
+    <p className="bg-lime-300 px-2 pb-3 pt-3">
+      <p className="text-xl">
         <div className="flex justify-center">
-          {isDelete ? (
-            <p className="ml-10"></p>
-          ) : (
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Image
-                  src="/image/Foldericon.svg"
-                  alt="Folder"
-                  width={28}
-                  height={28}
-                  style={{
-                    width: "28px",
-                    height: "auto",
-                  }}
-                  className="mb-4 ml-2 mr-4"
-                />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onSelect={() => handleDelete(folder)}>
-                  削除
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Image
+                src="/image/Foldericon.svg"
+                alt="Folder"
+                width={28}
+                height={28}
+                style={{
+                  width: '28px',
+                  height: 'auto',
+              }}
+                className="mb-4 ml-2 mr-3"
+              />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onSelect={() => handleDelete(folder)}>
+                削除
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Popover open={openFolder} onOpenChange={setOpenFolder}>
             <PopoverTrigger asChild>
               <Button
@@ -121,7 +119,7 @@ export default function FolderPreset({
                 aria-expanded={openFolder}
                 className="mb-3 w-[170px] py-5 text-lg"
               >
-                <div className="ml-5 max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
+                 <div className="ml-5 max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
                   {selectedFolderPreset
                     ? selectedFolderPreset.folder.name
                     : "未設定"}
@@ -151,8 +149,8 @@ export default function FolderPreset({
                               : "opacity-0",
                           )}
                         />
-                        <div className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
-                          {preset.folder.name}
+                         <div className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
+                        {preset.folder.name}
                         </div>
                       </CommandItem>
                     ))}
@@ -161,47 +159,47 @@ export default function FolderPreset({
               </Command>
             </PopoverContent>
           </Popover>
-          {isDelete ? (
-            <p className="mr-10"></p>
-          ) : (
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Image
-                  src="/image/arrow.png"
-                  alt="Task"
-                  width={30}
-                  height={30}
-                  style={{
-                    width: "30px",
-                    height: "auto",
-                  }}
-                  className="mb-3 ml-4"
-                />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onSelect={() => handleSortUp(index)}>
-                  上に移動
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onSelect={() => handleSortDown(index)}>
-                  下に移動
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Image
+                src="/image/arrow.png"
+                alt="Task"
+                width={30}
+                height={30}
+                style={{
+                  width: '30px',
+                  height: 'auto',
+              }}
+                className="mb-3 ml-4"
+              />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onSelect={() => handleSortUp(index)}>
+                上に移動
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onSelect={() => handleSortDown(index)}>
+                下に移動
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-      </div>
-      {selectedFolderPreset?.folder.tasks.map((item, index) => (
+      </p>
+      {selectedFolderPreset?.folder.tasks.map((item, index2) => (
         <TaskPreset
-          key={index}
+          key={index2}
+          index={index2}
           name={item.task.name}
           options={item.task.options}
           task={item}
           handleDelete={handleDelete} // TODO
-          handleSortUp={handleSortUp}
-          handleSortDown={handleSortDown}
+          folderIndex={index}
+          handleSortUp2={handleSortUp2}
+          handleSortDown2={handleSortDown2}
+          isDelete={true}
         />
       ))}
-    </div>
+    </p>
   );
 }

@@ -1,12 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "~/components/ui/card";
-import { ScrollArea } from "~/components/ui/scroll-area";
-import EditTime from "./edit";
-import NewTime from "./new";
 import {
   Command,
   CommandEmpty,
@@ -15,6 +12,9 @@ import {
   CommandItem,
   CommandList,
 } from "~/components/ui/command";
+import { ScrollArea } from "~/components/ui/scroll-area";
+import EditTime from "./edit";
+import NewTime from "./new";
 
 type TimeApiResponse = {
   // 時間プリセットの取得
@@ -58,17 +58,16 @@ export default function TabTime() {
       <Card className="h-[700px] border-color-time border-4">
         <CardContent className="space-y-2 p-0">
           <Command className="mt-2">
-            <div className="px-4">
+            <div className="px-4 border-bottom">
               <CommandInput placeholder="検索" />
             </div>
             <ScrollArea className="h-[640px]">
               <CommandList className="">
-                <hr className="w-full border-gray-500" />
                 <CommandEmpty>見つかりません</CommandEmpty>
                 <CommandGroup>
                   {timeResponse?.timeSets?.map((item) => (
                     <div key={item.time.timeId}>
-                      <CommandItem>
+                      <CommandItem className="mb-1 mt-1 border border-gray-300">
                         <EditTime
                           id={item.time.timeId}
                           time={item.time.time}
@@ -77,7 +76,6 @@ export default function TabTime() {
                           {item.time.name}
                         </EditTime>
                       </CommandItem>
-                      <hr className="w-full border-gray-500" />
                     </div>
                   ))}
                 </CommandGroup>

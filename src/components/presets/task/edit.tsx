@@ -1,6 +1,5 @@
 "use client";
 
-import { ScrollArea } from "@radix-ui/react-scroll-area";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";

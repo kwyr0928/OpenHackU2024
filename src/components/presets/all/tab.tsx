@@ -68,17 +68,16 @@ export default function TabAll() {
       <Card className="h-[700px] border-color-all border-4"  >
         <CardContent className="space-y-2 p-0">
           <Command className="mt-2">
-            <div className="px-4">
+          <div className="px-4 border-bottom">
               <CommandInput placeholder="検索" />
             </div>
             <ScrollArea className="h-[640px]">
               <CommandList className="">
-              <hr className="w-full border-gray-500" />
                 <CommandEmpty>見つかりません</CommandEmpty>
                 <CommandGroup className="">
                   {wholePresets.map((preset) => (
                     <div key={preset.itemId}>
-                      <CommandItem className="mb-1 mt-1">
+                      <CommandItem className="mb-1 mt-1 border border-gray-300">
                         <Link
                           className="flex w-full items-center justify-between text-xl text-black"
                           href={`presets/all/edit?itemId=${preset.itemId}`}
@@ -91,7 +90,6 @@ export default function TabAll() {
                           <div className="text-color-all">＞</div>
                         </Link>
                       </CommandItem>
-                      <hr className="w-full border-gray-500" />
                     </div>
                   ))}
                 </CommandGroup>

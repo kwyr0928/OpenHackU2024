@@ -1,8 +1,10 @@
 "use client";
 
-import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
+import React, { useState } from "react";
+import TimeIcon from "~/components/svgs/timeIcon";
 import {
   Accordion,
   AccordionContent,
@@ -17,8 +19,6 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
-import TimeIcon from "~/components/svgs/timeIcon";
-import axios from "axios";
 
 // childrenを受け取るために型定義を追加
 interface EditTimeProps {
@@ -138,7 +138,7 @@ export default function EditTime({
 
             {/* 名前変更ボタン */}
             <Button
-              className="my-auto ml-3 rounded-full bg-gray-500 p-2"
+              className="my-auto mx-3 rounded-full bg-gray-500 p-2"
               onClick={() => setIsDialogOpen(true)} // ダイアログを開く
             >
               <Image src="/image/edit.svg" alt="" width={20} height={20} />

@@ -63,17 +63,16 @@ export default function TabTask() {
       <Card className="h-[700px] border-color-task border-4">
         <CardContent className="space-y-2 p-0">
           <Command className="mt-2">
-            <div className="px-4">
+          <div className="px-4 border-bottom">
               <CommandInput placeholder="検索" />
             </div>
             <ScrollArea className="h-[640px]">
-              <hr className="w-full border-gray-500" />
               <CommandList className="">
                 <CommandEmpty>見つかりません</CommandEmpty>
                 <CommandGroup>
                   {taskResponse?.taskSets.map((item) => (
                     <div key={item.task.itemId}>
-                      <CommandItem >
+                      <CommandItem className="mb-1 mt-1 border border-gray-300">
                         <EditTask
                           task={item.task}
                           id={item.task.itemId}
@@ -82,7 +81,6 @@ export default function TabTask() {
                           {item.task.name}
                         </EditTask>
                       </CommandItem>
-                      <hr className="mt-2 w-full border-gray-500" />
                     </div>
                   ))}
                 </CommandGroup>
