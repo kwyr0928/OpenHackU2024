@@ -66,10 +66,29 @@ type ResponseData = {
   wholeSet: WholeSet;
 };
 
+const defaultResponseData: ResponseData = {
+  message: "No data available", // デフォルトのメッセージ
+  wholeSet: {
+    whole: {
+      name: "プリセットがありません", // デフォルトの Whole の名前
+      itemId: "", // デフォルトの Whole ID
+      updateTime: new Date(), // 現在の日時をデフォルトとして設定
+      timeSet: {
+        time: {
+          name: "プリセットなし", // デフォルトの時間設定名
+          timeId: "", // デフォルトの時間ID
+          time: "00:00", // デフォルトの時刻
+        },
+      },
+      itemSet: [], // 空のアイテムセット
+    },
+  },
+};
+
 
 export default function Home() {
   const { data: session } = useSession();
-  const [dataFromDb, setDataFromDb] = useState<ResponseData | null>(null);
+  const [dataFromDb, setDataFromDb] = useState<ResponseData>(defaultResponseData);
 
   const handleScheduleGet = async () => {
     if (!session?.user?.id) return;
@@ -86,19 +105,11 @@ export default function Home() {
     handleScheduleGet();
   }, []);
 
-  const whole = dataFromDb ? dataFromDb.wholeSet.whole : null;
+  let whole = dataFromDb ? dataFromDb.wholeSet.whole : null;
 
   if (!whole) {
     handleScheduleGet();
     return <div>Loading...
-      <div className="mt-4 flex-col">
-        <Link href="/presets">
-          <Button className="bg-color-all shadow-lg hover:bg-emerald-500">
-            <FolderIconSvg style={{ width: "30px", height: "30px" }} color={""} />
-          </Button>
-        </Link>
-        <h1>プリセット</h1>
-      </div>
     </div>;
   } else {
     console.log(dataFromDb);
