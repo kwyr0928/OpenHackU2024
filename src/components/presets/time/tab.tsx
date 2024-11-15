@@ -1,12 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "~/components/ui/card";
-import { ScrollArea } from "~/components/ui/scroll-area";
-import EditTime from "./edit";
-import NewTime from "./new";
 import {
   Command,
   CommandEmpty,
@@ -15,6 +12,9 @@ import {
   CommandItem,
   CommandList,
 } from "~/components/ui/command";
+import { ScrollArea } from "~/components/ui/scroll-area";
+import EditTime from "./edit";
+import NewTime from "./new";
 
 type TimeApiResponse = {
   // 時間プリセットの取得

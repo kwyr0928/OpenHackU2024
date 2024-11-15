@@ -80,15 +80,15 @@ export default function TabAll() {
                     <div key={preset.itemId}>
                       <CommandItem className="mb-1 mt-1">
                         <Link
-                          className="flex w-full items-center justify-between text-xl text-black"
+                          className="flex w-full items-center justify-start text-xl text-black"
                           href={`presets/all/edit?itemId=${preset.itemId}`}
                         >
                           <BoxIcon
                             color="#31D6CB"
                             style={{ width: "35px", height: "35px" }}
                           />
-                          {preset.name}
-                          <div className="text-color-all">＞</div>
+                          &nbsp;&nbsp;{preset.name}
+                          <div className="text-color-all">&nbsp;＞</div>
                         </Link>
                       </CommandItem>
                       <hr className="w-full border-gray-500" />
