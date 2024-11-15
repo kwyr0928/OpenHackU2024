@@ -1,13 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -74,23 +68,9 @@ console.log(name,options)
           </DropdownMenu>
         )}
         <span>{name}</span>
-        { task.isStatic ?
-        <Select>
-          <SelectTrigger className="w-[60px] ml-5">
-            <SelectValue placeholder="選択" />
-          </SelectTrigger>
-          <SelectContent>
-          {task.options.map((option, index) => (
-            <SelectItem key={index} value={option.name}>aaaa</SelectItem>
-          ))}
-          </SelectContent>
-        </Select>
-        :
-        <p></p>
-}
       </div>
       <div className="flex">
-        {task.isStatic ? <span>{options[0]?.time}min</span> : <span></span>}
+        <span>{options[0]?.time}min</span>
         {isDelete ? (
           <p className="mr-10"></p>
         ) : (
