@@ -114,8 +114,6 @@ export async function DELETE(
         );
       }
     }
-    // フォルダ(deleted.item.parentId)と同じmasterを持つフォルダもこれをもとに更新
-    // @here
 
     return NextResponse.json({
       message: "delete task successfully",

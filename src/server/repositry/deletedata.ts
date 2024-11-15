@@ -6,6 +6,21 @@ import {
   hasWholeTimeId,
 } from "./getdata";
 
+// userを削除
+export async function deleteUser(userId: string) {
+  try {
+    const deleteUser = await db.user.delete({
+      where: {
+        id: userId
+      },
+    });
+    return deleteUser;
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    return null;
+  }
+}
+
 // itemを削除
 export async function deleteItem(itemId: string, type: number) {
   try {
