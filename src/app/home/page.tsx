@@ -166,8 +166,8 @@ export default function Home() {
   const remainingTime = calculateRemainingTime(whole);
 
   return (
-    <div className="flex h-screen flex-col items-center justify-center bg-slate-50 text-center font-mPlus text-color-all max-w-md mx-auto">
-      {/* 現在時刻の表示 */}
+<div className="mx-auto flex min-h-screen max-w-md flex-col items-center justify-center bg-slate-50 text-center font-mPlus text-color-all pt-safe-top pb-safe-bottom">
+{/* 現在時刻の表示 */}
       <h1 className="mb-1">
         <DisplayTime />
       </h1>

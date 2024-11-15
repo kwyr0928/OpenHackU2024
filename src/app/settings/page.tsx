@@ -19,7 +19,7 @@ export default function Settings() {
   }
 
   return (
-    <div className="mx-auto flex h-screen max-w-md flex-col items-center justify-center bg-slate-50 text-center font-mPlus text-darkBlue">
+    <div className="mx-auto flex h-screen max-w-md flex-col items-center justify-center bg-slate-50 text-center font-mPlus">
       {/* <p className="text-2xl text-red-500">src/app/setting/page.tsx</p> */}
       <div className="mb-10 w-max items-center">
         <Button
