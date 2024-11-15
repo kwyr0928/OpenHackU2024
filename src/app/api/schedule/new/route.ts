@@ -54,7 +54,10 @@ export async function POST(req: Request) {
     const setNext = await setNextSchedule(userId, itemId);
     //もとの全体セットを削除
     await deleteItem(wholeItemId, presetType.whole);
-    return setNext;
+    return NextResponse.json({
+      message: "schedule updated successfully",
+      wholeSet: setNext,
+    });
   } catch (error) {
     console.error("Error in POST nextSchedule request", error);
     return NextResponse.json(

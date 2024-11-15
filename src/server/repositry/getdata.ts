@@ -313,7 +313,7 @@ export async function getKindItems(userId: string, type: number) {
         isSetting: false
       },
       orderBy: {
-        created_at: "asc",
+        order: "asc",
       },
     });
 
@@ -346,7 +346,7 @@ export async function getItemsInWhole(wholeItemId: string) {
         ],
       },
       orderBy: {
-        created_at: "asc",
+        order: "asc",
       },
     });
 

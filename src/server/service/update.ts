@@ -10,6 +10,7 @@ import {
 import {
   deleteOptionsInTask,
   deleteTaskItemsCanDeleteInFolder,
+  deleteTime
 } from "../repositry/deletedata";
 import {
   getFolderInfoByItemId,
@@ -17,6 +18,7 @@ import {
   getItemsInParentSortOrder,
   getMasterIdByTimeId,
   getTaskInfoByItemId,
+  getWholeInfoByItemId,
 } from "../repositry/getdata";
 import { updateMaster } from "../repositry/manageMaster";
 import {
@@ -26,9 +28,10 @@ import {
   updateOrderItem,
   updateTaskSet,
   updateTimeSet,
+  updateWholeSet,
 } from "../repositry/updatedata";
 import { createNewTask, createTaskOption } from "./create";
-import { instanciateFolder, instanciateTask } from "./instantiate";
+import { instanciateFolder, instanciateTask, instanciateTime } from "./instantiate";
 
 // 今あるタスクでフォルダ内順序を再設定
 export async function setItemParentReOrder(myItemId: string) {
@@ -60,11 +63,20 @@ export async function updateWhole(
   { userId, wholeSet }: wholeSetPutBody,
 ) {
   try {
-    const folderInfo = await getFolderInfoByItemId(itemId);
-    if (!folderInfo) throw new Error("Failed to get folderInfo.");
+    const wholeInfo = await getWholeInfoByItemId(itemId);
+    if (!wholeInfo) throw new Error("Failed to get wholeInfo.");
     // item更新
     const existTasks: string[] = [];
+    
+    // 今のtimeを削除
+    await deleteTime(wholeInfo.timeSetId!);
+    // 時間プリセットインスタンス化
+    const timeInstance = await instanciateTime(wholeSet.timeId);
+    if (timeInstance == null) {
+      throw new Error("Failed to instanciateTime.");
+    }
     await updateItem(itemId, wholeSet.name);
+    await updateWholeSet(wholeInfo.id, timeInstance.id)
 
     let count = 0;
     for (const items of wholeSet.items) {

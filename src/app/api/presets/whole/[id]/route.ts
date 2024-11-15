@@ -11,7 +11,7 @@ export async function GET(
   { params }: { params: { id: string } },
 ) {
   try {
-    const itemId = params.id; //itemId?wholeId?
+    const itemId = params.id; //itemId
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get("userId");
     if (!userId) {

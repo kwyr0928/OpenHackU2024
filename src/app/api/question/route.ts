@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prefabItemStruct } from "~/server/repositry/constants";
-import { deleteAllForlder } from "~/server/repositry/deletedata";
 import { getAllTaskByUserId, getTimeFirst } from "~/server/repositry/getdata";
 import { setNextSchedule } from "~/server/repositry/updatedata";
 import { createNewWhole, createWhole } from "~/server/service/create";
@@ -97,17 +96,6 @@ export async function POST(req: NextRequest) {
       );
     }
     await setNextSchedule(userId, targetItemId);
-
-    //ここから後処理
-    //謎のフォルダを削除
-    const deleteFolderItemId = createdWholeInstance.whole?.itemId
-    if(!deleteFolderItemId){
-      return NextResponse.json(
-        { error: "Invalid input: deleteFolderItemId is required for deleteFolder" },
-        { status: 400 }
-      );
-    }
-    await deleteAllForlder(userId, deleteFolderItemId);
 
     return NextResponse.json({
       message: "first wholeSet created successfully",
