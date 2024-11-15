@@ -38,7 +38,14 @@ export async function GET(req: Request) {
       const wholeRes: wholeAllResponse = {
         name: item.name,
         itemId: item.id,
-        updateTime: item.updated_at,
+        updateTime: item.updated_at.toLocaleString('ja-JP', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: undefined, // 秒を非表示にする
+        })
       };
       res.push(wholeRes);
     }
