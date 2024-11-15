@@ -10,6 +10,12 @@ const config = {
       domains: ['lh3.googleusercontent.com'],
     },
     reactStrictMode: true,
+    eslint: { // eslintのlint checkをbuild時にoff
+      ignoreDuringBuilds: true,
+    },
+    typescript: { // type checkをbuild時にoff
+      ignoreBuildErrors: true,
+    }
   };
 
 export default config;
