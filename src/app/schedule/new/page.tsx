@@ -201,6 +201,16 @@ export default function Schedule() {
   const [wholeName, setWholeName] = useState<string>("");
   const [wakeupTime, setWakeupTime] = useState<string>("");
 
+  useEffect(() => {
+    // スクロールを禁止
+    document.body.style.overflow = "hidden";
+
+    // クリーンアップ用
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [])
+  
   const handleScheduleCreate = async () => {
     // スケジュール　作成
   

@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect } from "react";
 import TabAll from "~/components/presets/all/tab";
 import TabFolder from "~/components/presets/folder/tab";
 import TabTask from "~/components/presets/task/tab";
@@ -7,6 +10,15 @@ import { Button } from "~/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 export default function Presets() {
+  useEffect(() => {
+    // スクロールを禁止
+    document.body.style.overflow = "hidden";
+
+    // クリーンアップ用
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [])
   return (
     <div className="mx-auto flex h-screen max-w-md flex-col items-center justify-start bg-slate-50 text-center font-mPlus">
       {/*タブ*/}
