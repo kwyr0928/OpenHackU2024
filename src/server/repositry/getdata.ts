@@ -66,6 +66,7 @@ export async function getMasterIdByTimeId(timeId: string) {
   try {
     const masterId = await db.timeSets.findFirst({
       select: {
+        userId: true,
         masterId: true,
       },
       where: {
@@ -74,7 +75,7 @@ export async function getMasterIdByTimeId(timeId: string) {
     });
 
     if (!masterId) throw new Error("not found masterId");
-    return masterId.masterId;
+    return {userId: masterId.userId, masterId: masterId.masterId };
   } catch (error) {
     console.error("Error in getMasterByTimeId:", error);
     return null;

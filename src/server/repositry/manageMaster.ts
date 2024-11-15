@@ -3,6 +3,7 @@ import { type itemStruct, type timeStruct } from "./constants";
 
 type masterStruct = {
   name: string;
+  userId: string;
 };
 
 /////////////////
@@ -24,11 +25,11 @@ export async function getSameMasterItem(masterId: string) {
 }
 
 // masterの命名を更新
-export async function updateMaster(masterId: string, name: string) {
+export async function updateMaster(userId: string, masterId: string, name: string) {
   try {
     if (masterId == null) throw new Error("require masterId");
     const updateMaster = await db.master.update({
-      data: { name: name },
+      data: { name: name, userId: userId },
       where: { id: masterId },
     });
     if (!updateMaster) throw new Error("not found updateMaster");
@@ -45,6 +46,7 @@ export async function createMasterItem(item: itemStruct) {
     if (item == null) throw new Error("Invalid item data");
     const masterData: masterStruct = {
       name: item.name,
+      userId: item.userId
     };
     const createMaster = await db.master.create({
       data: masterData,
@@ -62,6 +64,7 @@ export async function createMasterTimeSet(time: timeStruct) {
     if (time == null) throw new Error("Invalid item data");
     const masterData: masterStruct = {
       name: time.name,
+      userId: time.userId
     };
     const createMaster = await db.master.create({
       data: masterData,
