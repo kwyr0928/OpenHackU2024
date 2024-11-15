@@ -207,6 +207,16 @@ function Schedule() {
   const searchParams = useSearchParams();
   const itemId = searchParams.get("itemId");
 
+  useEffect(() => {
+    // スクロールを禁止
+    document.body.style.overflow = "hidden";
+
+    // クリーンアップ用
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [])
+  
   const handleWholeEdit = async () => {
     // 全体プリセット　編集
     console.log(detailWholePreset);

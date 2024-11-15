@@ -165,14 +165,14 @@ export default function EditTask({
       }}
     >
       <DialogTrigger
-        className="flex w-full items-center justify-start text-xl text-black"
+        className="flex w-full items-center justify-start text-xl text-black font-normal"
         onClick={handleDialogOpen}
       >
         <Description
           color="#FFA660"
           style={{ width: "35px", height: "35px" }}
         />
-        【{name}】
+        &nbsp;{name}
       </DialogTrigger>
       <DialogContent className="w-[90%] rounded-xl">
         <DialogHeader>

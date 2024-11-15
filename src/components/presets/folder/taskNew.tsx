@@ -373,14 +373,14 @@ export default function NewFolderTask({
             {taskApiResponse.taskSets.map((taskSet, index) => (
               <div
                 key={index}
-                className="flex w-full items-center justify-start text-xl text-black"
+                className="flex w-full items-center justify-start text-xl text-black font-normal font-normal"
                 onClick={() => handleTaskSelect(taskSet)}
               >
                 <Description
                   color="#FFA660"
                   style={{ width: "35px", height: "35px" }}
                 />
-                【{taskSet.task.name}】
+                &nbsp;{taskSet.task.name}
               </div>
             ))}
           </div>

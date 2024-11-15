@@ -204,6 +204,18 @@ export default function Schedule() {
     setWakeupTime(`${wakeUpHour < 10 ? "0" : ""}${wakeUpHour}:${wakeUpMinute < 10 ? "0" : ""}${wakeUpMinute}`);
   }
 
+    
+  useEffect(() => {
+    // スクロールを禁止
+    document.body.style.overflow = "hidden";
+
+    // クリーンアップ用
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [])
+
+
   
   const handleWholeCreate = async () => {
     // 全体プリセット　作成

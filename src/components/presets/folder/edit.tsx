@@ -133,7 +133,7 @@ export default function EditFolder({
       <AccordionItem value="item-1">
         <AccordionTrigger
           onClick={() => setIsOpen(!isOpen)} // 開閉をトグル
-          className="w-full items-center justify-between p-1 text-xl text-black"
+          className="w-full items-center justify-start p-1 text-xl text-black font-normal"
         >
           <div>
             {isOpen ? (
@@ -148,7 +148,7 @@ export default function EditFolder({
               />
             )}
           </div>
-          【{name}】
+          &nbsp;{name}
         </AccordionTrigger>
         <AccordionContent className="w-full">
           <hr className="mb-1 mt-2 border-gray-500" />

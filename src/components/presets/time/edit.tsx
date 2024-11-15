@@ -116,14 +116,14 @@ export default function EditTime({
   return (
     <Accordion type="single" collapsible className="w-full">
       <AccordionItem value="item-1">
-        <AccordionTrigger className="w-full items-center justify-between p-1 text-xl text-black">
+        <AccordionTrigger className="w-full items-center justify-start p-1 text-xl text-black font-normal">
           <div>
             <TimeIcon
               color="#FF9AC6"
               style={{ width: "35px", height: "35px" }}
             />
           </div>
-          【{name}】
+          &nbsp;{name}
         </AccordionTrigger>
         <AccordionContent className="items-center justify-start space-x-4 rounded-b-md text-xl">
           <hr className="mt-2 w-full border-gray-500" />

@@ -1,7 +1,17 @@
 "use client";
 import { signIn } from "next-auth/react";
+import { useEffect } from "react";
 
 export default function Login() {
+  useEffect(() => {
+    // スクロールを禁止
+    document.body.style.overflow = "hidden";
+
+    // クリーンアップ用
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [])
   return (
     <div className="mx-auto flex h-screen max-w-md flex-col justify-center bg-slate-50 text-center font-mPlus">
       {/* 新規登録 */}

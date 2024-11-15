@@ -1,9 +1,10 @@
 "use client";
 
-import Link from "next/link";
-import { Button } from "~/components/ui/button";
-import { useSession } from "next-auth/react";
 import axios from "axios";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { useEffect } from "react";
+import { Button } from "~/components/ui/button";
 
 
 export default function Settings() {
@@ -17,6 +18,16 @@ export default function Settings() {
       console.error(error + "破壊できません");
     }
   }
+
+  useEffect(() => {
+    // スクロールを禁止
+    document.body.style.overflow = "hidden";
+
+    // クリーンアップ用
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [])
 
   return (
     <div className="mx-auto flex h-screen max-w-md flex-col items-center justify-center bg-slate-50 text-center font-mPlus">
