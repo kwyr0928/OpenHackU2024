@@ -85,7 +85,7 @@ export type wholeSetPostBodyInSchedule = {
   userId: string;
   wholeSet: {
     name: string;
-    itemId: string,
+    itemId: string;
     timeId: string;
     items: {
       itemId: string;
