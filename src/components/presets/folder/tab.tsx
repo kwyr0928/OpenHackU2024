@@ -85,6 +85,7 @@ export default function TabFolder() {
       ]);
       setFolderResponse(folderResponse.data);
       setTaskResponse(taskApiResponse.data);
+      console.log(folderResponse);
     } catch (error) {}
   };
 
@@ -95,7 +96,7 @@ export default function TabFolder() {
   return (
     <div>
       {/* フォルダ */}
-      <Card className="h-[700px] border-color-folder">
+      <Card className="h-[700px] border-color-folder border-4">
         <CardContent className="space-y-2 p-0">
           <Command className="mt-2">
             <div className="px-4">

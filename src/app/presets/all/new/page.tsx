@@ -437,7 +437,7 @@ export default function Schedule() {
 
   return (
     <div className="mx-auto h-svh max-w-md bg-slate-50 pt-5 text-center font-mPlus">
-      <div className="mx-5 h-[660px] rounded-xl border-2 border-teal-400 bg-white">
+      <div className="mx-5 h-[660px] rounded-xl border-4 border-teal-400  bg-white">
         <p className="rounded-t-lg bg-teal-400 py-3 text-xl">
           <Link href="/home">
             <Image

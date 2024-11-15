@@ -55,7 +55,7 @@ export default function TabTime() {
   return (
     <div>
       {/* タスク */}
-      <Card className="h-[700px] border-color-time">
+      <Card className="h-[700px] border-color-time border-4">
         <CardContent className="space-y-2 p-0">
           <Command className="mt-2">
             <div className="px-4">
