@@ -3,7 +3,7 @@ import { prefabItemStruct } from "~/server/repositry/constants";
 import { deleteAllForlder } from "~/server/repositry/deletedata";
 import { getAllTaskByUserId, getTimeFirst } from "~/server/repositry/getdata";
 import { setNextSchedule } from "~/server/repositry/updatedata";
-import { createNewWhole } from "~/server/service/create";
+import { createNewWhole, createWhole } from "~/server/service/create";
 
 export async function POST(req: NextRequest) {
   try {
@@ -66,15 +66,30 @@ export async function POST(req: NextRequest) {
 
     //全体セットの生成
     const defaultWholeName = "デフォルトセット";
-    const createdWholeSet = await createNewWhole(
+    //新しく全体セットを生成
+    const createdNewWholePrefab = await createNewWhole(
       userId,
       defaultWholeName,
       timeId,
       prefabItems,
     );
+    if(!createdNewWholePrefab){
+      return NextResponse.json(
+        { error: "Invalid input: Failed to create createNewWhole" },
+        { status: 400 },
+      );
+    }
+    //全体セットインスタンスを生成
+    const createdWholeInstance = await createWhole(
+      userId,
+      defaultWholeName,
+      timeId,
+      prefabItems,
+      createdNewWholePrefab?.item
+    );
 
     //生成した全体セットを予定に設定
-    const targetItemId = createdWholeSet?.item.id;
+    const targetItemId = createdWholeInstance?.item.id;
     if(!targetItemId){
       return NextResponse.json(
         { error: "Invalid input: wholeItemId is required for setNextSchedule" },
@@ -85,7 +100,7 @@ export async function POST(req: NextRequest) {
 
     //ここから後処理
     //謎のフォルダを削除
-    const deleteFolderItemId = createdWholeSet.whole?.itemId
+    const deleteFolderItemId = createdWholeInstance.whole?.itemId
     if(!deleteFolderItemId){
       return NextResponse.json(
         { error: "Invalid input: deleteFolderItemId is required for deleteFolder" },
@@ -97,7 +112,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       message: "first wholeSet created successfully",
       question: {
-        wholeSet: createdWholeSet,
+        wholeSet: createdWholeInstance,
       },
     });
   } catch (error) {

@@ -198,6 +198,8 @@ export default function Schedule() {
   const [detailWholePreset, setDetailWholePreset] = useState<DetailWhole>(); // 選択中の全体プリセット[id]
   const [selectedTimePreset, setSelectedTimePreset] = useState<TimeSet>(); // 選択中の時間プリセット
   const [isFirst, setIsFirst] = useState<boolean>(true);
+  const [scheduleWholeName, setScheduleWholeName] = useState("");
+  const [scheduleWholeId, setScheduleWholeId] = useState("");
 
   const handleScheduleCreate = async () => {
     // スケジュール　作成
@@ -206,13 +208,14 @@ export default function Schedule() {
    const scheduleNew = {
     userId: session?.user.id,
     wholeSet: {
-      name: selectedWholePreset?.name,
-      itemId: selectedWholePreset?.itemId,
+      name: scheduleWholeName,
+      itemId: scheduleWholeId,
       timeId: selectedTimePreset?.time.timeId,
         items: detailWholePreset?.whole.itemSet.map((item) => ({
           itemId: item.task ? item.task.itemId : item.folder?.itemId,
           select: 0,
         })),},};
+        console.log(scheduleNew);
     try {
       const res = await axios.post("/api/schedule/new", scheduleNew);
       console.log(res.data);
@@ -416,16 +419,14 @@ export default function Schedule() {
 
         if (scheduleResponse.data.wholeSet) {
           setDetailWholePreset(scheduleResponse.data.wholeSet); // 全体プリセット[id] 登録
+          setScheduleWholeName(scheduleResponse.data.wholeSet.whole.name);
+          setScheduleWholeId(scheduleResponse.data.wholeSet.whole.itemId);
+          console.log(scheduleResponse.data.wholeSet.whole.name);
         }
 
         if (wholeResponse.data?.wholeSets) {
           setWholePresets(wholeResponse.data.wholeSets); // 全体プリセット一覧　登録
           if (wholeResponse.data.wholeSets.length > 0) {
-            setSelectedWholePreset({
-              // 選択中
-              name: scheduleResponse.data.wholeSet.whole.name,
-              itemId: scheduleResponse.data.wholeSet.whole.itemId,
-            });
             setValueWhole(scheduleResponse.data.wholeSet.whole.itemId); // 選択中
           }
         }
@@ -553,7 +554,7 @@ export default function Schedule() {
                 <div className="ml-5 max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
                   {selectedWholePreset
                     ? selectedWholePreset.name
-                    : "未設定"}
+                    : scheduleWholeName}
                 </div>
                 <ChevronsUpDown className="ml-3 h-4 w-4 shrink-0 opacity-50" />
               </Button>

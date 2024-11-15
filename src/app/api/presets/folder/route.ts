@@ -20,7 +20,10 @@ export async function GET(req: Request) {
         { status: 400 },
       );
     } else if (items?.length === 0) {
-      return NextResponse.json({ error: "Not found folders" }, { status: 404 });
+      return NextResponse.json({
+        message: "folder ないよ",
+        folderSets: [],
+      });
     }
 
     const res: folderResponse[] = [];
