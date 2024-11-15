@@ -245,7 +245,7 @@ export default function Question() {
       } else {
         nextButtonContent = (
           <Button onClick={handleNextStep} disabled={!selectedValue} className="bg-color-all">
-            <Link href="/home">次へ</Link>
+            <Link href="/home">終了</Link>
           </Button>
         );
       }
@@ -440,7 +440,7 @@ function QuestionComponent({
         <div className="flex items-center space-x-4">
           <RadioGroupItem value="other" id="other" />
           <Input
-            type="text"
+            type="number"
             placeholder="その他(分単位で数字のみ記入)"
             value={inputValue}
             onChange={(e) => {
