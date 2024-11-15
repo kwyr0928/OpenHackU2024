@@ -172,6 +172,15 @@ export default function Schedule() {
 
   const [wholeName, setWholeName] = useState<string>(""); // タスク追加　新規作成　タスク名
 
+  useEffect(() => {
+    // スクロールを禁止
+    document.body.style.overflow = "hidden";
+
+    // クリーンアップ用
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [])
 
   
   const handleWholeCreate = async () => {
