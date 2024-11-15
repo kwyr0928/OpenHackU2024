@@ -225,10 +225,11 @@ function Schedule() {
       userId: session?.user.id,
       wholeSet: {
         name: wholeName,
-        timeId: "cm3he49se001j4irxllhnn0pg",
+        timeId: selectedTimePreset?.time.timeId,
         items: items,
       },
     };
+    console.log("これをぽすと");
     console.log(wholeEdit);
     try {
       const res = await axios.put(`/api/presets/whole/${detailWholePreset?.whole.itemId}`, wholeEdit);

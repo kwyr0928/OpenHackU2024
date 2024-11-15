@@ -16,21 +16,43 @@ import {
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
+import { Label } from "~/components/ui/label";
 
 interface EditFolderTaskProps {
   id: string;
   children: string;
   task: Task;
-  select:number;
-  handleGetFolder: ()=>void;
+  handleFolderGet: () => void;
+  item: FolderSet;
 }
+
+type FolderSet = {
+  // フォルダプリセット　中身
+  folder: {
+    name: string;
+    itemId: string;
+    tasks: {
+      task: {
+        name: string;
+        itemId: string;
+        isStatic: boolean;
+        select: number;
+        options: {
+          name: string;
+          time: number;
+        }[];
+      };
+    }[];
+  };
+};
 
 type Task = {
   // タスクプリセット　中身
   name: string;
   itemId: string;
   isStatic: boolean;
-  select:number;
+  select: number;
   options: {
     name: string;
     time: number;
@@ -41,8 +63,8 @@ export default function EditFolderTask({
   id,
   children,
   task,
-  select,
-  handleGetFolder,
+  handleFolderGet,
+  item,
 }: EditFolderTaskProps) {
   const [name, setName] = useState<string>(children); // 表示される名前
   const [newName, setNewName] = useState<string>(children); // 入力用の一時的な名前
@@ -59,6 +81,7 @@ export default function EditFolderTask({
   const [minutes2, setMinutes2] = useState(0); // 分
   const [minutes3, setMinutes3] = useState(0); // 分
   const [minutes, setMinutes] = useState(0);
+  const [selectedRadio, setSelectedRadio] = useState(task.select);
 
   const { data: session, status } = useSession();
 
@@ -69,7 +92,7 @@ export default function EditFolderTask({
       taskSet: {
         name: name,
         isStatic: false,
-        select:select,
+        select: selectedRadio,
         options: [
           {
             name: options1,
@@ -91,7 +114,7 @@ export default function EditFolderTask({
       taskSet: {
         name: name,
         isStatic: true,
-        select:select,
+        select: selectedRadio,
         options: [
           {
             time: minutes,
@@ -114,9 +137,10 @@ export default function EditFolderTask({
           taskData2,
         );
       }
+      console.log({ taskData1 });
     } catch (error) {}
     setDialogOpen(false);
-    handleGetFolder();
+    handleFolderGet();
   };
 
   const handleDelete = async () => {
@@ -131,7 +155,7 @@ export default function EditFolderTask({
     } catch (error) {}
     setDialogOpen(false);
     setIsDeleteDialogOpen(false);
-    handleGetFolder();
+    handleFolderGet();
   };
 
   const handleDialogOpen = () => {
@@ -139,13 +163,13 @@ export default function EditFolderTask({
       setActiveTab("static");
     }
     if (activeTab === "pulldown") {
-        const options = task.options || []; // task.optionsがundefinedの場合でも空の配列を使用
-        setMinutes1(options[0]?.time ?? 0);
-        setMinutes2(options[1]?.time ?? 0);
-        setMinutes3(options[2]?.time ?? 0);
-        setOptions1(options[0]?.name ?? "デフォルト");
-        setOptions2(options[1]?.name ?? "");
-        setOptions3(options[2]?.name ?? "");
+      const options = task.options || []; // task.optionsがundefinedの場合でも空の配列を使用
+      setMinutes1(options[0]?.time ?? 0);
+      setMinutes2(options[1]?.time ?? 0);
+      setMinutes3(options[2]?.time ?? 0);
+      setOptions1(options[0]?.name ?? "デフォルト");
+      setOptions2(options[1]?.name ?? "");
+      setOptions3(options[2]?.name ?? "");
     } else {
       setMinutes(task.options[0]?.time ?? 0);
     }
@@ -156,6 +180,40 @@ export default function EditFolderTask({
     if (e.key === "Enter") {
       setIsEditing(false);
     }
+  };
+
+  const handleRadioChange = async (value: string) => {
+    setSelectedRadio(Number(value)); // 選択されたラジオボタンの値を更新
+    const folderData = {
+      userId: session?.user.id,
+      folderSet: {
+        name: newName,
+        items: item.folder.tasks.map((tasks) => {
+          if (tasks.task.itemId === task.itemId) {
+            return {
+              itemId: tasks.task.itemId,
+              select: selectedRadio, 
+            };
+          }
+          return {
+            itemId: tasks.task.itemId,
+            select: tasks.task.select,
+          };
+        }),
+      },
+    };
+    if (!session?.user?.id) {
+      return;
+    }
+    try {
+      const res = await axios.put(
+        `/api/presets/folder/${id}?userId=${session.user.id}`,
+        folderData,
+      );
+      console.log(folderData);
+    } catch (error) {}
+    setName(newName);
+    handleFolderGet();
   };
 
   useEffect(() => {
@@ -178,16 +236,13 @@ export default function EditFolderTask({
         }
       }}
     >
-      <DialogTrigger
-        className="flex w-full items-center justify-start text-xl text-black"
-        onClick={handleDialogOpen}
-      >
+      <div className="flex w-full items-center justify-start text-xl text-black">
         <Description
           color="#FFA660"
           style={{ width: "35px", height: "35px" }}
         />
-        【{name}】
-      </DialogTrigger>
+        <DialogTrigger onClick={handleDialogOpen}>【{name}】</DialogTrigger>
+      </div>
       <DialogContent className="w-[90%] rounded-xl">
         <DialogHeader>
           <DialogTitle>
@@ -197,7 +252,6 @@ export default function EditFolderTask({
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setNewName(e.target.value)
                 }
-                onBlur={handleSave}
                 onKeyDown={handleKeyDown} // Enter キーを押したときに編集を終了
                 autoFocus
                 className="mt-2 text-center text-gray-700"
@@ -217,63 +271,82 @@ export default function EditFolderTask({
         <Tabs
           defaultValue={activeTab}
           onValueChange={(value) => setActiveTab(value)}
-          className=""
         >
           <TabsList className="mb-4 grid w-full grid-cols-2">
             <TabsTrigger value="pulldown">プルダウン</TabsTrigger>
             <TabsTrigger value="static">固定値</TabsTrigger>
           </TabsList>
-          <TabsContent value="pulldown" className="h-[150px]">
-            <ScrollArea>
-              <div className="mb-3 flex items-center justify-center">
-                <Input
-                  type="text"
-                  value={options1}
-                  onChange={(e) => setOptions1(e.target.value)}
-                  className="mr-7 w-36 text-center"
-                />
-                <Input
-                  type="number"
-                  value={minutes1}
-                  onChange={(e) => setMinutes1(Number(e.target.value))}
-                  className="w-16 text-center"
-                />
-                <p>min</p>
-              </div>
-              <div className="mb-3 flex items-center justify-center">
-                <Input
-                  type="text"
-                  value={options2}
-                  onChange={(e) => setOptions2(e.target.value)}
-                  className="mr-7 w-36 text-center"
-                />
-                <Input
-                  type="number"
-                  value={minutes2}
-                  onChange={(e) => setMinutes2(Number(e.target.value))}
-                  className="w-16 text-center"
-                />
-                <p>min</p>
-              </div>
-              <div className="mb-3 flex items-center justify-center">
-                <Input
-                  type="text"
-                  value={options3}
-                  onChange={(e) => setOptions3(e.target.value)}
-                  className="mr-7 w-36 text-center"
-                />
-                <Input
-                  type="number"
-                  value={minutes3}
-                  onChange={(e) => setMinutes3(Number(e.target.value))}
-                  className="w-16 text-center"
-                />
-                <p>min</p>
-              </div>
-            </ScrollArea>
+          <TabsContent value="pulldown" className="h-[170px]">
+            <RadioGroup
+              defaultValue={selectedRadio.toString()}
+              onValueChange={handleRadioChange}
+            >
+              {task.options.map((option, index) => (
+                <div key={index} className="flex items-center justify-center">
+                  <RadioGroupItem value={String(index)} id={String(index)} />
+                  <Label htmlFor={String(index)}>
+                    <div className="flex items-center justify-center px-4">
+                      <Input
+                        type="text"
+                        value={
+                          index === 0
+                            ? options1
+                            : index === 1
+                              ? options2
+                              : options3
+                        }
+                        onChange={(e) =>
+                          index === 0
+                            ? setOptions1(e.target.value)
+                            : index === 1
+                              ? setOptions2(e.target.value)
+                              : setOptions3(e.target.value)
+                        }
+                        className="mr-7 w-36 text-center"
+                      />
+                      <Input
+                        type="number"
+                        value={
+                          index === 0
+                            ? minutes1
+                            : index === 1
+                              ? minutes2
+                              : minutes3
+                        }
+                        onChange={(e) =>
+                          index === 0
+                            ? setMinutes1(Number(e.target.value))
+                            : index === 1
+                              ? setMinutes2(Number(e.target.value))
+                              : setMinutes3(Number(e.target.value))
+                        }
+                        className="w-16 text-center"
+                      />
+                      <p>min</p>
+                    </div>
+                  </Label>
+                </div>
+              ))}
+            </RadioGroup>
+
+            <div className="mt-2 flex justify-around">
+              <Button
+                className="bg-red-600"
+                onClick={() => setIsDeleteDialogOpen(true)}
+              >
+                削除
+              </Button>
+              <Button
+                className="bg-darkBlue hover:bg-blue-900"
+                onClick={handleSave}
+                disabled={!name || !options1 || !options2 || !options3}
+              >
+                変更
+              </Button>
+            </div>
           </TabsContent>
           <TabsContent value="static" className="h-[150px]">
-            <div className="flex h-40 items-center justify-center">
+            <div className="flex h-32 items-center justify-center">
               <Input
                 type="number"
                 value={minutes}
@@ -282,23 +355,23 @@ export default function EditFolderTask({
               />
               <p>min</p>
             </div>
+            <div className="mt-auto flex justify-around">
+              <Button
+                className="bg-red-600"
+                onClick={() => setIsDeleteDialogOpen(true)}
+              >
+                削除
+              </Button>
+              <Button
+                className="bg-darkBlue hover:bg-blue-900"
+                onClick={handleSave}
+                disabled={!newName} // newNameが空の場合はボタンを無効化
+              >
+                変更
+              </Button>
+            </div>
           </TabsContent>
         </Tabs>
-        <div className="mt-auto flex justify-around">
-          <Button
-            className="bg-red-600"
-            onClick={() => setIsDeleteDialogOpen(true)}
-          >
-            削除
-          </Button>
-          <Button
-            className="bg-darkBlue hover:bg-blue-900"
-            onClick={handleSave}
-            disabled={!newName} // newNameが空の場合はボタンを無効化
-          >
-            変更
-          </Button>
-        </div>
       </DialogContent>
       {/* 削除確認ダイアログ */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
