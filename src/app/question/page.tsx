@@ -126,7 +126,7 @@ export default function Question() {
     }
   };
 
-  const handleSendTime = async () => {
+  const handleSendTime = () => {
     if(!session?.user.id){
       return;
     }
@@ -139,8 +139,7 @@ export default function Question() {
       }
     };
     try {
-      const res = await axios.post("/api/presets/time/new", json);
-      console.log(res.data);
+      const res = axios.post("/api/presets/time/new", json);
       console.log(json);
     } catch (error) {
       console.log("failed");
