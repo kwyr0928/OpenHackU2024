@@ -138,7 +138,7 @@ export default function EditTime({
 
             {/* 名前変更ボタン */}
             <Button
-              className="my-auto ml-3 rounded-full bg-gray-500 p-2"
+              className="my-auto mx-3 rounded-full bg-gray-500 p-2"
               onClick={() => setIsDialogOpen(true)} // ダイアログを開く
             >
               <Image src="/image/edit.svg" alt="" width={20} height={20} />

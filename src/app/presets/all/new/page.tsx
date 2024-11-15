@@ -152,7 +152,7 @@ export default function Schedule() {
   const [timePresets, setTimePresets] = useState<TimeSet[]>([]); // 時間プリセット一覧 time:
   const [folderPresets, setFolderPresets] = useState<FolderSet[]>([]); // フォルダプリセット一覧 folder:
   const [taskPresets, setTaskPresets] = useState<TaskSet[]>([]); // タスクプリセット一覧 task;
-
+  const [wakeupTime, setWakeupTime] = useState<string>("");
   const [detailWholePreset, setDetailWholePreset] = useState<DetailWhole>({
     // 全体プリセット　中身
     whole: {
@@ -172,6 +172,39 @@ export default function Schedule() {
 
   const [wholeName, setWholeName] = useState<string>(""); // タスク追加　新規作成　タスク名
 
+  const calculateRemainingTime = () => {
+    const [hours = 0, minutes = 0] = selectedTimePreset?.time.time.split(":").map(Number);
+    const totalTimeInMinutes = hours * 60 + minutes;
+    
+    // アイテム内のタスクの合計時間を計算
+    let taskTimeTotal = 0;
+    detailWholePreset?.whole.itemSet.forEach(item => {
+      if (item.task) {
+        // 単一タスクの場合
+        taskTimeTotal += item.task.options[item.task.select]?.time;
+      }
+      else if (item.folder) {
+        // フォルダ内のタスクの場合
+        item.folder.tasks.forEach(folderTask => {
+          taskTimeTotal += folderTask.task.options[folderTask.task.select].time;
+        });
+      }
+    });
+
+    // 残り時間を計算
+    let wakeUpTimeInMinutes = totalTimeInMinutes - taskTimeTotal;
+
+    if (wakeUpTimeInMinutes < 0) {
+      wakeUpTimeInMinutes += 1440; // 残り時間が負の数になる場合、24時間を足す
+    }
+
+    const wakeUpHour = Math.floor(wakeUpTimeInMinutes / 60);
+    const wakeUpMinute = wakeUpTimeInMinutes % 60;
+
+    setWakeupTime(`${wakeUpHour < 10 ? "0" : ""}${wakeUpHour}:${wakeUpMinute < 10 ? "0" : ""}${wakeUpMinute}`);
+  }
+
+    
   useEffect(() => {
     // スクロールを禁止
     document.body.style.overflow = "hidden";
@@ -181,6 +214,7 @@ export default function Schedule() {
       document.body.style.overflow = "";
     };
   }, [])
+
 
   
   const handleWholeCreate = async () => {
@@ -446,11 +480,11 @@ export default function Schedule() {
 
   return (
     <div className="mx-auto h-svh max-w-md bg-slate-50 pt-5 text-center font-mPlus">
-      <div className="mx-5 h-[660px] rounded-xl border-4 border-teal-400  bg-white">
-        <p className="rounded-t-lg bg-teal-400 py-3 text-xl">
-          <Link href="/home">
+      <div className="mx-auto w-[80%] h-[660px] rounded-xl border-4 border-color-all  bg-white">
+        <p className="flex justify-center rounded-t-lg bg-color-all py-3 text-xl">
+        <Link href="/home">
             <Image
-              src="/image/Backicon.svg"
+              src="/image/back.svg"
               alt="Backicon"
               width={25}
               height={25}
@@ -458,15 +492,19 @@ export default function Schedule() {
                 width: '25px',
                 height: 'auto',
             }}
-              className="fixed left-3 top-10 mx-5 mt-0.5"
+              className="mt-2"
             />
           </Link>
           <Image
-            src="/image/Allicon.svg"
-            alt="All"
-            width={27}
-            height={27}
-            className="fixed left-16 top-10 ml-2"
+            src="/image/inventory.svg"
+            alt="Backicon"
+            width={25}
+            height={25}
+            style={{
+              width: '25px',
+              height: 'auto',
+          }}
+            className="mr-3"
           />
          {/* 全体プリセットの名前を入力 */}
          <Input
@@ -474,10 +512,10 @@ export default function Schedule() {
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setWholeName(e.target.value)
           }
-          className="w-[170px] py-5 text-lg text-center mx-auto bg-white"
+          className="w-[170px] py-5 text-lg text-center mr-16 bg-white"
         />
         </p>
-        <p className="bg-pink-300 pb-0.5 pt-3 text-xl">
+        <p className="bg-color-time pb-0.5 pt-3 text-xl">
           <Image
             src="/image/Timeicon.svg"
             alt="Time"
@@ -738,12 +776,15 @@ export default function Schedule() {
       </div>
       <div className="fixed bottom-5 left-1/2 -translate-x-1/2 transform">
         <p className="mt-3 text-teal-500">間に合う時刻</p>
-        <p className="text-3xl font-extrabold text-red-600">７：３０</p>
-        <Link href="/home">
-          <Button className="my-2 w-36 bg-teal-400 py-6 text-2xl hover:bg-teal-500" onClick={handleWholeCreate}>
+      <div className="flex">
+          <p className="text-3xl ml-20 font-extrabold text-red-600">{wakeupTime}</p>
+          <Button className="flex ml-5 my-auto size-6 w-[60px] bg-slate-500" onClick={calculateRemainingTime}>更新</Button>
+      </div>
+          <Link href="/home">
+          <Button className="my-2 w-36 bg-color-all py-6 text-2xl hover:bg-teal-500" onClick={handleWholeCreate}>
             設定
           </Button>
-        </Link>
+          </Link>
       </div>
     </div>
   );

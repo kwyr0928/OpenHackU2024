@@ -99,17 +99,16 @@ export default function TabFolder() {
       <Card className="h-[700px] border-color-folder border-4">
         <CardContent className="space-y-2 p-0">
           <Command className="mt-2">
-            <div className="px-4">
+          <div className="px-4 border-bottom">
               <CommandInput placeholder="検索" />
             </div>
             <ScrollArea className="h-[640px]">
               <CommandList className="">
-                <hr className="w-full border-gray-500" />
                 <CommandEmpty>見つかりません</CommandEmpty>
                 <CommandGroup className="">
                   {folderResponse?.folderSets?.map((item) => (
                     <div key={item.folder.itemId}>
-                      <CommandItem >
+                      <CommandItem className="mb-1 mt-1 border border-gray-300">
                         <EditFolder
                         id={item.folder.itemId}
                           item={item}
@@ -119,7 +118,6 @@ export default function TabFolder() {
                           {item.folder.name}
                         </EditFolder>
                       </CommandItem>
-                      <hr className="mt-2 w-full border-gray-500" />
                     </div>
                   ))}
                 </CommandGroup>

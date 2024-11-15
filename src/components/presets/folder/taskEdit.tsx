@@ -235,10 +235,11 @@ export default function EditFolderTask({
         }
       }}
     >
-      <div className="flex w-full items-center justify-start text-xl text-black font-normal">
+      <div className="flex w-full items-center p-1 justify-start text-xl text-black font-normal">
+
         <Description
           color="#FFA660"
-          style={{ width: "35px", height: "35px" }}
+          style={{ width: "30px", height: "30px" }}
         />
         <DialogTrigger onClick={handleDialogOpen}>&nbsp;{name}</DialogTrigger>
       </div>

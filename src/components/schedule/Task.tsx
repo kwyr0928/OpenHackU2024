@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-
+import { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,6 +9,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 type TaskProps = {
   index: number;
@@ -16,8 +23,11 @@ type TaskProps = {
   options: { name: string; time: number }[];
   task: Item;
   handleDelete: (task: Item) => void;
-  handleSortUp: (index: number) => void;
-  handleSortDown: (index: number) => void;
+  folderIndex?: number;
+  handleSortUp?: (index: number) => void;
+  handleSortDown?: (index: number) => void;
+  handleSortUp2?: (folderIndex: number, taskIndex: number) => void;
+  handleSortDown2?: (folderIndex: number, taskIndex: number) => void;
   isDelete?: boolean;
 };
 
@@ -34,11 +44,19 @@ export default function TaskPreset({
   options,
   task,
   handleDelete,
+  folderIndex,
   handleSortUp,
   handleSortDown,
+  handleSortUp2,
+  handleSortDown2,
   isDelete,
 }: TaskProps) {
-console.log(name,options)
+  // 有効なオプションのみをフィルタリング
+  const validOptions = options.filter(opt => opt.name && opt.name.trim() !== '');
+  const [selectedOption, setSelectedOption] = useState(validOptions[0] || { name: 'デフォルト', time: 0 });
+
+  // 有効なオプションがない場合のデフォルト値
+  const defaultOption = { name: 'デフォルト', time: 0 };
 
   return (
     <div className="flex justify-between border bg-white py-3">
@@ -69,11 +87,40 @@ console.log(name,options)
         )}
         <span>{name}</span>
       </div>
-      <div className="flex">
-        <span>{options[0]?.time}min</span>
-        {isDelete ? (
-          <p className="mr-10"></p>
+      <div className="flex items-center">
+        {options.length != 3 ? (
+          <span className="mr-4">{(validOptions[0] || defaultOption).time}min</span>
         ) : (
+          <div className="flex items-center gap-4">
+            <Select
+              defaultValue={(validOptions[0] || defaultOption).name}
+              onValueChange={(value) => {
+                const option = validOptions.find(opt => opt.name === value);
+                if (option) setSelectedOption(option);
+              }}
+            >
+              <SelectTrigger className="w-15">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {validOptions.length > 0 ? (
+                  validOptions.map((option, index) => (
+                    <SelectItem 
+                      key={index} 
+                      value={option.name}
+                    >
+                      {option.name}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectItem value="default">デフォルト</SelectItem>
+                )}
+              </SelectContent>
+            </Select>
+            <span className="mr-4">{selectedOption.time}min</span>
+          </div>
+        )}
+        {!isDelete && (
           <DropdownMenu>
             <DropdownMenuTrigger>
               <Image
@@ -85,17 +132,29 @@ console.log(name,options)
                   width: "30px",
                   height: "auto",
                 }}
-                className="mx-5"
+                className="mr-5"
               />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem onSelect={() => handleSortUp(index)}>
-                上に移動
-              </DropdownMenuItem>
+              {handleSortUp2 ? (
+                <DropdownMenuItem onSelect={() => handleSortUp2(folderIndex, index)}>
+                  上に移動
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem onSelect={() => handleSortUp(index)}>
+                  上に移動
+                </DropdownMenuItem>
+              )}
               <DropdownMenuSeparator />
-              <DropdownMenuItem onSelect={() => handleSortDown(index)}>
-                下に移動
-              </DropdownMenuItem>
+              {handleSortDown2 ? (
+                <DropdownMenuItem onSelect={() => handleSortDown2(folderIndex, index)}>
+                  下に移動
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem onSelect={() => handleSortDown(index)}>
+                  下に移動
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         )}

@@ -152,9 +152,9 @@ export default function EditFolder({
         </AccordionTrigger>
         <AccordionContent className="w-full">
           <hr className="mb-1 mt-2 border-gray-500" />
-          <div className="mx-auto w-[90%]">
+          <div className="mt-4 mb-3 mx-auto w-[95%]">
             {item.folder.tasks.map((task) => (
-              <div key={task.task.itemId}>
+              <div key={task.task.itemId} className="mb-1 mt-1 border border-gray-300">
                 <EditFolderTask
                   task={task.task}
                   id={task.task.itemId}
@@ -163,9 +163,8 @@ export default function EditFolder({
                 >
                   {task.task.name}
                 </EditFolderTask>
-                <hr className="mb-1 mt-1 w-full border-gray-500" />
               </div>
-            ))}
+            ))}    </div>
 
             <div className="flex items-center justify-around">
               <NewFolderTask
@@ -180,7 +179,7 @@ export default function EditFolder({
                 <Image src="/image/edit.svg" alt="" width={20} height={20} />
               </Button>
             </div>
-          </div>
+      
 
           {/* 名前変更ダイアログ */}
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

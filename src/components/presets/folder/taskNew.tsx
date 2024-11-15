@@ -249,12 +249,12 @@ export default function NewFolderTask({
 
   return (
     <div>
-      <div className="mt-3 flex justify-center">
+      <div className="flex justify-center">
         <DropdownMenu>
           <DropdownMenuTrigger>
             <PlusCircle
               color="#FFA660"
-              style={{ width: "50px", height: "50px" }}
+              style={{ width: "45px", height: "45px" }}
             />
           </DropdownMenuTrigger>
           <DropdownMenuContent className="flex space-x-4 p-4">
