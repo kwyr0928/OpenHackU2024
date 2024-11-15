@@ -209,7 +209,7 @@ export default function Schedule() {
     userId: session?.user.id,
     wholeSet: {
       name: wholeName,
-      itemid: detailWholePreset?.whole.itemId,
+      itemId: detailWholePreset?.whole.itemId,
       timeId: selectedTimePreset?.time.timeId,
         items: detailWholePreset?.whole.itemSet.map((item) => ({
           itemId: item.task ? item.task.itemId : item.folder?.itemId,
