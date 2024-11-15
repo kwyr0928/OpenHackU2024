@@ -2,10 +2,10 @@
 
 import {
   presetType,
-  type wholeSetPutBody,
   type folderSetPutBody,
   type optionStruct,
   type taskSetPostBody,
+  type wholeSetPutBody,
 } from "../repositry/constants";
 import {
   deleteOptionsInTask,
@@ -267,12 +267,12 @@ export async function updateTask(
 
 export async function updateTime(timeId: string, name: string, time: string) {
   try {
-    const masterId = await getMasterIdByTimeId(timeId);
-    if (masterId == null) throw new Error("Failed getMasterIdByTimeId");
+    const master = await getMasterIdByTimeId(timeId);
+    if (master == null) throw new Error("Failed getMasterIdByTimeId");
     // master更新
-    await updateMaster(masterId, name);
+    await updateMaster(master.userId, master.masterId!, name);
     // timeSet更新
-    const updatedTime = await updateTimeSet(masterId, name, time);
+    const updatedTime = await updateTimeSet(master.masterId!, name, time);
     if (updatedTime == null) throw new Error("Failed getMasterIdByTimeId");
     return updatedTime;
   } catch (error) {
