@@ -114,10 +114,12 @@ export default function Question() {
         console.log("choice question");
         setStep(step + 1);
         return;
+
       case selectedItems.length + 2:
         handleSendTask();
         callWholePresetAPI();
         return;
+
       default:
         handleSendTask();
         setStep(step + 1);
@@ -145,7 +147,7 @@ export default function Question() {
     }
   }
 
-  const handleSendTask = async () => {
+  const handleSendTask = () => {
     if(!session?.user.id){
       return;
     }
@@ -162,21 +164,20 @@ export default function Question() {
       }
     };
     try {
-      const res = await axios.post("/api/presets/task/new", json);
-      console.log(res.data);
+      const res = axios.post("/api/presets/task/new", json);
       console.log(json);
     } catch (error) {
       console.log("failed");
     }
   };
 
-  const callWholePresetAPI = async () => {
+  const callWholePresetAPI = () => {
     if(!session?.user.id){
       return;
     }
 
     try {
-      const res = await axios.post(`/api/question?userId=${session.user.id}`);
+      const res = axios.post(`/api/question?userId=${session.user.id}`);
       console.log("generated whole preset");
     } catch (error) {
       console.log("failed");
