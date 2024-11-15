@@ -114,17 +114,19 @@ export default function Question() {
         console.log("choice question");
         setStep(step + 1);
         return;
+
       case selectedItems.length + 2:
         handleSendTask();
         callWholePresetAPI();
         return;
+
       default:
         handleSendTask();
         setStep(step + 1);
     }
   };
 
-  const handleSendTime = async () => {
+  const handleSendTime = () => {
     if(!session?.user.id){
       return;
     }
@@ -137,15 +139,14 @@ export default function Question() {
       }
     };
     try {
-      const res = await axios.post("/api/presets/time/new", json);
-      console.log(res.data);
+      const res = axios.post("/api/presets/time/new", json);
       console.log(json);
     } catch (error) {
       console.log("failed");
     }
   }
 
-  const handleSendTask = async () => {
+  const handleSendTask = () => {
     if(!session?.user.id){
       return;
     }
@@ -162,21 +163,20 @@ export default function Question() {
       }
     };
     try {
-      const res = await axios.post("/api/presets/task/new", json);
-      console.log(res.data);
+      const res = axios.post("/api/presets/task/new", json);
       console.log(json);
     } catch (error) {
       console.log("failed");
     }
   };
 
-  const callWholePresetAPI = async () => {
+  const callWholePresetAPI = () => {
     if(!session?.user.id){
       return;
     }
 
     try {
-      const res = await axios.post(`/api/question?userId=${session.user.id}`);
+      const res = axios.post(`/api/question?userId=${session.user.id}`);
       console.log("generated whole preset");
     } catch (error) {
       console.log("failed");
@@ -245,7 +245,7 @@ export default function Question() {
       } else {
         nextButtonContent = (
           <Button onClick={handleNextStep} disabled={!selectedValue} className="bg-color-all">
-            <Link href="/home">次へ</Link>
+            <Link href="/home">終了</Link>
           </Button>
         );
       }
@@ -440,7 +440,7 @@ function QuestionComponent({
         <div className="flex items-center space-x-4">
           <RadioGroupItem value="other" id="other" />
           <Input
-            type="text"
+            type="number"
             placeholder="その他(分単位で数字のみ記入)"
             value={inputValue}
             onChange={(e) => {
