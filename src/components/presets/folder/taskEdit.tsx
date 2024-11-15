@@ -22,6 +22,7 @@ interface EditFolderTaskProps {
   children: string;
   task: Task;
   select:number;
+  handleGetFolder: ()=>void;
 }
 
 type Task = {
@@ -41,6 +42,7 @@ export default function EditFolderTask({
   children,
   task,
   select,
+  handleGetFolder,
 }: EditFolderTaskProps) {
   const [name, setName] = useState<string>(children); // 表示される名前
   const [newName, setNewName] = useState<string>(children); // 入力用の一時的な名前
@@ -114,6 +116,7 @@ export default function EditFolderTask({
       }
     } catch (error) {}
     setDialogOpen(false);
+    handleGetFolder();
   };
 
   const handleDelete = async () => {
@@ -128,6 +131,7 @@ export default function EditFolderTask({
     } catch (error) {}
     setDialogOpen(false);
     setIsDeleteDialogOpen(false);
+    handleGetFolder();
   };
 
   const handleDialogOpen = () => {
