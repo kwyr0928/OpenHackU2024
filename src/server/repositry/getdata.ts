@@ -308,6 +308,7 @@ export async function getKindItems(userId: string, type: number) {
   try {
     const res = await db.items.findMany({
       where: {
+        userId: userId,
         parentId: null,
         itemType: type,
         isSetting: false
