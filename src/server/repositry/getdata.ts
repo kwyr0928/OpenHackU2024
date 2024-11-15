@@ -317,7 +317,7 @@ export async function getKindItems(userId: string, type: number) {
       },
     });
 
-    if (res.length === 0) return null;
+    if (res.length === 0) return [];
     return res;
   } catch (error) {
     console.error("Error in getKindItems:", error);

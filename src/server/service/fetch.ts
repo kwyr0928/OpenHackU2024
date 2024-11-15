@@ -59,7 +59,14 @@ export async function fetchWhole(itemId: string) {
       whole: {
         name: name,
         itemId: itemId,
-        updateTime: whole.updated_at,
+        updateTime: whole.updated_at.toLocaleString('ja-JP', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: undefined, // 秒を非表示にする
+        }),
         timeSet: time,
         itemSet: retItems,
       },

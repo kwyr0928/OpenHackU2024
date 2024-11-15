@@ -87,19 +87,14 @@ export default function EditFolder({
 
   const handleSave = async () => {
     // 名前を変更
-    setName(newName);
     const folderData = {
       userId: session?.user.id,
       folderSet: {
-        name:name,
-        item: [
-          {
-            items: item.folder.tasks.map((task) => ({
-              itemId: task.task.itemId,
-              select: task.task.select,
-            })),
-          },
-        ],
+        name: newName,
+        items: item.folder.tasks.map((task) => ({
+          itemId: task.task.itemId,
+          select: task.task.select,
+        })),
       },
     };
     if (!session?.user?.id) {
@@ -110,9 +105,9 @@ export default function EditFolder({
         `/api/presets/folder/${id}?userId=${session.user.id}`,
         folderData,
       );
-      console.log(res.data);
+      console.log(folderData);
     } catch (error) {}
-
+    setName(newName);
     setIsDialogOpen(false);
     handleFolderGet();
   };
@@ -158,13 +153,13 @@ export default function EditFolder({
         <AccordionContent className="w-full">
           <hr className="mb-1 mt-2 border-gray-500" />
           <div className="mx-auto w-[90%]">
-            {/* おそらくここ */}
-            {item.folder.tasks.map((task, index) => (
-              <div key={index}>
+            {item.folder.tasks.map((task) => (
+              <div key={task.task.itemId}>
                 <EditFolderTask
                   task={task.task}
                   id={task.task.itemId}
-                  select={index}
+                  select={task.task.select}
+                  handleGetFolder={handleFolderGet}
                 >
                   {task.task.name}
                 </EditFolderTask>
@@ -177,6 +172,7 @@ export default function EditFolder({
                 select={item.folder.tasks.length}
                 item={item}
                 taskApiResponse={taskApiResponse}
+                handleGetFolder={handleFolderGet}
               />
               <Button
                 className="ml-2 rounded-full bg-gray-500 p-2"

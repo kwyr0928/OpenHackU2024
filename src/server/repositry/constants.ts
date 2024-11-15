@@ -188,7 +188,7 @@ export type wholeResponse = {
   whole: {
     name: string;
     itemId: string;
-    updateTime: Date;
+    updateTime: string;
     timeSet: timeResponse;
     itemSet: contentResponse[];
   };
@@ -197,7 +197,7 @@ export type wholeResponse = {
 export type wholeAllResponse = {
   name: string;
   itemId: string;
-  updateTime: Date;
+  updateTime: string;
 };
 
 export type timeResponse = {
