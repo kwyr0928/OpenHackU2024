@@ -394,7 +394,7 @@ export default function Schedule() {
         setIsLoading(false); // セッションが無ければ何も表示しない
         return;
       }
-
+        console.log("get実行するよ");
       try {
         const [wholeResponse, timeResponse, folderResponse, taskResponse, scheduleResponse] =
           await Promise.all([
@@ -412,6 +412,15 @@ export default function Schedule() {
             ),
             axios.get(`/api/schedule?userId=${session.user.id}`)
           ]);
+        console.log("全体プリセット一覧");
+        console.log(wholeResponse);
+        console.log("時間プリセット一覧");
+        console.log(timeResponse);
+        console.log("フォルダプリセット一覧");
+        console.log(folderResponse);
+        console.log("タスクプリセット一覧");
+        console.log(taskResponse);
+        console.log("スケジュール取得");
         console.log(scheduleResponse);
 
         if (scheduleResponse.data.wholeSet) {
