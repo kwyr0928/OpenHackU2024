@@ -59,7 +59,7 @@ export default function TabTask() {
   return (
     <div>
       {/* タスク */}
-      <Card className="h-[700px] border-color-task">
+      <Card className="h-[700px] border-color-task border-4">
         <CardContent className="space-y-2 p-0">
           <Command className="mt-2">
             <div className="px-4">
