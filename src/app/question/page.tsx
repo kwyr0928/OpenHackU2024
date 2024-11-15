@@ -252,15 +252,15 @@ export default function Question() {
   }
 
   return (
-    <div className="flex-col items-center justify-center bg-slate-50 text-center font-mPlus max-w-md, mx-auto">
-      <div className="pb-20 pt-20">
+    <div className="h-screen flex-col items-center justify-center bg-slate-50 text-center font-mPlus max-w-md, mx-auto">
+      <div className="pt-20 pb-20">
         <h1 className="m-2 text-5xl ">アンケート</h1>
         <h2 className="pt-2 text-xl ">
           回答結果に基づき<br></br>アプリがカスタマイズされます。
         </h2>
       </div>
 
-      <div className="flex h-screen flex-col items-center text-center">
+      <div className="flex flex-col items-center text-center mb-32">
         <Card className="w-3/4 max-w-md border-2 border-color-all">
           <CardHeader>
             <CardTitle>
