@@ -2,7 +2,6 @@
 
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
 import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
@@ -101,14 +100,14 @@ export default function Question() {
    */
   let nextButtonContent = null;
 
-  const handleNextStep = () => {
+  const handleNextStep  = async () => {
     setSelectedValue(""); // 選択をリセット
     setInputValue(""); // 入力欄をリセット
 
     //  stepによって呼び出すAPIを変更
     switch (step) {
       case GOAL_TIME_QUESTION:
-        handleSendTime();
+        await handleSendTime();
         setStep(step + 1);
       case INITIAL_QUESTION:
         console.log("choice question");
@@ -116,17 +115,18 @@ export default function Question() {
         return;
 
       case selectedItems.length + 2:
-        handleSendTask();
-        callWholePresetAPI();
+        await handleSendTask();
+        await callWholePresetAPI();
+        window.location.href = "/home";
         return;
 
       default:
-        handleSendTask();
+        await handleSendTask();
         setStep(step + 1);
     }
   };
 
-  const handleSendTime = () => {
+  const handleSendTime = async () => {
     if(!session?.user.id){
       return;
     }
@@ -139,14 +139,14 @@ export default function Question() {
       }
     };
     try {
-      const res = axios.post("/api/presets/time/new", json);
+      const res = await axios.post("/api/presets/time/new", json);
       console.log(json);
     } catch (error) {
       console.log("failed");
     }
   }
 
-  const handleSendTask = () => {
+  const handleSendTask = async () => {
     if(!session?.user.id){
       return;
     }
@@ -163,20 +163,20 @@ export default function Question() {
       }
     };
     try {
-      const res = axios.post("/api/presets/task/new", json);
+      const res = await axios.post("/api/presets/task/new", json);
       console.log(json);
     } catch (error) {
       console.log("failed");
     }
   };
 
-  const callWholePresetAPI = () => {
+  const callWholePresetAPI = async () => {
     if(!session?.user.id){
       return;
     }
 
     try {
-      const res = axios.post(`/api/question?userId=${session.user.id}`);
+      const res = await axios.post(`/api/question?userId=${session.user.id}`);
       console.log("generated whole preset");
     } catch (error) {
       console.log("failed");
@@ -245,7 +245,7 @@ export default function Question() {
       } else {
         nextButtonContent = (
           <Button onClick={handleNextStep} disabled={!selectedValue} className="bg-color-all">
-            <Link href="/home">終了</Link>
+            終了
           </Button>
         );
       }
