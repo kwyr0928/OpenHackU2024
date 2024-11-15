@@ -31,7 +31,7 @@ export async function PUT(
       throw new Error("not found masterId");
     }
     // master更新
-    await updateMaster(masterId, folderSet.name);
+    await updateMaster(userId, masterId, folderSet.name);
     // masterIdが同じitemを取得
     const allItems = await getAllItemsByMasterId(masterId);
     if (allItems == null) {

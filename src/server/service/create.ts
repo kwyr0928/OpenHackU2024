@@ -40,6 +40,31 @@ export async function createNewWhole(
   }[],
 ) {
   try {
+    const ret = await createWhole(
+      userId,
+      name,
+      prefabtimeId,
+      prefabItems);
+    if (ret == null) {
+      throw new Error("Failed on createTimeSet");
+    }
+    return ret;
+  } catch (error) {
+    console.error("Error in createNewTimeSet:", error);
+    return null;
+  }
+}
+export async function createWhole(
+  userId: string,
+  name: string,
+  prefabtimeId: string,
+  prefabItems: {
+    itemId: string;
+    select: number;
+  }[],
+  wholePrefab?: itemStruct
+) {
+  try {
     if (!userId || !name || !prefabtimeId || prefabItems.length === 0) {
       throw new Error(
         "Invalid input: userId and name and prefabtimeId and prefabItemId are required",
@@ -58,8 +83,18 @@ export async function createNewWhole(
     if (newItem == null) {
       throw new Error("Failed to create item.");
     }
-    // 新規masterをセット
-    const masterSetItem = await setNewMasterItem(newItem);
+
+    let masterSetItem;
+    if (wholePrefab == null) {
+      //新規masterをセット
+      masterSetItem = await setNewMasterItem(newItem);
+    } else if (wholePrefab.masterId != null) {
+      //既存masterをセット
+      masterSetItem = await setExistMasterItem(
+        newItem.id,
+        wholePrefab.masterId,
+      );
+    }
     if (masterSetItem == null) {
       throw new Error("Failed to set master.");
     }

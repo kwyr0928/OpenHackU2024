@@ -67,7 +67,7 @@ export async function PUT(
       throw new Error("not found masterId");
     }
     // master更新
-    await updateMaster(masterId, taskSet.name);
+    await updateMaster(userId, masterId, taskSet.name);
     // masterIdが同じitemを
     const allItems = await getAllItemsByMasterId(masterId);
     if (allItems == null) {

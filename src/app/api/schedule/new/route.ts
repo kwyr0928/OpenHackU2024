@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { setNextSchedule } from "~/server/repositry/updatedata";
 import { presetType, type wholeSetPostBodyInSchedule } from "~/server/repositry/constants";
-import { createNewWhole } from "~/server/service/create";
 import { deleteItem } from "~/server/repositry/deletedata";
+import { setNextSchedule } from "~/server/repositry/updatedata";
+import { createNewWhole, createWhole } from "~/server/service/create";
 
 export async function POST(req: Request) {
   try {
@@ -22,15 +22,29 @@ export async function POST(req: Request) {
     }
 
     //新しく全体セットを生成
-    const createdNewWhole = await createNewWhole(
+    const createdNewWholePrefab = await createNewWhole(
       userId,
       wholeSet.name,
       wholeSet.timeId,
       wholeSet.items,
     );
+    if(!createdNewWholePrefab){
+      return NextResponse.json(
+        { error: "Invalid input: Failed to create createNewWhole" },
+        { status: 400 },
+      );
+    }
+    //全体セットインスタンスを生成
+    const createdWholeInstance = await createWhole(
+      userId,
+      wholeSet.name,
+      wholeSet.timeId,
+      wholeSet.items,
+      createdNewWholePrefab?.item
+    );
 
     //次の予定に設定
-    const itemId = createdNewWhole?.whole?.id
+    const itemId = createdWholeInstance?.whole?.id
     if(!itemId){
       return NextResponse.json(
         { error: "Invalid input: itemId of wholeSetItemId is required for setNextSchedule" },
