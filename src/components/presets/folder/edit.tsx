@@ -1,7 +1,9 @@
 "use client";
 
+import axios from "axios";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
-import React, { useState } from "react";
+import { useState } from "react";
 import FolderClose from "~/components/svgs/folderClose";
 import FolderOpen from "~/components/svgs/folderOpen";
 import {
@@ -18,10 +20,8 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
-import NewFolderTask from "./taskNew";
 import EditFolderTask from "./taskEdit";
-import axios from "axios";
-import { useSession } from "next-auth/react";
+import NewFolderTask from "./taskNew";
 
 interface EditFolderProps {
   item: FolderSet;
@@ -133,7 +133,7 @@ export default function EditFolder({
       <AccordionItem value="item-1">
         <AccordionTrigger
           onClick={() => setIsOpen(!isOpen)} // 開閉をトグル
-          className="w-full items-center justify-between p-1 text-xl text-black"
+          className="w-full items-center justify-start p-1 text-xl text-black font-normal"
         >
           <div>
             {isOpen ? (
@@ -148,7 +148,7 @@ export default function EditFolder({
               />
             )}
           </div>
-          【{name}】
+          &nbsp;{name}
         </AccordionTrigger>
         <AccordionContent className="w-full">
           <hr className="mb-1 mt-2 border-gray-500" />

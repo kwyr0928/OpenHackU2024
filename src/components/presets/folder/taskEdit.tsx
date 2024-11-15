@@ -1,6 +1,5 @@
 "use client";
 
-import { ScrollArea } from "@radix-ui/react-scroll-area";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
@@ -15,9 +14,9 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { Label } from "~/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 interface EditFolderTaskProps {
   id: string;
@@ -236,12 +235,12 @@ export default function EditFolderTask({
         }
       }}
     >
-      <div className="flex w-full items-center justify-start text-xl text-black">
+      <div className="flex w-full items-center justify-start text-xl text-black font-normal">
         <Description
           color="#FFA660"
           style={{ width: "35px", height: "35px" }}
         />
-        <DialogTrigger onClick={handleDialogOpen}>【{name}】</DialogTrigger>
+        <DialogTrigger onClick={handleDialogOpen}>&nbsp;{name}</DialogTrigger>
       </div>
       <DialogContent className="w-[90%] rounded-xl">
         <DialogHeader>
