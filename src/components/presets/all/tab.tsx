@@ -65,7 +65,7 @@ export default function TabAll() {
   return (
     <div>
       {/* 全体 */}
-      <Card className="h-[700px] border-color-all">
+      <Card className="h-[700px] border-color-all border-4"  >
         <CardContent className="space-y-2 p-0">
           <Command className="mt-2">
             <div className="px-4">

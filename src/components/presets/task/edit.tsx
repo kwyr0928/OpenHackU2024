@@ -29,6 +29,7 @@ type Task = {
   name: string;
   itemId: string;
   isStatic: boolean;
+  select: number;
   options: {
     name: string;
     time: number;
@@ -49,13 +50,14 @@ export default function EditTask({
 
   const [activeTab, setActiveTab] = useState("pulldown");
 
-  const [options1, setOptions1] = useState(""); // プルダウン
-  const [options2, setOptions2] = useState("");
-  const [options3, setOptions3] = useState("");
-  const [minutes1, setMinutes1] = useState(0); // 分
-  const [minutes2, setMinutes2] = useState(0); // 分
-  const [minutes3, setMinutes3] = useState(0); // 分
-  const [minutes, setMinutes] = useState(0);
+  const [options1, setOptions1] = useState(task.options[0]?.name ?? ""); // プルダウン
+  const [options2, setOptions2] = useState(task.options[1]?.name ?? "");
+  const [options3, setOptions3] = useState(task.options[2]?.name ?? "");
+  const [minutes1, setMinutes1] = useState(task.options[0]?.time ?? 0); // 分
+  const [minutes2, setMinutes2] = useState(task.options[1]?.time ?? 0); // 分
+  const [minutes3, setMinutes3] = useState(task.options[2]?.time ?? 0); // 分
+
+  const [minutes, setMinutes] = useState(task.options[0]?.time);
 
   const { data: session, status } = useSession();
 
@@ -66,6 +68,7 @@ export default function EditTask({
       taskSet: {
         name: name,
         isStatic: false,
+        select: 0,
         options: [
           {
             name: options1,
@@ -98,11 +101,16 @@ export default function EditTask({
       return;
     }
     try {
-
       if (activeTab === "pulldown") {
-        const res = await axios.put(`/api/presets/task/${id}?userId=${session.user.id}`, taskData1);
+        const res = await axios.put(
+          `/api/presets/task/${id}?userId=${session.user.id}`,
+          taskData1,
+        );
       } else {
-        const res = await axios.put(`/api/presets/task/${id}?userId=${session.user.id}`, taskData2);
+        const res = await axios.put(
+          `/api/presets/task/${id}?userId=${session.user.id}`,
+          taskData2,
+        );
       }
     } catch (error) {}
     setDialogOpen(false);
@@ -125,18 +133,8 @@ export default function EditTask({
   };
 
   const handleDialogOpen = () => {
-    if(task.isStatic){
+    if (task.isStatic) {
       setActiveTab("static");
-    }
-    if (activeTab === "pulldown") {
-      setMinutes(task.options[0]?.time ?? 0);
-    } else {
-      setMinutes1(task.options[0]?.time ?? 0);
-      setMinutes2(task.options[1]?.time ?? 0);
-      setMinutes3(task.options[2]?.time ?? 0);
-      setOptions1(task.options[0]?.name ?? "デフォルト");
-      setOptions2(task.options[1]?.name ?? "");
-      setOptions3(task.options[2]?.name ?? "");
     }
   };
 
@@ -186,7 +184,6 @@ export default function EditTask({
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setNewName(e.target.value)
                 }
-                onBlur={handleSave}
                 onKeyDown={handleKeyDown} // Enter キーを押したときに編集を終了
                 autoFocus
                 className="mt-2 text-center text-gray-700"
@@ -203,62 +200,79 @@ export default function EditTask({
           </DialogTitle>
           <DialogDescription></DialogDescription>
         </DialogHeader>
-        <Tabs defaultValue={activeTab} onValueChange={(value) => setActiveTab(value)} className="">
+        <Tabs
+          defaultValue={activeTab}
+          onValueChange={(value) => setActiveTab(value)}
+          className=""
+        >
           <TabsList className="mb-4 grid w-full grid-cols-2">
             <TabsTrigger value="pulldown">プルダウン</TabsTrigger>
             <TabsTrigger value="static">固定値</TabsTrigger>
           </TabsList>
           <TabsContent value="pulldown" className="h-[150px]">
-            <ScrollArea>
-              <div className="mb-3 flex items-center justify-center">
-                <Input
-                  type="text"
-                  value={options1}
-                  onChange={(e) => setOptions1(e.target.value)}
-                  className="mr-7 w-36 text-center"
-                />
-                <Input
-                  type="number"
-                  value={minutes1}
-                  onChange={(e) => setMinutes1(Number(e.target.value))}
-                  className="w-16 text-center"
-                />
-                <p>min</p>
-              </div>
-              <div className="mb-3 flex items-center justify-center">
-                <Input
-                  type="text"
-                  value={options2}
-                  onChange={(e) => setOptions2(e.target.value)}
-                  className="mr-7 w-36 text-center"
-                />
-                <Input
-                  type="number"
-                  value={minutes2}
-                  onChange={(e) => setMinutes2(Number(e.target.value))}
-                  className="w-16 text-center"
-                />
-                <p>min</p>
-              </div>
-              <div className="mb-3 flex items-center justify-center">
-                <Input
-                  type="text"
-                  value={options3}
-                  onChange={(e) => setOptions3(e.target.value)}
-                  className="mr-7 w-36 text-center"
-                />
-                <Input
-                  type="number"
-                  value={minutes3}
-                  onChange={(e) => setMinutes3(Number(e.target.value))}
-                  className="w-16 text-center"
-                />
-                <p>min</p>
-              </div>
-            </ScrollArea>
+            <div className="mb-2 flex items-center justify-center">
+              <Input
+                type="text"
+                value={options1}
+                onChange={(e) => setOptions1(e.target.value)}
+                className="mr-7 w-36 text-center"
+              />
+              <Input
+                type="number"
+                value={minutes1}
+                onChange={(e) => setMinutes1(Number(e.target.value))}
+                className="w-16 text-center"
+              />
+              <p>min</p>
+            </div>
+            <div className="mb-2 flex items-center justify-center">
+              <Input
+                type="text"
+                value={options2}
+                onChange={(e) => setOptions2(e.target.value)}
+                className="mr-7 w-36 text-center"
+              />
+              <Input
+                type="number"
+                value={minutes2}
+                onChange={(e) => setMinutes2(Number(e.target.value))}
+                className="w-16 text-center"
+              />
+              <p>min</p>
+            </div>
+            <div className="mb-2 flex items-center justify-center">
+              <Input
+                type="text"
+                value={options3}
+                onChange={(e) => setOptions3(e.target.value)}
+                className="mr-7 w-36 text-center"
+              />
+              <Input
+                type="number"
+                value={minutes3}
+                onChange={(e) => setMinutes3(Number(e.target.value))}
+                className="w-16 text-center"
+              />
+              <p>min</p>
+            </div>
+            <div className="mt-auto flex justify-around">
+              <Button
+                className="bg-red-600"
+                onClick={() => setIsDeleteDialogOpen(true)}
+              >
+                削除
+              </Button>
+              <Button
+                className="bg-darkBlue hover:bg-blue-900"
+                onClick={handleSave}
+                disabled={!name || !options1 || !options2 || !options3}
+              >
+                変更
+              </Button>
+            </div>
           </TabsContent>
           <TabsContent value="static" className="h-[150px]">
-            <div className="flex h-40 items-center justify-center">
+            <div className="flex h-32 items-center justify-center">
               <Input
                 type="number"
                 value={minutes}
@@ -267,23 +281,23 @@ export default function EditTask({
               />
               <p>min</p>
             </div>
+            <div className="mt-auto flex justify-around">
+              <Button
+                className="bg-red-600"
+                onClick={() => setIsDeleteDialogOpen(true)}
+              >
+                削除
+              </Button>
+              <Button
+                className="bg-darkBlue hover:bg-blue-900"
+                onClick={handleSave}
+                disabled={!newName} // newNameが空の場合はボタンを無効化
+              >
+                変更
+              </Button>
+            </div>
           </TabsContent>
         </Tabs>
-        <div className="mt-auto flex justify-around">
-          <Button
-            className="bg-red-600"
-            onClick={() => setIsDeleteDialogOpen(true)}
-          >
-            削除
-          </Button>
-          <Button
-            className="bg-darkBlue hover:bg-blue-900"
-            onClick={handleSave}
-            disabled={!newName} // newNameが空の場合はボタンを無効化
-          >
-            変更
-          </Button>
-        </div>
       </DialogContent>
       {/* 削除確認ダイアログ */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
