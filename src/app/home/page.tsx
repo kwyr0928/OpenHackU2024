@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { boolean } from "zod";
 import DisplayTime from "~/components/displayTime/displayTime";
 import DescriptionSvg from "~/components/svgs/description";
 import FolderIconSvg from "~/components/svgs/folderClose";
@@ -52,7 +53,7 @@ type TimeSet = {
 type Whole = {
   name: string;
   itemId: string;
-  updateTime: Date; // ISO string format for update time
+  updateTime: string; // ISO string format for update time
   timeSet: TimeSet;
   itemSet: ItemSet[]; // Can contain both folders and tasks
 };
@@ -72,7 +73,7 @@ const defaultResponseData: ResponseData = {
     whole: {
       name: "プリセットがありません", // デフォルトの Whole の名前
       itemId: "", // デフォルトの Whole ID
-      updateTime: new Date(), // 現在の日時をデフォルトとして設定
+      updateTime: "no data", // 現在の日時をデフォルトとして設定
       timeSet: {
         time: {
           name: "プリセットなし", // デフォルトの時間設定名
@@ -84,20 +85,25 @@ const defaultResponseData: ResponseData = {
     },
   },
 };
+let isGetDataFromDb: boolean = false
 
 
 export default function Home() {
   const { data: session } = useSession();
   const [dataFromDb, setDataFromDb] = useState<ResponseData>(defaultResponseData);
+  const [loading, setLoading] = useState(true); // ローディング状態を管理
 
   const handleScheduleGet = async () => {
     if (!session?.user?.id) return;
     try {
       const res = await axios.get(`/api/schedule?userId=${session.user.id}`);
       setDataFromDb(res.data);
+      isGetDataFromDb = true;
       console.log(res.data);  // データが正しく取得できているか確認
     } catch (error) {
-      console.error(error + "なんで");
+      console.error(error + "DBがないのかも");
+    } finally {
+      setLoading(false); // ローディング終了
     }
   };
 
@@ -105,15 +111,26 @@ export default function Home() {
     handleScheduleGet();
   }, []);
 
-  let whole = dataFromDb ? dataFromDb.wholeSet.whole : null;
+  if (!isGetDataFromDb) {
+    handleScheduleGet();
+  }
+
+  const whole = dataFromDb.wholeSet.whole;
 
   if (!whole) {
-    handleScheduleGet();
     return <div>Loading...
+      <div className="mt-4 flex-col">
+        <Link href="/presets">
+          <Button className="bg-color-all shadow-lg hover:bg-emerald-500">
+            <FolderIconSvg style={{ width: "30px", height: "30px" }} color={""} />
+          </Button>
+        </Link>
+        <h1>プリセット</h1>
+      </div>
     </div>;
-  } else {
-    console.log(dataFromDb);
   }
+
+
 
   function calculateRemainingTime(data: Whole) {
     const [hours = 0, minutes = 0] = data.timeSet.time.time.split(":").map(Number);
@@ -148,9 +165,6 @@ export default function Home() {
   }
   const remainingTime = calculateRemainingTime(whole);
 
-  // 日付フォーマット
-  const dateString: string = format(whole.updateTime, "yyyy/MM/dd HH:mm");
-
   return (
     <div className="flex h-screen flex-col items-center justify-center bg-slate-50 text-center font-mPlus text-color-all max-w-md mx-auto">
       {/* 現在時刻の表示 */}
@@ -158,7 +172,7 @@ export default function Home() {
         <DisplayTime />
       </h1>
       <Card className="mt-4 w-3/4 max-w-md border-4 border-color-all text-gray-700">
-        <h5 className="pb-1 pt-1">最終更新時刻：{dateString}</h5>
+        <h5 className="pb-1 pt-1">最終更新時刻：{whole.updateTime}</h5>
         <CardHeader className="pb-2 pt-0">
           <div className="bg-slate-0 mb-1 rounded-lg border-4 border-pink-300 p-4 text-3xl shadow-sm">
             <p className="mb-1 text-lg leading-none">{whole.timeSet.time.name || "-"}</p>
