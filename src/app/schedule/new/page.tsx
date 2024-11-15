@@ -198,8 +198,8 @@ export default function Schedule() {
   const [detailWholePreset, setDetailWholePreset] = useState<DetailWhole>(); // 選択中の全体プリセット[id]
   const [selectedTimePreset, setSelectedTimePreset] = useState<TimeSet>(); // 選択中の時間プリセット
   const [isFirst, setIsFirst] = useState<boolean>(true);
-  const [scheduleWholeName, setScheduleWholeName] = useState("");
-  const [scheduleWholeId, setScheduleWholeId] = useState("");
+  const [wholeName, setWholeName] = useState<string>("");
+  const [wakeupTime, setWakeupTime] = useState<string>("");
 
   const handleScheduleCreate = async () => {
     // スケジュール　作成
@@ -208,8 +208,8 @@ export default function Schedule() {
    const scheduleNew = {
     userId: session?.user.id,
     wholeSet: {
-      name: scheduleWholeName,
-      itemId: scheduleWholeId,
+      name: wholeName,
+      itemid: detailWholePreset?.whole.itemId,
       timeId: selectedTimePreset?.time.timeId,
         items: detailWholePreset?.whole.itemSet.map((item) => ({
           itemId: item.task ? item.task.itemId : item.folder?.itemId,
@@ -226,6 +226,7 @@ export default function Schedule() {
     // タスクフォルダ並び替え　↑
     // スケジュール内のタスクフォルダを並び替える itemSets // TODO
     // 全体プリセットで仮実装済
+    setWholeName("カスタム");
     setDetailWholePreset((prev) => {
       if (!prev) return undefined; // データが無ければreturn
 
@@ -248,10 +249,44 @@ export default function Schedule() {
     });
   };
 
+  const calculateRemainingTime = () => {
+    const [hours = 0, minutes = 0] = selectedTimePreset?.time.time.split(":").map(Number);
+    const totalTimeInMinutes = hours * 60 + minutes;
+    
+    // アイテム内のタスクの合計時間を計算
+    let taskTimeTotal = 0;
+    detailWholePreset?.whole.itemSet.forEach(item => {
+      if (item.task) {
+        // 単一タスクの場合
+        taskTimeTotal += item.task.options[item.task.select]?.time;
+      }
+      else if (item.folder) {
+        // フォルダ内のタスクの場合
+        item.folder.tasks.forEach(folderTask => {
+          taskTimeTotal += folderTask.task.options[folderTask.task.select].time;
+        });
+      }
+    });
+
+    // 残り時間を計算
+    let wakeUpTimeInMinutes = totalTimeInMinutes - taskTimeTotal;
+
+    if (wakeUpTimeInMinutes < 0) {
+      wakeUpTimeInMinutes += 1440; // 残り時間が負の数になる場合、24時間を足す
+    }
+
+    const wakeUpHour = Math.floor(wakeUpTimeInMinutes / 60);
+    const wakeUpMinute = wakeUpTimeInMinutes % 60;
+
+    setWakeupTime(`${wakeUpHour < 10 ? "0" : ""}${wakeUpHour}:${wakeUpMinute < 10 ? "0" : ""}${wakeUpMinute}`);
+  }
+
+
   const handleSortDown = (index: number) => {
     // タスクフォルダ並び替え　↓
     // スケジュール内のタスクフォルダを並び替える itemSets // TODO
     // 全体プリセットで仮実装済
+    setWholeName("カスタム");
     setDetailWholePreset((prev) => {
       if (!prev) return undefined; // データが無ければreturn
 
@@ -318,7 +353,7 @@ export default function Schedule() {
 
   const handleTaskSelect = (target) => {
     // タスク追加　既存プリセット　選択 // 型定義 // TODO
-
+    setWholeName("カスタム");
     setDetailWholePreset((prev) => {
       if (!prev) return undefined; // データが無ければreturn
 
@@ -336,7 +371,7 @@ export default function Schedule() {
 
   const handleFolderSelect = (target) => {
     // フォルダ追加　既存プリセット　選択 // 型定義 // TODO
-
+    setWholeName("カスタム");
     setDetailWholePreset((prev) => {
       if (!prev) return undefined; // データが無ければreturn
 
@@ -415,13 +450,11 @@ export default function Schedule() {
             ),
             axios.get(`/api/schedule?userId=${session.user.id}`)
           ]);
-        console.log(scheduleResponse);
+        
 
         if (scheduleResponse.data.wholeSet) {
           setDetailWholePreset(scheduleResponse.data.wholeSet); // 全体プリセット[id] 登録
-          setScheduleWholeName(scheduleResponse.data.wholeSet.whole.name);
-          setScheduleWholeId(scheduleResponse.data.wholeSet.whole.itemId);
-          console.log(scheduleResponse.data.wholeSet.whole.name);
+          setWholeName(scheduleResponse.data.wholeSet.whole.name);
         }
 
         if (wholeResponse.data?.wholeSets) {
@@ -462,6 +495,7 @@ export default function Schedule() {
     void fetchPresets();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  
 
   useEffect(() => {
     // 全体プリセットが変更されたら1回実行
@@ -477,6 +511,7 @@ export default function Schedule() {
         );
         if (detailWholeResponse.data?.wholeSet) {
           setDetailWholePreset(detailWholeResponse.data.wholeSet); // 全体プリセット[id] 登録
+          setWholeName(detailWholeResponse.data.wholeSet.whole.name);
         }
         const firstTimePreset = detailWholeResponse.data.wholeSet.whole.timeSet; // 時間プリセット
         if (firstTimePreset !== undefined) {
@@ -499,6 +534,7 @@ export default function Schedule() {
         name: selectedPreset.name,
         itemId: selectedPreset.itemId,
       });
+      setWholeName(selectedPreset.name);
       setValueWhole(id);
       setOpenWhole(false);
     }
@@ -513,6 +549,7 @@ export default function Schedule() {
       setSelectedTimePreset(selectedPreset);
       setValueTime(id);
       setOpenTime(false);
+      setWholeName("カスタム");
     }
   };
 
@@ -520,8 +557,8 @@ export default function Schedule() {
 
   return (
     <div className="mx-auto h-svh max-w-md bg-slate-50 pt-5 text-center font-mPlus">
-      <div className="mx-5 h-[660px] rounded-xl border-2 border-teal-400 bg-white">
-        <div className="rounded-t-lg bg-teal-400 py-3 text-xl">
+      <div className="mx-auto w-[80%] h-[660px] rounded-xl border-4 border-color-all bg-white">
+        <div className="flex justify-center rounded-t-lg bg-color-all py-3 text-xl">
           <Link href="/home">
             <Image
               src="/image/back.svg"
@@ -532,7 +569,7 @@ export default function Schedule() {
                 width: '25px',
                 height: 'auto',
             }}
-              className="fixed left-3 top-10 mx-5 mt-0.5"
+              className="mt-2"
             />
           </Link>
           <Image
@@ -540,7 +577,11 @@ export default function Schedule() {
             alt="Backicon"
             width={25}
             height={25}
-            className="fixed left-16 top-10 ml-2"
+            style={{
+              width: '25px',
+              height: 'auto',
+          }}
+            className="mr-3"
           />
 
           <Popover open={openWhole} onOpenChange={setOpenWhole}>
@@ -549,12 +590,12 @@ export default function Schedule() {
                 variant="outline"
                 role="combobox"
                 aria-expanded={openWhole}
-                className="w-[170px] py-5 text-lg"
+                className="w-[170px] py-5 text-lg mr-16"
               >
                 <div className="ml-5 max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
-                  {selectedWholePreset
-                    ? selectedWholePreset.name
-                    : scheduleWholeName}
+                  {wholeName
+                    ? wholeName
+                    : "未設定"}
                 </div>
                 <ChevronsUpDown className="ml-3 h-4 w-4 shrink-0 opacity-50" />
               </Button>
@@ -590,7 +631,7 @@ export default function Schedule() {
             </PopoverContent>
           </Popover>
         </div>
-        <div className="bg-pink-300 pb-0.5 pt-3 text-xl">
+        <div className="bg-color-time pb-0.5 pt-3 text-xl">
           <Image
             src="/image/Timeicon.svg"
             alt="Time"
@@ -730,6 +771,7 @@ export default function Schedule() {
                     handleDelete={handleDelete}
                     handleSortUp={handleSortUp}
                     handleSortDown={handleSortDown}
+                    isDelete={true}
                   />
                 </div>
               ))}
@@ -846,6 +888,7 @@ export default function Schedule() {
                     handleDelete={handleDelete}
                     handleSortUp={handleSortUp}
                     handleSortDown={handleSortDown}
+                    isDelete={true}
                   />
                 </div>
               ))}
@@ -855,12 +898,17 @@ export default function Schedule() {
       </div>
       <div className="fixed bottom-5 left-1/2 -translate-x-1/2 transform">
         <p className="mt-3 text-teal-500">間に合う時刻</p>
-        <p className="text-3xl font-extrabold text-red-600">７：３０</p>
-        <Link href="/home">
-          <Button className="my-2 w-36 bg-teal-400 py-6 text-2xl hover:bg-teal-500" onClick={handleScheduleCreate}>
+        { wakeupTime === "" ?
+       <Button className="flex mx-auto bg-slate-500" onClick={calculateRemainingTime}>クリック</Button>
+        :
+        <p className="text-3xl font-extrabold text-red-600">{wakeupTime}</p>
+}
+          <Link href="/home">
+          <Button className="my-2 w-36 bg-color-all py-6 text-2xl hover:bg-teal-500" onClick={handleScheduleCreate}>
             設定
           </Button>
-        </Link>
+          </Link>
+ 
       </div>
     </div>
   );
