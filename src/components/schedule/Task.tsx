@@ -17,6 +17,7 @@ type TaskProps = {
   handleDelete: (task: Item) => void;
   handleSortUp: (index: number) => void;
   handleSortDown: (index: number) => void;
+  isDelete?: boolean;
 };
 
 type Item = {
@@ -34,10 +35,14 @@ export default function TaskPreset({
   handleDelete,
   handleSortUp,
   handleSortDown,
+  isDelete
 }: TaskProps) {
   return (
-    <p className="flex justify-between border bg-white py-3">
+    <div className="flex justify-between border bg-white py-3">
       <div className="flex">
+        { isDelete ? 
+        <p className="ml-10"></p>
+        :
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Image
@@ -58,10 +63,14 @@ export default function TaskPreset({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+}
         <span>{name}</span>
       </div>
       <div className="flex">
         <span>{options[0]?.time}min</span>
+        { isDelete ? 
+        <p className="mr-10"></p>
+        :
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Image
@@ -69,6 +78,10 @@ export default function TaskPreset({
               alt="Task"
               width={30}
               height={30}
+              style={{
+                width: '30px',
+                height: 'auto',
+            }}
               className="mx-5"
             />
           </DropdownMenuTrigger>
@@ -82,7 +95,8 @@ export default function TaskPreset({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+}
       </div>
-    </p>
+    </div>
   );
 }
