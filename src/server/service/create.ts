@@ -99,14 +99,6 @@ export async function createWhole(
       throw new Error("Failed to set master.");
     }
 
-    //folderを作る
-    const folder: folderStruct = {
-      itemId: masterSetItem.id,
-    };
-    const newFolder = await insertFolderSet(folder);
-    if (newFolder == null) {
-      throw new Error("Failed to create folder.");
-    }
     // 時間プリセットインスタンス化
     const timeInstance = await instanciateTime(prefabtimeId);
     if (timeInstance == null) {

@@ -25,7 +25,8 @@ export async function GET(req: Request) {
       return NextResponse.json({
         message: "not found whole",
         wholeSets: [],
-      });    }
+      });
+    }
 
     const res: wholeAllResponse[] = [];
     for (const item of items) {

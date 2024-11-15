@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import FolderPreset from "~/components/schedule/Folder";
 import TaskPreset from "~/components/schedule/Task";
 import PlusCircle from "~/components/svgs/plusCircle";
@@ -164,7 +164,15 @@ type TaskSet = {
   };
 };
 
-export default function Schedule() {
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Schedule />
+    </Suspense>
+  );
+}
+
+function Schedule() {
   const [openWhole, setOpenWhole] = useState(false); // 全体　プルダウン
   const [valueWhole, setValueWhole] = useState(""); // 全体　プルダウン
   const [openTime, setOpenTime] = useState(false); // 時間　プルダウン
@@ -196,7 +204,6 @@ export default function Schedule() {
   const [detailWholePreset, setDetailWholePreset] = useState<DetailWhole>(); // 選択中の全体プリセット[id]
   const [selectedTimePreset, setSelectedTimePreset] = useState<TimeSet>(); // 選択中の時間プリセット
   const [wholeName, setWholeName] = useState<string>();
-
   const searchParams = useSearchParams();
   const itemId = searchParams.get("itemId");
 

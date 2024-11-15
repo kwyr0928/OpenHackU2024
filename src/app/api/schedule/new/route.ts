@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     );
 
     //次の予定に設定
-    const itemId = createdWholeInstance?.whole?.id
+    const itemId = createdWholeInstance?.whole?.itemId
     if(!itemId){
       return NextResponse.json(
         { error: "Invalid input: itemId of wholeSetItemId is required for setNextSchedule" },
@@ -52,10 +52,12 @@ export async function POST(req: Request) {
       );
     }
     const setNext = await setNextSchedule(userId, itemId);
-
     //もとの全体セットを削除
     await deleteItem(wholeItemId, presetType.whole);
-    return setNext;
+    return NextResponse.json({
+      message: "schedule updated successfully",
+      wholeSet: setNext,
+    });
   } catch (error) {
     console.error("Error in POST nextSchedule request", error);
     return NextResponse.json(

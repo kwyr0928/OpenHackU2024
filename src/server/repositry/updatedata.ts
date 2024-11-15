@@ -1,3 +1,4 @@
+import { error } from "console";
 import { db } from "../db";
 
 // 選択中オプションを設定
@@ -68,19 +69,8 @@ export async function setItemOrder(myItemId: string, order: number) {
 export async function setNextSchedule(userId: string, wholeItemId: string){
   try {
     if(wholeItemId === null) throw new Error("Invalid wholeItemId for setNextSchedule");
-
-    //すでにセットされている予定のisSettingをfalseに
-    await db.items.updateMany({
-      where: {
-        userId: userId,
-        isSetting: true,
-      },
-      data: {
-        isSetting: false,
-      },
-    });
-
-    await db.items.update({
+    
+    const ret = await db.items.update({
       where:{
         userId: userId,
         id: wholeItemId,
@@ -89,6 +79,8 @@ export async function setNextSchedule(userId: string, wholeItemId: string){
         isSetting: true,
       },
     });
+    if(ret==null) return error;
+    return ret;
   } catch (error) {
     console.error(error);
     return null;
@@ -113,6 +105,7 @@ export async function updateItem(itemId: string, name: string) {
     return null;
   }
 }
+
 
 // itemの更新
 export async function updateOrderItem(
