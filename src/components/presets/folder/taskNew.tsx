@@ -27,7 +27,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 type taskNewProps = {
   item: FolderSet;
   taskApiResponse: TaskApiResponse;
-  select:number;
+  select: number;
+  handleGetFolder: () => void;
 };
 
 type FolderSet = {
@@ -40,7 +41,7 @@ type FolderSet = {
         name: string;
         itemId: string;
         isStatic: boolean;
-        select:number;
+        select: number;
         options: {
           name: string;
           time: number;
@@ -68,7 +69,44 @@ type TaskApiResponse = {
   taskSets: TaskSet[];
 };
 
-export default function NewFolderTask({select, item, taskApiResponse }: taskNewProps) {
+export type folderSetPutBody = {
+  userId: string;
+  folderSet: {
+    name: string;
+    items: (
+      | taskIdInFolderPutData
+      | taskPrefabInFolderPutData
+      | taskInFolderPutData
+    )[];
+  };
+};
+
+export type taskIdInFolderPutData = {
+  itemId: string;
+  select: number;
+};
+export type taskPrefabInFolderPutData = {
+  prefabId: string;
+  select: number;
+};
+export type taskInFolderPutData = {
+  taskSet: {
+    name: string;
+    isStatic: boolean;
+    select: number; //index
+    options: {
+      name: string;
+      time: number;
+    }[];
+  };
+};
+
+export default function NewFolderTask({
+  select,
+  item,
+  taskApiResponse,
+  handleGetFolder,
+}: taskNewProps) {
   const [name, setName] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDialogOpen2, setIsDialogOpen2] = useState(false);
@@ -102,6 +140,11 @@ export default function NewFolderTask({select, item, taskApiResponse }: taskNewP
       folderSet: {
         name: item.folder.name,
         items: [
+          // map の結果を個別に構造化して追加
+          ...item.folder.tasks.map((task) => ({
+            itemId: task.task.itemId,
+            select: task.task.select,
+          })),
           {
             taskSet: {
               name: name,
@@ -131,6 +174,11 @@ export default function NewFolderTask({select, item, taskApiResponse }: taskNewP
       folderSet: {
         name: item.folder.name,
         items: [
+          // map の結果を個別に構造化して追加
+          ...item.folder.tasks.map((task) => ({
+            itemId: task.task.itemId,
+            select: task.task.select,
+          })),
           {
             taskSet: {
               name: name,
@@ -165,6 +213,7 @@ export default function NewFolderTask({select, item, taskApiResponse }: taskNewP
     } catch (error) {}
     handleCancel();
     setIsDialogOpen(false);
+    handleGetFolder();
   };
 
   const handleTaskAdd = () => setIsDialogOpen(true);
@@ -178,8 +227,13 @@ export default function NewFolderTask({select, item, taskApiResponse }: taskNewP
       folderSet: {
         name: item.folder.name,
         items: [
+          // map の結果を個別に構造化して追加
+          ...item.folder.tasks.map((task) => ({
+            itemId: task.task.itemId,
+            select: task.task.select,
+          })),
           {
-            item: target.task.itemId,
+            prefabId: target.task.itemId,
             select: 0,
           },
         ],
@@ -193,6 +247,7 @@ export default function NewFolderTask({select, item, taskApiResponse }: taskNewP
       data,
     );
     console.log(folderPreset);
+    handleGetFolder();
     setIsDialogOpen2(false);
   };
 
@@ -208,7 +263,7 @@ export default function NewFolderTask({select, item, taskApiResponse }: taskNewP
           </DropdownMenuTrigger>
           <DropdownMenuContent className="flex space-x-4 p-4">
             <div>
-              <DropdownMenuLabel>タスクの作成</DropdownMenuLabel>
+              <DropdownMenuLabel>タスクの追加</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleTaskAdd}>
                 新規作成
@@ -241,50 +296,57 @@ export default function NewFolderTask({select, item, taskApiResponse }: taskNewP
               <TabsTrigger value="static">固定値</TabsTrigger>
             </TabsList>
             <TabsContent value="pulldown" className="h-[150px]">
-              <ScrollArea>
-                {[
-                  {
-                    options: options1,
-                    minutes: minutes1,
-                    setOptions: setOptions1,
-                    setMinutes: setMinutes1,
-                  },
-                  {
-                    options: options2,
-                    minutes: minutes2,
-                    setOptions: setOptions2,
-                    setMinutes: setMinutes2,
-                  },
-                  {
-                    options: options3,
-                    minutes: minutes3,
-                    setOptions: setOptions3,
-                    setMinutes: setMinutes3,
-                  },
-                ].map((opt, index) => (
-                  <div
-                    key={index}
-                    className="mb-3 flex items-center justify-center"
-                  >
-                    <Input
-                      type="text"
-                      value={opt.options}
-                      onChange={(e) => opt.setOptions(e.target.value)}
-                      className="mr-7 w-36 text-center"
-                    />
-                    <Input
-                      type="number"
-                      value={opt.minutes}
-                      onChange={(e) => opt.setMinutes(Number(e.target.value))}
-                      className="w-16 text-center"
-                    />
-                    <p>min</p>
-                  </div>
-                ))}
-              </ScrollArea>
+              {[
+                {
+                  options: options1,
+                  minutes: minutes1,
+                  setOptions: setOptions1,
+                  setMinutes: setMinutes1,
+                },
+                {
+                  options: options2,
+                  minutes: minutes2,
+                  setOptions: setOptions2,
+                  setMinutes: setMinutes2,
+                },
+                {
+                  options: options3,
+                  minutes: minutes3,
+                  setOptions: setOptions3,
+                  setMinutes: setMinutes3,
+                },
+              ].map((opt, index) => (
+                <div
+                  key={index}
+                  className="mb-2 flex items-center justify-center"
+                >
+                  <Input
+                    type="text"
+                    value={opt.options}
+                    onChange={(e) => opt.setOptions(e.target.value)}
+                    className="mr-7 w-36 text-center"
+                  />
+                  <Input
+                    type="number"
+                    value={opt.minutes}
+                    onChange={(e) => opt.setMinutes(Number(e.target.value))}
+                    className="w-16 text-center"
+                  />
+                  <p>min</p>
+                </div>
+              ))}
+              <div className="mt-auto flex justify-around">
+                <Button
+                  className="bg-darkBlue hover:bg-blue-900"
+                  onClick={handleTaskCreate}
+                  disabled={!name || !options1}
+                >
+                  作成
+                </Button>
+              </div>
             </TabsContent>
-            <TabsContent value="static" className="h-[150px]">
-              <div className="flex h-40 items-center justify-center">
+            <TabsContent value="static" className="h-[170px]">
+              <div className="flex h-32 items-center justify-center">
                 <Input
                   type="number"
                   value={minutes}
@@ -293,17 +355,17 @@ export default function NewFolderTask({select, item, taskApiResponse }: taskNewP
                 />
                 <p>min</p>
               </div>
+              <div className="mt-auto flex justify-around">
+                <Button
+                  className="bg-darkBlue hover:bg-blue-900"
+                  onClick={handleTaskCreate}
+                  disabled={!name}
+                >
+                  作成
+                </Button>
+              </div>
             </TabsContent>
           </Tabs>
-          <div className="mt-auto flex justify-around">
-            <Button
-              className="bg-darkBlue hover:bg-blue-900"
-              onClick={handleTaskCreate}
-              disabled={!name}
-            >
-              作成
-            </Button>
-          </div>
         </DialogContent>
       </Dialog>
       <Dialog open={isDialogOpen2} onOpenChange={setIsDialogOpen2}>

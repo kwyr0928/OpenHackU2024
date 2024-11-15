@@ -72,7 +72,6 @@ export default function EditTime({
       );
       console.log(res.data);
     } catch (error) {}
-    handleTimeGet();
   };
 
   const handleSave = async () => {
