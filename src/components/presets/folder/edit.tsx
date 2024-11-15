@@ -158,7 +158,8 @@ export default function EditFolder({
                 <EditFolderTask
                   task={task.task}
                   id={task.task.itemId}
-                  handleGetFolder={handleFolderGet}
+                  item={item}
+                  handleFolderGet={handleFolderGet}
                 >
                   {task.task.name}
                 </EditFolderTask>

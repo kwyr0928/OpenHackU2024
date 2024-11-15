@@ -23,8 +23,29 @@ interface EditFolderTaskProps {
   id: string;
   children: string;
   task: Task;
-  handleGetFolder: () => void;
+  handleFolderGet: () => void;
+  item: FolderSet;
 }
+
+type FolderSet = {
+  // フォルダプリセット　中身
+  folder: {
+    name: string;
+    itemId: string;
+    tasks: {
+      task: {
+        name: string;
+        itemId: string;
+        isStatic: boolean;
+        select: number;
+        options: {
+          name: string;
+          time: number;
+        }[];
+      };
+    }[];
+  };
+};
 
 type Task = {
   // タスクプリセット　中身
@@ -42,7 +63,8 @@ export default function EditFolderTask({
   id,
   children,
   task,
-  handleGetFolder,
+  handleFolderGet,
+  item,
 }: EditFolderTaskProps) {
   const [name, setName] = useState<string>(children); // 表示される名前
   const [newName, setNewName] = useState<string>(children); // 入力用の一時的な名前
@@ -118,7 +140,7 @@ export default function EditFolderTask({
       console.log({ taskData1 });
     } catch (error) {}
     setDialogOpen(false);
-    handleGetFolder();
+    handleFolderGet();
   };
 
   const handleDelete = async () => {
@@ -133,7 +155,7 @@ export default function EditFolderTask({
     } catch (error) {}
     setDialogOpen(false);
     setIsDeleteDialogOpen(false);
-    handleGetFolder();
+    handleFolderGet();
   };
 
   const handleDialogOpen = () => {
@@ -158,6 +180,40 @@ export default function EditFolderTask({
     if (e.key === "Enter") {
       setIsEditing(false);
     }
+  };
+
+  const handleRadioChange = async (value: string) => {
+    setSelectedRadio(Number(value)); // 選択されたラジオボタンの値を更新
+    const folderData = {
+      userId: session?.user.id,
+      folderSet: {
+        name: newName,
+        items: item.folder.tasks.map((tasks) => {
+          if (tasks.task.itemId === task.itemId) {
+            return {
+              itemId: tasks.task.itemId,
+              select: selectedRadio, 
+            };
+          }
+          return {
+            itemId: tasks.task.itemId,
+            select: tasks.task.select,
+          };
+        }),
+      },
+    };
+    if (!session?.user?.id) {
+      return;
+    }
+    try {
+      const res = await axios.put(
+        `/api/presets/folder/${id}?userId=${session.user.id}`,
+        folderData,
+      );
+      console.log(folderData);
+    } catch (error) {}
+    setName(newName);
+    handleFolderGet();
   };
 
   useEffect(() => {
@@ -223,13 +279,13 @@ export default function EditFolderTask({
           <TabsContent value="pulldown" className="h-[170px]">
             <RadioGroup
               defaultValue={selectedRadio.toString()}
-              onValueChange={(value) => setSelectedRadio(Number(value))} // 選択状態を更新
+              onValueChange={handleRadioChange}
             >
               {task.options.map((option, index) => (
                 <div key={index} className="flex items-center justify-center">
                   <RadioGroupItem value={String(index)} id={String(index)} />
                   <Label htmlFor={String(index)}>
-                    <div className="px-4 flex items-center justify-center">
+                    <div className="flex items-center justify-center px-4">
                       <Input
                         type="text"
                         value={

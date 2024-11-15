@@ -138,7 +138,6 @@ export default function NewFolderTask({
       folderSet: {
         name: item.folder.name,
         items: [
-          // map の結果を個別に構造化して追加
           ...item.folder.tasks.map((task) => ({
             itemId: task.task.itemId,
             select: task.task.select,
