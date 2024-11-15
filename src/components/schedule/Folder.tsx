@@ -94,12 +94,14 @@ export default function FolderPreset({
                 alt="Folder"
                 width={28}
                 height={28}
+                style={{
+                  width: '28px',
+                  height: 'auto',
+              }}
                 className="mb-4 ml-8 mr-3"
               />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem>保存</DropdownMenuItem>
-              <DropdownMenuSeparator />
               <DropdownMenuItem onSelect={() => handleDelete(folder)}>
                 削除
               </DropdownMenuItem>
@@ -113,10 +115,10 @@ export default function FolderPreset({
                 aria-expanded={openFolder}
                 className="mb-3 w-[170px] py-5 text-lg"
               >
-                <div className="ml-5">
+                 <div className="ml-5 max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
                   {selectedFolderPreset
                     ? selectedFolderPreset.folder.name
-                    : "プリセットを選択"}
+                    : "未設定"}
                 </div>
                 <ChevronsUpDown className="ml-3 h-4 w-4 shrink-0 opacity-50" />
               </Button>
@@ -143,7 +145,9 @@ export default function FolderPreset({
                               : "opacity-0",
                           )}
                         />
+                         <div className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
                         {preset.folder.name}
+                        </div>
                       </CommandItem>
                     ))}
                   </CommandGroup>
@@ -159,6 +163,10 @@ export default function FolderPreset({
                 alt="Task"
                 width={30}
                 height={30}
+                style={{
+                  width: '30px',
+                  height: 'auto',
+              }}
                 className="mb-3 ml-8"
               />
             </DropdownMenuTrigger>

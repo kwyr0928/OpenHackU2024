@@ -17,11 +17,11 @@ import {
 import { Input } from "~/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
-interface EditTaskProps {
+interface EditFolderTaskProps {
   id: string;
   children: string;
   task: Task;
-  handleTaskGet: () => void;
+  select:number;
 }
 
 type Task = {
@@ -29,18 +29,19 @@ type Task = {
   name: string;
   itemId: string;
   isStatic: boolean;
+  select:number;
   options: {
     name: string;
     time: number;
   }[];
 };
 
-export default function EditTask({
+export default function EditFolderTask({
   id,
   children,
   task,
-  handleTaskGet,
-}: EditTaskProps) {
+  select,
+}: EditFolderTaskProps) {
   const [name, setName] = useState<string>(children); // 表示される名前
   const [newName, setNewName] = useState<string>(children); // 入力用の一時的な名前
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false); // 削除確認ダイアログの状態
@@ -66,6 +67,7 @@ export default function EditTask({
       taskSet: {
         name: name,
         isStatic: false,
+        select:select,
         options: [
           {
             name: options1,
@@ -87,6 +89,7 @@ export default function EditTask({
       taskSet: {
         name: name,
         isStatic: true,
+        select:select,
         options: [
           {
             time: minutes,
@@ -98,15 +101,19 @@ export default function EditTask({
       return;
     }
     try {
-
       if (activeTab === "pulldown") {
-        const res = await axios.put(`/api/presets/task/${id}?userId=${session.user.id}`, taskData1);
+        const res = await axios.put(
+          `/api/presets/task/${id}?userId=${session.user.id}`,
+          taskData1,
+        );
       } else {
-        const res = await axios.put(`/api/presets/task/${id}?userId=${session.user.id}`, taskData2);
+        const res = await axios.put(
+          `/api/presets/task/${id}?userId=${session.user.id}`,
+          taskData2,
+        );
       }
     } catch (error) {}
     setDialogOpen(false);
-    handleTaskGet();
   };
 
   const handleDelete = async () => {
@@ -121,22 +128,22 @@ export default function EditTask({
     } catch (error) {}
     setDialogOpen(false);
     setIsDeleteDialogOpen(false);
-    handleTaskGet();
   };
 
   const handleDialogOpen = () => {
-    if(task.isStatic){
+    if (task.isStatic) {
       setActiveTab("static");
     }
     if (activeTab === "pulldown") {
-      setMinutes(task.options[0]?.time ?? 0);
+        const options = task.options || []; // task.optionsがundefinedの場合でも空の配列を使用
+        setMinutes1(options[0]?.time ?? 0);
+        setMinutes2(options[1]?.time ?? 0);
+        setMinutes3(options[2]?.time ?? 0);
+        setOptions1(options[0]?.name ?? "デフォルト");
+        setOptions2(options[1]?.name ?? "");
+        setOptions3(options[2]?.name ?? "");
     } else {
-      setMinutes1(task.options[0]?.time ?? 0);
-      setMinutes2(task.options[1]?.time ?? 0);
-      setMinutes3(task.options[2]?.time ?? 0);
-      setOptions1(task.options[0]?.name ?? "デフォルト");
-      setOptions2(task.options[1]?.name ?? "");
-      setOptions3(task.options[2]?.name ?? "");
+      setMinutes(task.options[0]?.time ?? 0);
     }
   };
 
@@ -203,7 +210,11 @@ export default function EditTask({
           </DialogTitle>
           <DialogDescription></DialogDescription>
         </DialogHeader>
-        <Tabs defaultValue={activeTab} onValueChange={(value) => setActiveTab(value)} className="">
+        <Tabs
+          defaultValue={activeTab}
+          onValueChange={(value) => setActiveTab(value)}
+          className=""
+        >
           <TabsList className="mb-4 grid w-full grid-cols-2">
             <TabsTrigger value="pulldown">プルダウン</TabsTrigger>
             <TabsTrigger value="static">固定値</TabsTrigger>

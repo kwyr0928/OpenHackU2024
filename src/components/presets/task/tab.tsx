@@ -53,7 +53,7 @@ export default function TabTask() {
   };
 
   useEffect(() => {
-    void handleTaskGet();
+ void  handleTaskGet();
   }, [session]);
 
   return (
@@ -71,8 +71,8 @@ export default function TabTask() {
                 <CommandEmpty>見つかりません</CommandEmpty>
                 <CommandGroup>
                   {taskResponse?.taskSets.map((item) => (
-                    <>
-                      <CommandItem key={item.task.itemId}>
+                    <div key={item.task.itemId}>
+                      <CommandItem >
                         <EditTask
                           task={item.task}
                           id={item.task.itemId}
@@ -82,7 +82,7 @@ export default function TabTask() {
                         </EditTask>
                       </CommandItem>
                       <hr className="mt-2 w-full border-gray-500" />
-                    </>
+                    </div>
                   ))}
                 </CommandGroup>
                 <NewTask

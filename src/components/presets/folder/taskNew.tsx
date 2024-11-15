@@ -2,6 +2,7 @@
 
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import axios from "axios";
+import { useSession } from "next-auth/react";
 import { useState } from "react";
 import Description from "~/components/svgs/description";
 import PlusCircle from "~/components/svgs/plusCircle";
@@ -25,10 +26,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 type taskNewProps = {
   item: FolderSet;
-  taskResponse: TaskApiResponse;
+  taskApiResponse: TaskApiResponse;
+  select:number;
 };
 
 type FolderSet = {
+  // フォルダプリセット　中身
   folder: {
     name: string;
     itemId: string;
@@ -37,6 +40,7 @@ type FolderSet = {
         name: string;
         itemId: string;
         isStatic: boolean;
+        select:number;
         options: {
           name: string;
           time: number;
@@ -47,6 +51,7 @@ type FolderSet = {
 };
 
 type TaskSet = {
+  // タスクプリセット　中身
   task: {
     name: string;
     itemId: string;
@@ -63,7 +68,7 @@ type TaskApiResponse = {
   taskSets: TaskSet[];
 };
 
-export default function NewFolderTask({ item, taskResponse }: taskNewProps) {
+export default function NewFolderTask({select, item, taskApiResponse }: taskNewProps) {
   const [name, setName] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDialogOpen2, setIsDialogOpen2] = useState(false);
@@ -75,6 +80,9 @@ export default function NewFolderTask({ item, taskResponse }: taskNewProps) {
   const [minutes3, setMinutes3] = useState(0);
   const [minutes, setMinutes] = useState(0);
   const [folderPreset, setFolderPreset] = useState<FolderSet>(item);
+  const [taskResponse, setTaskResponse] = useState<TaskSet>();
+  const { data: session, status } = useSession();
+  const [activeTab, setActiveTab] = useState("pulldown");
 
   const handleCancel = () => {
     setIsDialogOpen(false);
@@ -88,47 +96,102 @@ export default function NewFolderTask({ item, taskResponse }: taskNewProps) {
     setMinutes3(0);
   };
 
-  const handlePullDownTaskCreate = async () => {
-    const taskData = {
-      userId: "cm390e361000010avus2xru9v",
-      taskSet: {
-        name: name,
-        isStatic: false,
-        select: 0,
-        options: [
-          { name: options1, time: minutes1 },
-          { name: options2, time: minutes2 },
-          { name: options3, time: minutes3 },
+  const handleTaskCreate = async () => {
+    const taskData1 = {
+      userId: session?.user.id,
+      folderSet: {
+        name: item.folder.name,
+        items: [
+          {
+            taskSet: {
+              name: name,
+              isStatic: false,
+              select: select,
+              options: [
+                {
+                  name: options1,
+                  time: minutes1,
+                },
+                {
+                  name: options2,
+                  time: minutes2,
+                },
+                {
+                  name: options3,
+                  time: minutes3,
+                },
+              ],
+            },
+          },
         ],
       },
     };
-
+    const taskData2 = {
+      userId: session?.user.id,
+      folderSet: {
+        name: item.folder.name,
+        items: [
+          {
+            taskSet: {
+              name: name,
+              isStatic: true,
+              select: select,
+              options: [
+                {
+                  name: options1,
+                  time: minutes1,
+                },
+              ],
+            },
+          },
+        ],
+      },
+    };
+    if (!session?.user?.id) {
+      return;
+    }
     try {
-      const res = await axios.post("/api/presets/task/new", taskData);
-      setTaskResponse(res.data);
-      console.log(res.data);
+      if (activeTab === "pulldown") {
+        const res = await axios.put(
+          `/api/presets/folder/${item.folder.itemId}?userId=${session.user.id}`,
+          taskData1,
+        );
+      } else {
+        const res = await axios.put(
+          `/api/presets/folder/${item.folder.itemId}?userId=${session.user.id}`,
+          taskData2,
+        );
+      }
     } catch (error) {}
     handleCancel();
     setIsDialogOpen(false);
   };
 
   const handleTaskAdd = () => setIsDialogOpen(true);
+
   const handleTaskAdd2 = () => setIsDialogOpen2(true);
 
-  const handleTaskSelect = (target: TaskSet) => {
-    // PUT // TODO
+  const handleTaskSelect = async (target: TaskSet) => {
     console.log(target);
-    setFolderPreset((prev) => {
-      if (!prev) return undefined;
-
-      return {
-        ...prev,
-        folder: {
-          ...prev.folder,
-          tasks: [...prev.folder.tasks, target],
-        },
-      };
-    });
+    const data = {
+      userId: session?.user.id,
+      folderSet: {
+        name: item.folder.name,
+        items: [
+          {
+            item: target.task.itemId,
+            select: 0,
+          },
+        ],
+      },
+    };
+    if (!session?.user?.id) {
+      return;
+    }
+    const res = await axios.put(
+      `/api/presets/folder/${item.folder.itemId}?userId=${session.user.id}`,
+      data,
+    );
     console.log(folderPreset);
     setIsDialogOpen2(false);
   };
@@ -168,7 +231,11 @@ export default function NewFolderTask({ item, taskResponse }: taskNewProps) {
               />
             </DialogTitle>
           </DialogHeader>
-          <Tabs defaultValue="pulldown" className="mt-2">
+          <Tabs
+            defaultValue="pulldown"
+            onValueChange={(value) => setActiveTab(value)}
+            className="mt-2"
+          >
             <TabsList className="mb-4 grid w-full grid-cols-2">
               <TabsTrigger value="pulldown">プルダウン</TabsTrigger>
               <TabsTrigger value="static">固定値</TabsTrigger>
@@ -231,7 +298,7 @@ export default function NewFolderTask({ item, taskResponse }: taskNewProps) {
           <div className="mt-auto flex justify-around">
             <Button
               className="bg-darkBlue hover:bg-blue-900"
-              onClick={handlePullDownTaskCreate}
+              onClick={handleTaskCreate}
               disabled={!name}
             >
               作成
@@ -240,12 +307,12 @@ export default function NewFolderTask({ item, taskResponse }: taskNewProps) {
         </DialogContent>
       </Dialog>
       <Dialog open={isDialogOpen2} onOpenChange={setIsDialogOpen2}>
-        <DialogContent>
+        <DialogContent className="w-[90%]">
           <DialogHeader>
             <DialogTitle>追加するタスクを選んでください</DialogTitle>
           </DialogHeader>
           <div className="grid gap-2 py-4">
-            {taskResponse.taskSets.map((taskSet, index) => (
+            {taskApiResponse.taskSets.map((taskSet, index) => (
               <div
                 key={index}
                 className="flex w-full items-center justify-start text-xl text-black"

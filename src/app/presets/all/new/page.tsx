@@ -445,6 +445,10 @@ export default function Schedule() {
               alt="Backicon"
               width={25}
               height={25}
+              style={{
+                width: '25px',
+                height: 'auto',
+            }}
               className="fixed left-3 top-10 mx-5 mt-0.5"
             />
           </Link>
@@ -480,7 +484,7 @@ export default function Schedule() {
                 aria-expanded={openTime}
                 className="w-[170px] py-5 text-lg"
               >
-                <div className="ml-5">
+                <div className="ml-5 max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
                   {selectedTimePreset
                     ? selectedTimePreset.time.name
                     : "未設定"}
@@ -510,7 +514,9 @@ export default function Schedule() {
                               : "opacity-0",
                           )}
                         />
+                        <div className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
                         {preset.time.name}
+                        </div>
                       </CommandItem>
                     ))}
                   </CommandGroup>
@@ -571,18 +577,12 @@ export default function Schedule() {
                 <DropdownMenuItem onClick={handleTaskAdd}>
                   既存プリセットから
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleTaskAdd2}>
-                  新規作成
-                </DropdownMenuItem>
               </div>
               <div>
                 <DropdownMenuLabel>フォルダの作成</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleFolderAdd}>
                   既存プリセットから
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleFolderAdd2}>
-                  新規作成
                 </DropdownMenuItem>
               </div>
             </DropdownMenuContent>

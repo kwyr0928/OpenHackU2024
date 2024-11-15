@@ -43,6 +43,8 @@ import { ScrollArea } from "~/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { cn } from "~/lib/utils";
 
+
+
 type WholeApiResponse = {
   // 全体プリセットの取得
   message: string;
@@ -74,6 +76,7 @@ type DetailWhole = {
       };
     };
     itemSet: {
+      isNew?: boolean; // 追加 itemかprefabか
       task?: {
         name: string; // タスクプリセット　名前
         itemId: string; // タスクプリセット　ID
@@ -192,9 +195,47 @@ export default function Schedule() {
   const [selectedWholePreset, setSelectedWholePreset] = useState<WholeSet>(); // 選択中の全体プリセット
   const [detailWholePreset, setDetailWholePreset] = useState<DetailWhole>(); // 選択中の全体プリセット[id]
   const [selectedTimePreset, setSelectedTimePreset] = useState<TimeSet>(); // 選択中の時間プリセット
+  const [wholeName, setWholeName] = useState<string>();
 
   const searchParams = useSearchParams();
   const itemId = searchParams.get("itemId");
+
+  const handleWholeEdit = async () => {
+    // 全体プリセット　編集
+    console.log(detailWholePreset);
+
+    let items = []
+
+    for (const item of detailWholePreset?.whole.itemSet!){
+      if(item.isNew){
+        items.push({ prefabId: item.folder ? item.folder.itemId : item.task?.itemId, select: 0 })
+      }else{
+        items.push({ itemId: item.folder ? item.folder.itemId : item.task?.itemId, select: 0 })
+      }
+    }
+
+    const wholeEdit = {
+      userId: session?.user.id,
+      wholeSet: {
+        name: wholeName,
+        timeId: "cm3he49se001j4irxllhnn0pg",
+        items: items,
+      },
+    };
+    console.log(wholeEdit);
+    try {
+      const res = await axios.put(`/api/presets/whole/${detailWholePreset?.whole.itemId}`, wholeEdit);
+      console.log(res.data);
+    } catch (error) {}
+  };
+
+  const handleWholeDelete = async () => {
+    // 全体プリセット　削除
+    try {
+      const res = await axios.delete(`/api/presets/whole/${detailWholePreset?.whole.itemId}`);
+      console.log(res.data);
+    } catch (error) {}
+  };
 
   const handleSortUp = (index: number) => {
     // タスクフォルダ並び替え　↑
@@ -296,12 +337,14 @@ export default function Schedule() {
     setDetailWholePreset((prev) => {
       if (!prev) return undefined; // データが無ければreturn
 
+      const updatedTarget = { ...target, isNew: true };
+
       return {
         // 新しい配列を登録
         ...prev,
         whole: {
           ...prev.whole,
-          itemSet: [...prev.whole.itemSet, target], // 赤線解消できない // TODO
+          itemSet: [...prev.whole.itemSet, updatedTarget], // 赤線解消できない // TODO
         },
       };
     });
@@ -314,12 +357,14 @@ export default function Schedule() {
     setDetailWholePreset((prev) => {
       if (!prev) return undefined; // データが無ければreturn
 
+      const updatedTarget = { ...target, isNew: true };
+
       return {
         // 新しい配列を登録
         ...prev,
         whole: {
           ...prev.whole,
-          itemSet: [...prev.whole.itemSet, target], // 赤線解消できない // TODO
+          itemSet: [...prev.whole.itemSet, updatedTarget], // 赤線解消できない // TODO
         },
       };
     });
@@ -407,6 +452,7 @@ export default function Schedule() {
         );
         if (detailWholeResponse.data?.wholeSet) {
           setDetailWholePreset(detailWholeResponse.data.wholeSet); // 全体プリセット[id] 登録
+          setWholeName(detailWholeResponse.data.wholeSet.whole.name);
         }
         const firstTimePreset = detailWholeResponse.data.wholeSet.whole.timeSet; // 時間プリセット
         if (firstTimePreset !== undefined) {
@@ -456,7 +502,14 @@ export default function Schedule() {
             height={27}
             className="fixed left-16 top-10 ml-2"
           />
-          {detailWholePreset?.whole.name}
+           {/* 全体プリセットの名前を入力 */}
+         <Input
+          value={wholeName}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setWholeName(e.target.value)
+          }
+          className="w-[170px] py-5 text-center mx-auto bg-white"
+        />
         </p>
         <p className="bg-pink-300 pb-0.5 pt-3 text-xl">
           <Image
@@ -474,11 +527,9 @@ export default function Schedule() {
                 aria-expanded={openTime}
                 className="w-[170px] py-5 text-lg"
               >
-                <div className="ml-5">
-                  {selectedTimePreset
-                    ? selectedTimePreset.time.name
-                    : "プリセットを選択"}
-                </div>
+                <div className="ml-5 max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
+  {selectedTimePreset ? selectedTimePreset.time.name : "未設定"}
+</div>
                 <ChevronsUpDown className="ml-3 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
@@ -504,7 +555,9 @@ export default function Schedule() {
                               : "opacity-0",
                           )}
                         />
+                        <span className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
                         {preset.time.name}
+                        </span>
                       </CommandItem>
                     ))}
                   </CommandGroup>
@@ -545,7 +598,8 @@ export default function Schedule() {
               </div>
             ))
           ) : (
-            <p>Loading tasks and folders...</p>
+            <p className="mt-28 text-gray-500">
+              下の＋ボタンから<br/>タスクかフォルダを追加してください</p>
           )}
         </ScrollArea>
 
@@ -564,18 +618,12 @@ export default function Schedule() {
                 <DropdownMenuItem onClick={handleTaskAdd}>
                   既存プリセットから
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleTaskAdd2}>
-                  新規作成
-                </DropdownMenuItem>
               </div>
               <div>
                 <DropdownMenuLabel>フォルダの作成</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleFolderAdd}>
                   既存プリセットから
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleFolderAdd2}>
-                  新規作成
                 </DropdownMenuItem>
               </div>
             </DropdownMenuContent>
@@ -723,12 +771,12 @@ export default function Schedule() {
       <div className="fixed bottom-10 left-1/2 -translate-x-1/2 transform">
         <div className="flex items-center justify-center">
           <Link href="/home">
-            <Button className="my-2 mr-10 w-20 bg-teal-400 py-6 text-2xl hover:bg-teal-500">
+            <Button className="my-2 mr-10 w-20 bg-teal-400 py-6 text-2xl hover:bg-teal-500" onClick={handleWholeEdit}>
               保存
             </Button>
           </Link>
           <Link href="/home">
-            <Button className="my-2 w-20 bg-red-500 py-6 text-2xl hover:bg-red-600">
+            <Button className="my-2 w-20 bg-red-500 py-6 text-2xl hover:bg-red-600" onClick={handleWholeDelete}>
               削除
             </Button>
           </Link>

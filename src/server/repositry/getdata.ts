@@ -1,8 +1,6 @@
 import { getUniqueMasterTimeset } from "@prisma/client/sql";
 import { db } from "../db";
 import { presetType } from "./constants";
-import { strict } from "assert";
-import { string } from "zod";
 
 // userId to ユーザー名
 export async function getUserName(userId: string) {
@@ -311,6 +309,7 @@ export async function getKindItems(userId: string, type: number) {
       where: {
         parentId: null,
         itemType: type,
+        isSetting: false
       },
       orderBy: {
         created_at: "asc",
@@ -439,7 +438,25 @@ export async function getAllTaskByUserId(userId: string) {
   }
 }
 
-export async function getTimeFirst(){
-  const timeData = await db.timeSets.findFirst();
+
+export async function getTimeFirst(userId: string){
+  const timeData = await db.timeSets.findFirst({
+    where: { userId: userId }
+  });
   return timeData;
+}
+
+//from wholeSetId to itemId
+export async function getItemIdByWholeId(wholeId: string) {
+  try {
+    const targetItemId = await db.wholeSets.findUnique({
+      where: {
+        id: wholeId,
+      },
+    });
+    return targetItemId
+  } catch (error) {
+    console.error("Error getItemByWholeId:", error);
+    return null;
+  }
 }

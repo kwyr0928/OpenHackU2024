@@ -42,6 +42,7 @@ import { ScrollArea } from "~/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { cn } from "~/lib/utils";
 
+
 type WholeApiResponse = {
   // 全体プリセットの取得
   message: string;
@@ -196,6 +197,27 @@ export default function Schedule() {
   const [selectedWholePreset, setSelectedWholePreset] = useState<WholeSet>(); // 選択中の全体プリセット
   const [detailWholePreset, setDetailWholePreset] = useState<DetailWhole>(); // 選択中の全体プリセット[id]
   const [selectedTimePreset, setSelectedTimePreset] = useState<TimeSet>(); // 選択中の時間プリセット
+  const [isFirst, setIsFirst] = useState<boolean>(true);
+
+  const handleScheduleCreate = async () => {
+    // スケジュール　作成
+  
+
+   const scheduleNew = {
+    userId: session?.user.id,
+    wholeSet: {
+      name: selectedWholePreset?.name,
+      itemId: selectedWholePreset?.itemId,
+      timeId: selectedTimePreset?.time.timeId,
+        items: detailWholePreset?.whole.itemSet.map((item) => ({
+          itemId: item.task ? item.task.itemId : item.folder?.itemId,
+          select: 0,
+        })),},};
+    try {
+      const res = await axios.post("/api/schedule/new", scheduleNew);
+      console.log(res.data);
+    } catch (error) { }
+  };
 
   const handleSortUp = (index: number) => {
     // タスクフォルダ並び替え　↑
@@ -374,7 +396,7 @@ export default function Schedule() {
       }
 
       try {
-        const [wholeResponse, timeResponse, folderResponse, taskResponse] =
+        const [wholeResponse, timeResponse, folderResponse, taskResponse, scheduleResponse] =
           await Promise.all([
             axios.get<WholeApiResponse>(
               `/api/presets/whole?userId=${session.user.id}`, // 全体プリセット一覧 get
@@ -388,31 +410,30 @@ export default function Schedule() {
             axios.get<TaskApiResponse>(
               `/api/presets/task?userId=${session.user.id}`, // タスクプリセット一覧 get
             ),
+            axios.get(`/api/schedule?userId=${session.user.id}`)
           ]);
+        console.log(scheduleResponse);
+
+        if (scheduleResponse.data.wholeSet) {
+          setDetailWholePreset(scheduleResponse.data.wholeSet); // 全体プリセット[id] 登録
+        }
 
         if (wholeResponse.data?.wholeSets) {
           setWholePresets(wholeResponse.data.wholeSets); // 全体プリセット一覧　登録
           if (wholeResponse.data.wholeSets.length > 0) {
-            const firstPreset = wholeResponse.data.wholeSets[0];
-            if (firstPreset !== undefined) {
-              setSelectedWholePreset({
-                // 選択中
-                name: firstPreset.name,
-                itemId: firstPreset.itemId,
-              });
-              setValueWhole(firstPreset.itemId); // 選択中
-            }
+            setSelectedWholePreset({
+              // 選択中
+              name: scheduleResponse.data.wholeSet.whole.name,
+              itemId: scheduleResponse.data.wholeSet.whole.itemId,
+            });
+            setValueWhole(scheduleResponse.data.wholeSet.whole.itemId); // 選択中
           }
         }
-
         if (timeResponse.data?.timeSets) {
           setTimePresets(timeResponse.data.timeSets); // 時間プリセット[id]　登録
           if (timeResponse.data.timeSets.length > 0) {
-            const firstTimePreset = timeResponse.data.timeSets[0];
-            if (firstTimePreset !== undefined) {
-              setSelectedTimePreset(firstTimePreset); // 選択中
-              setValueTime(firstTimePreset.time.timeId); // 選択中
-            }
+            setSelectedTimePreset(scheduleResponse.data.wholeSet.whole.timeSet); // 選択中
+            setValueTime(scheduleResponse.data.wholeSet.whole.timeSet.time.timeId); // 選択中
           }
         }
 
@@ -428,7 +449,7 @@ export default function Schedule() {
         }
 
         if (taskResponse.data?.taskSets) {
-          setTaskPresets(taskResponse.data.taskSets); // 時間プリセット　登録
+          setTaskPresets(taskResponse.data.taskSets); // タスクプリセット　登録
         }
       } catch (err) {
         console.error("Error fetching presets:", err);
@@ -444,7 +465,8 @@ export default function Schedule() {
   useEffect(() => {
     // 全体プリセットが変更されたら1回実行
     const fetchPresets = async () => {
-      if (!session?.user?.id) {
+      if (!session?.user?.id || isFirst) {
+        setIsFirst(false);
         setIsLoading(false); // セッションが無ければ何も表示しない
         return;
       }
@@ -498,23 +520,28 @@ export default function Schedule() {
   return (
     <div className="mx-auto h-svh max-w-md bg-slate-50 pt-5 text-center font-mPlus">
       <div className="mx-5 h-[660px] rounded-xl border-2 border-teal-400 bg-white">
-        <p className="rounded-t-lg bg-teal-400 py-3 text-xl">
+        <div className="rounded-t-lg bg-teal-400 py-3 text-xl">
           <Link href="/home">
             <Image
-              src="/image/Backicon.svg"
+              src="/image/back.svg"
               alt="Backicon"
               width={25}
               height={25}
+              style={{
+                width: '25px',
+                height: 'auto',
+            }}
               className="fixed left-3 top-10 mx-5 mt-0.5"
             />
           </Link>
           <Image
-            src="/image/Allicon.svg"
-            alt="All"
-            width={27}
-            height={27}
+            src="/image/inventory.svg"
+            alt="Backicon"
+            width={25}
+            height={25}
             className="fixed left-16 top-10 ml-2"
           />
+
           <Popover open={openWhole} onOpenChange={setOpenWhole}>
             <PopoverTrigger asChild>
               <Button
@@ -523,10 +550,10 @@ export default function Schedule() {
                 aria-expanded={openWhole}
                 className="w-[170px] py-5 text-lg"
               >
-                <div className="ml-5">
+                <div className="ml-5 max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
                   {selectedWholePreset
                     ? selectedWholePreset.name
-                    : "プリセットを選択"}
+                    : "未設定"}
                 </div>
                 <ChevronsUpDown className="ml-3 h-4 w-4 shrink-0 opacity-50" />
               </Button>
@@ -551,7 +578,9 @@ export default function Schedule() {
                               : "opacity-0",
                           )}
                         />
-                        {preset.name}
+                        <div className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
+                          {preset.name}
+                        </div>
                       </CommandItem>
                     ))}
                   </CommandGroup>
@@ -559,13 +588,17 @@ export default function Schedule() {
               </Command>
             </PopoverContent>
           </Popover>
-        </p>
-        <p className="bg-pink-300 pb-0.5 pt-3 text-xl">
+        </div>
+        <div className="bg-pink-300 pb-0.5 pt-3 text-xl">
           <Image
             src="/image/Timeicon.svg"
             alt="Time"
             width={27}
             height={27}
+            style={{
+              width: '27px',
+              height: 'auto',
+          }}
             className="fixed left-16 top-24 ml-2 mt-3"
           />
           <Popover open={openTime} onOpenChange={setOpenTime}>
@@ -576,10 +609,10 @@ export default function Schedule() {
                 aria-expanded={openTime}
                 className="w-[170px] py-5 text-lg"
               >
-                <div className="ml-5">
+                <div className="ml-5 max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
                   {selectedTimePreset
                     ? selectedTimePreset.time.name
-                    : "プリセットを選択"}
+                    : "未設定"}
                 </div>
                 <ChevronsUpDown className="ml-3 h-4 w-4 shrink-0 opacity-50" />
               </Button>
@@ -606,7 +639,9 @@ export default function Schedule() {
                               : "opacity-0",
                           )}
                         />
-                        {preset.time.name}
+                        <div className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
+                          {preset.time.name}
+                        </div>
                       </CommandItem>
                     ))}
                   </CommandGroup>
@@ -615,10 +650,10 @@ export default function Schedule() {
             </PopoverContent>
           </Popover>
 
-          <p className="mx-2 mb-2 mt-3 bg-white py-3 text-3xl font-extrabold">
+          <div className="mx-2 mb-2 mt-3 bg-white py-3 text-3xl font-extrabold">
             {selectedTimePreset?.time.time}
-          </p>
-        </p>
+          </div>
+        </div>
         <ScrollArea className="h-[380px]">
           {detailWholePreset ? (
             detailWholePreset.whole?.itemSet?.map((item, index) => (
@@ -647,7 +682,8 @@ export default function Schedule() {
               </div>
             ))
           ) : (
-            <p>Loading tasks and folders...</p>
+            <p className="mt-28 text-gray-500">
+              下の＋ボタンから<br />タスクかフォルダを追加してください</p>
           )}
         </ScrollArea>
 
@@ -666,18 +702,12 @@ export default function Schedule() {
                 <DropdownMenuItem onClick={handleTaskAdd}>
                   既存プリセットから
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleTaskAdd2}>
-                  新規作成
-                </DropdownMenuItem>
               </div>
               <div>
                 <DropdownMenuLabel>フォルダの作成</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleFolderAdd}>
                   既存プリセットから
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleFolderAdd2}>
-                  新規作成
                 </DropdownMenuItem>
               </div>
             </DropdownMenuContent>
@@ -826,7 +856,7 @@ export default function Schedule() {
         <p className="mt-3 text-teal-500">間に合う時刻</p>
         <p className="text-3xl font-extrabold text-red-600">７：３０</p>
         <Link href="/home">
-          <Button className="my-2 w-36 bg-teal-400 py-6 text-2xl hover:bg-teal-500">
+          <Button className="my-2 w-36 bg-teal-400 py-6 text-2xl hover:bg-teal-500" onClick={handleScheduleCreate}>
             設定
           </Button>
         </Link>

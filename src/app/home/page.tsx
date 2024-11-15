@@ -1,19 +1,18 @@
 "use client";
 
+import axios from "axios";
+import { format } from "date-fns";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import DisplayTime from "~/components/displayTime/displayTime";
+import DescriptionSvg from "~/components/svgs/description";
+import FolderIconSvg from "~/components/svgs/folderClose";
+import FolderOpenSvg from "~/components/svgs/folderOpen";
+import SettingIconSvg from "~/components/svgs/setting";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader } from "~/components/ui/card";
 import { ScrollArea } from "~/components/ui/scroll-area";
-import FolderIconSvg from "~/components/svgs/folderClose";
-import SettingIconSvg from "~/components/svgs/setting";
-import DescriptionSvg from "~/components/svgs/description";
-import FolderOpenSvg from "~/components/svgs/folderOpen"
-import { useSession } from "next-auth/react";
-import axios from "axios";
-import { useState } from "react";
-import { useEffect } from "react";
-import { format } from "date-fns";
 
 
 type TaskOption = {
@@ -85,13 +84,22 @@ export default function Home() {
 
   useEffect(() => {
     handleScheduleGet();
-  }, [session?.user?.id]);
+  }, []);
 
   const whole = dataFromDb ? dataFromDb.wholeSet.whole : null;
 
   if (!whole) {
     handleScheduleGet();
-    return <div>Loading...</div>;
+    return <div>Loading...
+      <div className="mt-4 flex-col">
+        <Link href="/presets">
+          <Button className="bg-color-all shadow-lg hover:bg-emerald-500">
+            <FolderIconSvg style={{ width: "30px", height: "30px" }} color={""} />
+          </Button>
+        </Link>
+        <h1>プリセット</h1>
+      </div>
+    </div>;
   } else {
     console.log(dataFromDb);
   }
