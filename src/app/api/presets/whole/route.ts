@@ -22,8 +22,10 @@ export async function GET(req: Request) {
         { status: 400 },
       );
     } else if (items?.length === 0) {
-      return NextResponse.json({ error: "Not found wholes" }, { status: 404 });
-    }
+      return NextResponse.json({
+        message: "not found whole",
+        wholeSets: [],
+      });    }
 
     const res: wholeAllResponse[] = [];
     for (const item of items) {

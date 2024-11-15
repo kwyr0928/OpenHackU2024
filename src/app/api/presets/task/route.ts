@@ -20,7 +20,10 @@ export async function GET(req: Request) {
         { status: 400 },
       );
     } else if (items?.length === 0) {
-      return NextResponse.json({ error: "Not found tasks" }, { status: 404 });
+      return NextResponse.json({
+        message: "not found task",
+        taskSets: [],
+      });
     }
 
     const res: taskResponse[] = [];
