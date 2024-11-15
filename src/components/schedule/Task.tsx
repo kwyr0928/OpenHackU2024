@@ -88,38 +88,7 @@ export default function TaskPreset({
         <span>{name}</span>
       </div>
       <div className="flex items-center">
-        {options.length != 3 ? (
-          <span className="mr-4">{(validOptions[0] || defaultOption).time}min</span>
-        ) : (
-          <div className="flex items-center gap-4">
-            <Select
-              defaultValue={(validOptions[0] || defaultOption).name}
-              onValueChange={(value) => {
-                const option = validOptions.find(opt => opt.name === value);
-                if (option) setSelectedOption(option);
-              }}
-            >
-              <SelectTrigger className="w-15">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {validOptions.length > 0 ? (
-                  validOptions.map((option, index) => (
-                    <SelectItem 
-                      key={index} 
-                      value={option.name}
-                    >
-                      {option.name}
-                    </SelectItem>
-                  ))
-                ) : (
-                  <SelectItem value="default">デフォルト</SelectItem>
-                )}
-              </SelectContent>
-            </Select>
-            <span className="mr-4">{selectedOption.time}min</span>
-          </div>
-        )}
+            <span className="mr-4">{options[0].time}min</span>
         {!isDelete && (
           <DropdownMenu>
             <DropdownMenuTrigger>
