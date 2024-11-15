@@ -649,7 +649,7 @@ export default function Schedule() {
 
   return (
     <div className="mx-auto h-svh max-w-md bg-slate-50 pt-5 text-center font-mPlus">
-      <div className="mx-auto w-[80%] h-[660px] rounded-xl border-4 border-color-all bg-white">
+      <div className="mx-auto w-[80%] h-[600px] rounded-xl border-4 border-color-all bg-white">
         <div className="flex justify-center rounded-t-lg bg-color-all py-3 text-xl">
           <Link href="/home">
             <Image
@@ -823,9 +823,9 @@ export default function Schedule() {
           )}
         </ScrollArea>
 
-        <div className="mt-3 flex justify-center">
+        <div className="flex justify-center">
           <DropdownMenu>
-            <DropdownMenuTrigger>
+            <DropdownMenuTrigger className="">
               <PlusCircle
                 style={{ width: "50px", height: "50px" }}
                 color={"#31D6CB"}
@@ -993,7 +993,7 @@ export default function Schedule() {
       <div className="fixed bottom-5 left-1/2 -translate-x-1/2 transform">
         <p className="mt-3 text-teal-500">間に合う時刻</p>
       <div className="flex">
-          <p className="text-3xl ml-20 font-extrabold text-red-600">{wakeupTime}</p>
+          <p className="text-3xl my-5 ml-20 font-extrabold text-red-600">{wakeupTime}</p>
           <Button className="flex ml-5 my-auto size-6 w-[60px] bg-slate-500" onClick={calculateRemainingTime}>更新</Button>
       </div>
           <Link href="/home">
