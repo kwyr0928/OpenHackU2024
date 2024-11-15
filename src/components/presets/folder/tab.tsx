@@ -85,6 +85,7 @@ export default function TabFolder() {
       ]);
       setFolderResponse(folderResponse.data);
       setTaskResponse(taskApiResponse.data);
+      console.log(folderResponse);
     } catch (error) {}
   };
 

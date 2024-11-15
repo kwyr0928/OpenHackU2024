@@ -158,7 +158,6 @@ export default function EditFolder({
                 <EditFolderTask
                   task={task.task}
                   id={task.task.itemId}
-                  select={task.task.select}
                   handleGetFolder={handleFolderGet}
                 >
                   {task.task.name}
@@ -169,7 +168,6 @@ export default function EditFolder({
 
             <div className="flex items-center justify-around">
               <NewFolderTask
-                select={item.folder.tasks.length}
                 item={item}
                 taskApiResponse={taskApiResponse}
                 handleGetFolder={handleFolderGet}

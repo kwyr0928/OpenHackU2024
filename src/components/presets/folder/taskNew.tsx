@@ -27,7 +27,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 type taskNewProps = {
   item: FolderSet;
   taskApiResponse: TaskApiResponse;
-  select: number;
   handleGetFolder: () => void;
 };
 
@@ -93,7 +92,7 @@ export type taskInFolderPutData = {
   taskSet: {
     name: string;
     isStatic: boolean;
-    select: number; //index
+    select: number;
     options: {
       name: string;
       time: number;
@@ -102,7 +101,6 @@ export type taskInFolderPutData = {
 };
 
 export default function NewFolderTask({
-  select,
   item,
   taskApiResponse,
   handleGetFolder,
@@ -149,7 +147,7 @@ export default function NewFolderTask({
             taskSet: {
               name: name,
               isStatic: false,
-              select: select,
+              select: 0,
               options: [
                 {
                   name: options1,
@@ -183,7 +181,7 @@ export default function NewFolderTask({
             taskSet: {
               name: name,
               isStatic: true,
-              select: select,
+              select: 0,
               options: [
                 {
                   name: options1,
@@ -339,7 +337,7 @@ export default function NewFolderTask({
                 <Button
                   className="bg-darkBlue hover:bg-blue-900"
                   onClick={handleTaskCreate}
-                  disabled={!name || !options1}
+                  disabled={!name || !options1 || !options2 || !options3}
                 >
                   作成
                 </Button>

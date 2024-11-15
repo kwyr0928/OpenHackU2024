@@ -175,8 +175,8 @@ export default function NewTask({ handleTaskGet }: NewTaskProps) {
               <Button
                 className="bg-darkBlue hover:bg-blue-900"
                 onClick={handleTaskCreate}
-                disabled={!name || !options1} // newNameが空の場合はボタンを無効化
-              >
+                disabled={!name || !options1 || !options2 || !options3}
+                >
                 作成
               </Button>
             </div>
