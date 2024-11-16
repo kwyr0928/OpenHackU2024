@@ -545,8 +545,8 @@ function Schedule() {
                   className="w-[170px] py-5 text-lg mr-10"
                 >
                   <div className="ml-5 max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
-            dTimePreset ? selectedTimePreset.time.name : "未設定"}
-            
+                    {selectedTimePreset ? selectedTimePreset.time.name : "未設定"}
+                  </div>
                   <ChevronsUpDown className="ml-3 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
