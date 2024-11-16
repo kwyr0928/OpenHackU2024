@@ -772,7 +772,7 @@ export default function Schedule() {
             {selectedTimePreset?.time.time}
           </div>
         </div>
-        <ScrollArea className="h-[380px]">
+        <ScrollArea className="">
           {detailWholePreset ? (
             detailWholePreset.whole?.itemSet?.map((item, index) => (
               <div key={index}>
