@@ -811,7 +811,7 @@ export default function Schedule() {
                   color={"#31D6CB"}
                 />
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="flex space-x-4 p-4">
+              <DropdownMenuContent className="flex space-x-4 p-4 bg-gray-200">
                 <div>
                   <DropdownMenuLabel>タスクの作成</DropdownMenuLabel>
                   <DropdownMenuSeparator />
