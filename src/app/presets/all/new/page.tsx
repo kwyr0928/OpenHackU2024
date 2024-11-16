@@ -780,11 +780,11 @@ export default function Schedule() {
         <p className="mt-3 text-teal-500">間に合う時刻</p>
       <div className="flex">
           <p className="text-3xl ml-20 font-extrabold text-red-600">{wakeupTime}</p>
-          <Button className="flex ml-5 my-auto size-6 w-[60px] bg-slate-500" onClick={calculateRemainingTime}>更新</Button>
+          <Button className="flex ml-5 my-auto size-6 w-[60px] bg-slate-500" onClick={calculateRemainingTime}>計算</Button>
       </div>
           <Link href="/home">
           <Button className="my-2 w-36 bg-color-all py-6 text-2xl hover:bg-teal-500" onClick={handleWholeCreate}>
-            設定
+            更新
           </Button>
           </Link>
       </div>
