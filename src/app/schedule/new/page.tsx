@@ -1,6 +1,5 @@
 "use client";
 
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import axios from "axios";
 import { Check, ChevronsUpDown, PlusCircle } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -24,6 +23,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "~/components/ui/dropdown-menu";
 import { Input } from "~/components/ui/input";
 import {
   Popover,
@@ -805,9 +805,9 @@ export default function Schedule() {
             <p className="mt-28 text-gray-500">
               下の＋ボタンから<br />タスクかフォルダを追加してください</p>
           )}
-          <div className="flex justify-center">
+          <div className="mt-3 flex justify-center">
             <DropdownMenu>
-              <DropdownMenuTrigger className="mt-28">
+              <DropdownMenuTrigger>
                 <PlusCircle
                   style={{ width: "50px", height: "50px" }}
                   color={"#31D6CB"}
