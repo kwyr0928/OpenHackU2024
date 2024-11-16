@@ -1,14 +1,14 @@
 "use client";
 
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import axios from "axios";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, PlusCircle } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import FolderPreset from "~/components/schedule/Folder";
 import TaskPreset from "~/components/schedule/Task";
-import PlusCircle from "~/components/svgs/plusCircle";
 import { Button } from "~/components/ui/button";
 import {
   Command,
@@ -24,14 +24,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
 import { Input } from "~/components/ui/input";
 import {
   Popover,
@@ -639,7 +631,7 @@ export default function Schedule() {
 
   return (
     <div className="mx-auto h-svh max-w-md bg-slate-50 pt-5 text-center font-mPlus">
-      <div className="mx-auto w-[80%] h-[600px] rounded-xl border-4 border-color-all bg-white">
+      <div className="mx-auto w-[80%] h-[70svh] rounded-xl border-4 border-color-all bg-white">
         <div className="flex justify-center rounded-t-lg bg-color-all py-3 text-xl">
           <Link href="/home">
             <Image
@@ -723,7 +715,7 @@ export default function Schedule() {
               width: '27px',
               height: 'auto',
           }}
-            className="fixed left-16 top-24 ml-2 mt-3"
+            className="fixed top-24 ml-12 mt-2"
           />
           <Popover open={openTime} onOpenChange={setOpenTime}>
             <PopoverTrigger asChild>
@@ -811,34 +803,34 @@ export default function Schedule() {
             <p className="mt-28 text-gray-500">
               下の＋ボタンから<br />タスクかフォルダを追加してください</p>
           )}
+          <div className="flex justify-center">
+            <DropdownMenu>
+              <DropdownMenuTrigger className="mt-28">
+                <PlusCircle
+                  style={{ width: "50px", height: "50px" }}
+                  color={"#31D6CB"}
+                />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="flex space-x-4 p-4">
+                <div>
+                  <DropdownMenuLabel>タスクの作成</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleTaskAdd}>
+                    既存プリセットから
+                  </DropdownMenuItem>
+                </div>
+                <div>
+                  <DropdownMenuLabel>フォルダの作成</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleFolderAdd}>
+                    既存プリセットから
+                  </DropdownMenuItem>
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </ScrollArea>
 
-        <div className="flex justify-center">
-          <DropdownMenu>
-            <DropdownMenuTrigger className="">
-              <PlusCircle
-                style={{ width: "50px", height: "50px" }}
-                color={"#31D6CB"}
-              />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="flex space-x-4 p-4">
-              <div>
-                <DropdownMenuLabel>タスクの作成</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleTaskAdd}>
-                  既存プリセットから
-                </DropdownMenuItem>
-              </div>
-              <div>
-                <DropdownMenuLabel>フォルダの作成</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleFolderAdd}>
-                  既存プリセットから
-                </DropdownMenuItem>
-              </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
         <Dialog open={isTaskModalOpen} onOpenChange={setIsTaskModalOpen}>
           <DialogContent>
             <DialogHeader>
