@@ -29,7 +29,7 @@ export default function NewTask({ handleTaskGet }: NewTaskProps) {
   const [minutes2, setMinutes2] = useState(0); // 分
   const [minutes3, setMinutes3] = useState(0); // 分
   const [minutes, setMinutes] = useState(0);
-  const [activeTab, setActiveTab] = useState("pulldown");
+  const [activeTab, setActiveTab] = useState("static");
 
   const { data: session, status } = useSession(); // セッション情報
 
@@ -51,7 +51,7 @@ export default function NewTask({ handleTaskGet }: NewTaskProps) {
       taskSet: {
         name: name,
         isStatic: false,
-        select:0,
+        select: 0,
         options: [
           {
             name: options1,
@@ -73,7 +73,7 @@ export default function NewTask({ handleTaskGet }: NewTaskProps) {
       taskSet: {
         name: name,
         isStatic: true,
-        select:0,
+        select: 0,
         options: [
           {
             time: minutes,
@@ -88,7 +88,7 @@ export default function NewTask({ handleTaskGet }: NewTaskProps) {
       } else {
         const res = await axios.post("/api/presets/task/new", taskData2);
       }
-    } catch (error) {}
+    } catch (error) { }
     handleCancel();
     setDialogOpen(false);
     handleTaskGet();
@@ -117,13 +117,13 @@ export default function NewTask({ handleTaskGet }: NewTaskProps) {
           </DialogTitle>
         </DialogHeader>
         <Tabs
-          defaultValue="pulldown"
+          defaultValue="static"
           onValueChange={(value) => setActiveTab(value)}
           className="mt-2"
         >
           <TabsList className="mb-4 grid w-full grid-cols-2">
-            <TabsTrigger value="pulldown">プルダウン</TabsTrigger>
             <TabsTrigger value="static">固定値</TabsTrigger>
+            <TabsTrigger value="pulldown">プルダウン</TabsTrigger>
           </TabsList>
           <TabsContent value="pulldown" className="h-[160px]">
             <div className="mb-3 flex items-center justify-center">
@@ -176,7 +176,7 @@ export default function NewTask({ handleTaskGet }: NewTaskProps) {
                 className="bg-darkBlue hover:bg-blue-900"
                 onClick={handleTaskCreate}
                 disabled={!name || !options1 || !options2 || !options3}
-                >
+              >
                 作成
               </Button>
             </div>

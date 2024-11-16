@@ -47,7 +47,7 @@ export default function EditTask({
   const [isDialogOpen, setDialogOpen] = useState(false); // ダイアログの状態
   const [isEditing, setIsEditing] = useState(false); // 編集状態
 
-  const [activeTab, setActiveTab] = useState("pulldown");
+  const [activeTab, setActiveTab] = useState("static");
 
   const [options1, setOptions1] = useState(task.options[0]?.name ?? ""); // プルダウン
   const [options2, setOptions2] = useState(task.options[1]?.name ?? "");
@@ -111,7 +111,7 @@ export default function EditTask({
           taskData2,
         );
       }
-    } catch (error) {}
+    } catch (error) { }
     setDialogOpen(false);
     handleTaskGet();
   };
@@ -125,15 +125,15 @@ export default function EditTask({
         `/api/presets/task/${id}?userId=${session.user.id}`,
       );
       console.log(response);
-    } catch (error) {}
+    } catch (error) { }
     setDialogOpen(false);
     setIsDeleteDialogOpen(false);
     handleTaskGet();
   };
 
   const handleDialogOpen = () => {
-    if (task.isStatic) {
-      setActiveTab("static");
+    if (task.isStatic === false) {
+      setActiveTab("pulldown");
     }
   };
 
@@ -205,8 +205,8 @@ export default function EditTask({
           className=""
         >
           <TabsList className="mb-4 grid w-full grid-cols-2">
-            <TabsTrigger value="pulldown">プルダウン</TabsTrigger>
             <TabsTrigger value="static">固定値</TabsTrigger>
+            <TabsTrigger value="pulldown">プルダウン</TabsTrigger>
           </TabsList>
           <TabsContent value="pulldown" className="h-[150px]">
             <div className="mb-2 flex items-center justify-center">
