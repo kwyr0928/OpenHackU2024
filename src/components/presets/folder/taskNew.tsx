@@ -1,6 +1,5 @@
 "use client";
 
-import { ScrollArea } from "@radix-ui/react-scroll-area";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
@@ -250,12 +249,12 @@ export default function NewFolderTask({
 
   return (
     <div>
-      <div className="mt-3 flex justify-center">
+      <div className="flex justify-center">
         <DropdownMenu>
           <DropdownMenuTrigger>
             <PlusCircle
               color="#FFA660"
-              style={{ width: "50px", height: "50px" }}
+              style={{ width: "45px", height: "45px" }}
             />
           </DropdownMenuTrigger>
           <DropdownMenuContent className="flex space-x-4 p-4">
@@ -374,14 +373,14 @@ export default function NewFolderTask({
             {taskApiResponse.taskSets.map((taskSet, index) => (
               <div
                 key={index}
-                className="flex w-full items-center justify-start text-xl text-black"
+                className="flex w-full items-center justify-start text-xl text-black font-normal font-normal"
                 onClick={() => handleTaskSelect(taskSet)}
               >
                 <Description
                   color="#FFA660"
                   style={{ width: "35px", height: "35px" }}
                 />
-                【{taskSet.task.name}】
+                &nbsp;{taskSet.task.name}
               </div>
             ))}
           </div>

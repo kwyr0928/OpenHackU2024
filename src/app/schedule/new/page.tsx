@@ -201,6 +201,16 @@ export default function Schedule() {
   const [wholeName, setWholeName] = useState<string>("");
   const [wakeupTime, setWakeupTime] = useState<string>("");
 
+  useEffect(() => {
+    // スクロールを禁止
+    document.body.style.overflow = "hidden";
+
+    // クリーンアップ用
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [])
+  
   const handleScheduleCreate = async () => {
     // スケジュール　作成
   
@@ -209,7 +219,7 @@ export default function Schedule() {
     userId: session?.user.id,
     wholeSet: {
       name: wholeName,
-      itemid: detailWholePreset?.whole.itemId,
+      itemId: detailWholePreset?.whole.itemId,
       timeId: selectedTimePreset?.time.timeId,
         items: detailWholePreset?.whole.itemSet.map((item) => ({
           itemId: item.task ? item.task.itemId : item.folder?.itemId,
@@ -287,6 +297,7 @@ export default function Schedule() {
     // スケジュール内のタスクフォルダを並び替える itemSets // TODO
     // 全体プリセットで仮実装済
     setWholeName("カスタム");
+    console.log(index);
     setDetailWholePreset((prev) => {
       if (!prev) return undefined; // データが無ければreturn
 
@@ -309,6 +320,87 @@ export default function Schedule() {
       };
     });
   };
+
+  const handleSortUp2 = (folderIndex: number, taskIndex: number) => {
+    // フォルダ内タスク並び替え　↑
+    setWholeName("カスタム");
+    setDetailWholePreset((prev) => {
+      if (!prev) return undefined; // データが無ければreturn
+
+      const updatedItemSet = [...prev.whole.itemSet]; // 現在の配列を取得
+      const targetFolder = updatedItemSet[folderIndex];
+      const tasks = Array.isArray(targetFolder?.folder?.tasks) 
+            ? [...targetFolder.folder.tasks]
+            : Array.isArray(targetFolder?.folder?.tasks?.task)
+                ? [...targetFolder.folder.tasks.task]
+                : [];
+      if (taskIndex > 0 && taskIndex <= tasks.length) {
+        [tasks[taskIndex - 1], tasks[taskIndex]] = [tasks[taskIndex], tasks[taskIndex - 1]];
+      }
+
+      const updatedFolder = {
+        ...targetFolder,
+        folder: {
+          ...targetFolder.folder,
+          tasks: Array.isArray(targetFolder?.folder?.tasks)
+                    ? tasks
+                    : { task: tasks }
+        }
+      };
+      updatedItemSet[folderIndex] = updatedFolder;
+   
+      return {
+        ...prev,
+        whole: {
+          ...prev.whole,
+          itemSet: updatedItemSet,
+        },
+      }
+    });
+  };
+
+  const handleSortDown2 = (folderIndex: number, taskIndex: number) => {
+    // フォルダ内タスク並び替え　↓
+    setWholeName("カスタム");
+    setDetailWholePreset((prev) => {
+        if (!prev) return undefined;
+
+        const updatedItemSet = [...prev.whole.itemSet];
+        const targetFolder = updatedItemSet[folderIndex];
+        const tasks = Array.isArray(targetFolder?.folder?.tasks) 
+            ? [...targetFolder.folder.tasks]
+            : Array.isArray(targetFolder?.folder?.tasks?.task)
+                ? [...targetFolder.folder.tasks.task]
+                : [];
+
+        // 最後のタスクでなければ入れ替え可能
+        if (taskIndex >= 0 && taskIndex < tasks.length - 1) {
+            [tasks[taskIndex], tasks[taskIndex + 1]] = [
+                tasks[taskIndex + 1],
+                tasks[taskIndex]
+            ];
+        }
+
+        const updatedFolder = {
+            ...targetFolder,
+            folder: {
+                ...targetFolder.folder,
+                tasks: Array.isArray(targetFolder?.folder?.tasks)
+                    ? tasks
+                    : { task: tasks }
+            }
+        };
+        updatedItemSet[folderIndex] = updatedFolder;
+
+        return {
+            ...prev,
+            whole: {
+                ...prev.whole,
+                itemSet: updatedItemSet,
+            },
+        };
+    });
+  }
 
   const handleDelete = (target) => {
     // タスクフォルダ削除 // 型定義 // TODO
@@ -557,7 +649,7 @@ export default function Schedule() {
 
   return (
     <div className="mx-auto h-svh max-w-md bg-slate-50 pt-5 text-center font-mPlus">
-      <div className="mx-auto w-[80%] h-[660px] rounded-xl border-4 border-color-all bg-white">
+      <div className="mx-auto w-[80%] h-[600px] rounded-xl border-4 border-color-all bg-white">
         <div className="flex justify-center rounded-t-lg bg-color-all py-3 text-xl">
           <Link href="/home">
             <Image
@@ -719,6 +811,8 @@ export default function Schedule() {
                     handleDelete={handleDelete}
                     handleSortUp={handleSortUp}
                     handleSortDown={handleSortDown}
+                    handleSortUp2={handleSortUp2}
+                    handleSortDown2={handleSortDown2}
                   />
                 )}
               </div>
@@ -729,9 +823,9 @@ export default function Schedule() {
           )}
         </ScrollArea>
 
-        <div className="mt-3 flex justify-center">
+        <div className="flex justify-center">
           <DropdownMenu>
-            <DropdownMenuTrigger>
+            <DropdownMenuTrigger className="">
               <PlusCircle
                 style={{ width: "50px", height: "50px" }}
                 color={"#31D6CB"}
@@ -898,11 +992,10 @@ export default function Schedule() {
       </div>
       <div className="fixed bottom-5 left-1/2 -translate-x-1/2 transform">
         <p className="mt-3 text-teal-500">間に合う時刻</p>
-        { wakeupTime === "" ?
-       <Button className="flex mx-auto bg-slate-500" onClick={calculateRemainingTime}>クリック</Button>
-        :
-        <p className="text-3xl font-extrabold text-red-600">{wakeupTime}</p>
-}
+      <div className="flex">
+          <p className="text-3xl my-5 ml-20 font-extrabold text-red-600">{wakeupTime}</p>
+          <Button className="flex ml-5 my-auto size-6 w-[60px] bg-slate-500" onClick={calculateRemainingTime}>更新</Button>
+      </div>
           <Link href="/home">
           <Button className="my-2 w-36 bg-color-all py-6 text-2xl hover:bg-teal-500" onClick={handleScheduleCreate}>
             設定

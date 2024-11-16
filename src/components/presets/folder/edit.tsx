@@ -1,7 +1,9 @@
 "use client";
 
+import axios from "axios";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
-import React, { useState } from "react";
+import { useState } from "react";
 import FolderClose from "~/components/svgs/folderClose";
 import FolderOpen from "~/components/svgs/folderOpen";
 import {
@@ -18,10 +20,8 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
-import NewFolderTask from "./taskNew";
 import EditFolderTask from "./taskEdit";
-import axios from "axios";
-import { useSession } from "next-auth/react";
+import NewFolderTask from "./taskNew";
 
 interface EditFolderProps {
   item: FolderSet;
@@ -133,7 +133,7 @@ export default function EditFolder({
       <AccordionItem value="item-1">
         <AccordionTrigger
           onClick={() => setIsOpen(!isOpen)} // 開閉をトグル
-          className="w-full items-center justify-between p-1 text-xl text-black"
+          className="w-full items-center justify-start p-1 text-xl text-black font-normal"
         >
           <div>
             {isOpen ? (
@@ -148,13 +148,13 @@ export default function EditFolder({
               />
             )}
           </div>
-          【{name}】
+          &nbsp;{name}
         </AccordionTrigger>
         <AccordionContent className="w-full">
           <hr className="mb-1 mt-2 border-gray-500" />
-          <div className="mx-auto w-[90%]">
+          <div className="mt-4 mb-3 mx-auto w-[95%]">
             {item.folder.tasks.map((task) => (
-              <div key={task.task.itemId}>
+              <div key={task.task.itemId} className="mb-1 mt-1 border border-gray-300">
                 <EditFolderTask
                   task={task.task}
                   id={task.task.itemId}
@@ -163,9 +163,8 @@ export default function EditFolder({
                 >
                   {task.task.name}
                 </EditFolderTask>
-                <hr className="mb-1 mt-1 w-full border-gray-500" />
               </div>
-            ))}
+            ))}    </div>
 
             <div className="flex items-center justify-around">
               <NewFolderTask
@@ -180,7 +179,7 @@ export default function EditFolder({
                 <Image src="/image/edit.svg" alt="" width={20} height={20} />
               </Button>
             </div>
-          </div>
+      
 
           {/* 名前変更ダイアログ */}
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

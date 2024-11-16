@@ -207,6 +207,16 @@ function Schedule() {
   const searchParams = useSearchParams();
   const itemId = searchParams.get("itemId");
 
+  useEffect(() => {
+    // スクロールを禁止
+    document.body.style.overflow = "hidden";
+
+    // クリーンアップ用
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [])
+  
   const handleWholeEdit = async () => {
     // 全体プリセット　編集
     console.log(detailWholePreset);
@@ -225,10 +235,11 @@ function Schedule() {
       userId: session?.user.id,
       wholeSet: {
         name: wholeName,
-        timeId: "cm3he49se001j4irxllhnn0pg",
+        timeId: selectedTimePreset?.time.timeId,
         items: items,
       },
     };
+    console.log("これをぽすと");
     console.log(wholeEdit);
     try {
       const res = await axios.put(`/api/presets/whole/${detailWholePreset?.whole.itemId}`, wholeEdit);
@@ -491,23 +502,31 @@ function Schedule() {
 
   return (
     <div className="mx-auto h-svh max-w-md bg-slate-50 pt-5 text-center font-mPlus">
-      <div className="mx-5 h-[660px] rounded-xl border-2 border-teal-400 bg-white">
-        <p className="rounded-t-lg bg-teal-400 py-3 text-xl">
-          <Link href="/home">
+      <div className="w-[80%] mx-auto h-[660px] rounded-xl border-4 border-color-all bg-white">
+        <p className="flex justify-center rounded-t-lg bg-color-all py-3 text-xl">
+        <Link href="/home">
             <Image
-              src="/image/Backicon.svg"
+              src="/image/back.svg"
               alt="Backicon"
               width={25}
               height={25}
-              className="fixed left-3 top-10 mx-5 mt-0.5"
+              style={{
+                width: '25px',
+                height: 'auto',
+            }}
+              className="mt-2"
             />
           </Link>
           <Image
-            src="/image/Allicon.svg"
-            alt="All"
-            width={27}
-            height={27}
-            className="fixed left-16 top-10 ml-2"
+            src="/image/inventory.svg"
+            alt="Backicon"
+            width={25}
+            height={25}
+            style={{
+              width: '25px',
+              height: 'auto',
+          }}
+            className="mr-3"
           />
            {/* 全体プリセットの名前を入力 */}
          <Input
@@ -515,10 +534,10 @@ function Schedule() {
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setWholeName(e.target.value)
           }
-          className="w-[170px] py-5 text-center mx-auto bg-white"
+          className="w-[170px] py-5 text-center mr-16 bg-white"
         />
         </p>
-        <p className="bg-pink-300 pb-0.5 pt-3 text-xl">
+        <p className="bg-color-time pb-0.5 pt-3 text-xl">
           <Image
             src="/image/Timeicon.svg"
             alt="Time"
