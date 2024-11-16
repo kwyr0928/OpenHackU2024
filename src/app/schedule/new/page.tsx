@@ -706,65 +706,67 @@ export default function Schedule() {
           </Popover>
         </div>
         <div className="bg-color-time pb-0.5 pt-3 text-xl">
-          <Image
-            src="/image/Timeicon.svg"
-            alt="Time"
-            width={27}
-            height={27}
-            style={{
-              width: '27px',
-              height: 'auto',
-          }}
-            className="fixed top-24 ml-12 mt-2"
-          />
-          <Popover open={openTime} onOpenChange={setOpenTime}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                role="combobox"
-                aria-expanded={openTime}
-                className="w-[170px] py-5 text-lg"
-              >
-                <div className="ml-5 max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
-                  {selectedTimePreset
-                    ? selectedTimePreset.time.name
-                    : "未設定"}
-                </div>
-                <ChevronsUpDown className="ml-3 h-4 w-4 shrink-0 opacity-50" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-0">
-              <Command>
-                <CommandInput placeholder="時間プリセットを検索" />
-                <CommandList>
-                  <CommandEmpty>見つかりません</CommandEmpty>
-                  <CommandGroup>
-                    {timePresets.map((preset) => (
-                      <CommandItem
-                        key={preset.time.timeId}
-                        value={preset.time.name}
-                        onSelect={() =>
-                          handleTimePresetSelect(preset.time.timeId)
-                        }
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            valueTime === preset.time.timeId
-                              ? "opacity-100"
-                              : "opacity-0",
-                          )}
-                        />
-                        <div className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
-                          {preset.time.name}
-                        </div>
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
+          <div className="flex justify-center">
+            <Image
+              src="/image/Timeicon.svg"
+              alt="Time"
+              width={27}
+              height={27}
+              style={{
+                width: '27px',
+                height: 'auto',
+            }}
+              className="mr-3"
+            />
+            <Popover open={openTime} onOpenChange={setOpenTime}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={openTime}
+                  className="w-[170px] py-5 text-lg mr-10"
+                >
+                  <div className="ml-5 max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
+                    {selectedTimePreset
+                      ? selectedTimePreset.time.name
+                      : "未設定"}
+                  </div>
+                  <ChevronsUpDown className="ml-3 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[200px] p-0">
+                <Command>
+                  <CommandInput placeholder="時間プリセットを検索" />
+                  <CommandList>
+                    <CommandEmpty>見つかりません</CommandEmpty>
+                    <CommandGroup>
+                      {timePresets.map((preset) => (
+                        <CommandItem
+                          key={preset.time.timeId}
+                          value={preset.time.name}
+                          onSelect={() =>
+                            handleTimePresetSelect(preset.time.timeId)
+                          }
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              valueTime === preset.time.timeId
+                                ? "opacity-100"
+                                : "opacity-0",
+                            )}
+                          />
+                          <div className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
+                            {preset.time.name}
+                          </div>
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          </div>
 
           <div className="mx-2 mb-2 mt-3 bg-white py-3 text-3xl font-extrabold">
             {selectedTimePreset?.time.time}
@@ -811,7 +813,7 @@ export default function Schedule() {
                   color={"#31D6CB"}
                 />
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="flex space-x-4 p-4 bg-gray-200">
+              <DropdownMenuContent className="flex space-x-4 p-4">
                 <div>
                   <DropdownMenuLabel>タスクの作成</DropdownMenuLabel>
                   <DropdownMenuSeparator />
