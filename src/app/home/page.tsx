@@ -1,9 +1,11 @@
 "use client";
 
 import axios from "axios";
+import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { boolean } from "zod";
 import DisplayTime from "~/components/displayTime/displayTime";
 import DescriptionSvg from "~/components/svgs/description";
 import FolderIconSvg from "~/components/svgs/folderClose";
@@ -105,16 +107,6 @@ export default function Home() {
     }
   };
 
-  useEffect(() => {
-    // スクロールを禁止
-    document.body.style.overflow = "hidden";
-
-    // クリーンアップ用
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [])
-  
   useEffect(() => {
     handleScheduleGet();
   }, []);

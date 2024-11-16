@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Checkbox } from "~/components/ui/checkbox";
@@ -100,16 +100,6 @@ export default function Question() {
    */
   let nextButtonContent = null;
 
-  useEffect(() => {
-    // スクロールを禁止
-    document.body.style.overflow = "hidden";
-
-    // クリーンアップ用
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [])
-  
   const handleNextStep  = async () => {
     setSelectedValue(""); // 選択をリセット
     setInputValue(""); // 入力欄をリセット
